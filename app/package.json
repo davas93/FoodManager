@@ -1,0 +1,11 @@
+{
+  "name": "food-manager",
+  "version": "1.0.0",
+  "main": "main.js",
+  "private": true,
+  "author": "Denis Vasin",
+  "license": "ISC",
+  "dependencies": {
+    "os-utils": "0.0.14"
+  }
+}

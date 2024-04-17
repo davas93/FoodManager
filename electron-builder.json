@@ -1,0 +1,31 @@
+{
+    "asar": true,
+    "directories": {
+        "output": "release/"
+    },
+    "files": [
+        "**/*",
+        "!**/*.ts",
+        "!*.map",
+        "!package.json",
+        "!package-lock.json",
+        {
+            "from": "../dist",
+            "filter": [
+                "**/*"
+            ]
+        }
+    ],
+    "mac": {
+        "icon": "dist/assets/icons",
+        "target": [
+            "dmg"
+        ]
+    },
+    "linux": {
+        "icon": "dist/assets/icons",
+        "target": [
+            "AppImage"
+        ]
+    }
+}
