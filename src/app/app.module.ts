@@ -8,13 +8,14 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ButtonModule} from "primeng/button";
 import {DropdownModule} from "primeng/dropdown";
 import {CalendarModule} from "primeng/calendar";
-import {FirebaseDataService} from "./core/services/firebase-data.service";
 import {InputNumberModule} from "primeng/inputnumber";
 import {InputTextModule} from "primeng/inputtext";
+import {AuthComponent} from "./auth/auth.component";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AuthComponent
   ],
   imports: [
     BrowserModule,
