@@ -1,0 +1,25 @@
+.user-menu-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .user-menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: 1%;
+    flex: 1;
+    padding: 32px;
+
+    .user-name {
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .table-container {
+      height: 1%;
+      flex: 1;
+      border: 1px solid lightgray;
+    }
+  }
+}

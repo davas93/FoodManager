@@ -1,12 +1,4 @@
 <div class="app-container">
-  @if (isAuthenticated$ | async) {
-    <div class="toolbar">
-      <img src="assets/toolbar-logo.svg" alt="logo" class="toolbar-logo">
-
-      <button pButton (click)="logout$.next()">Выйти</button>
-    </div>
-  }
-
   <div class="app-content">
     <router-outlet></router-outlet>
   </div>

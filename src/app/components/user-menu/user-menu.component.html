@@ -1,1 +1,13 @@
-<p>user-menu works!</p>
+<div class="user-menu-container">
+  <app-toolbar></app-toolbar>
+
+  @if (currentUser$ | async; as employee) {
+    <div class="user-menu-content">
+      <div class="user-name">{{employee.fullName}}</div>
+
+      <div class="table-container">
+
+      </div>
+    </div>
+  }
+</div>
