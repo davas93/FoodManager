@@ -1,4 +1,22 @@
+@use "themes/mytheme/variables" as var;
+
 .app-container {
   width: 100vw;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 32px;
+    height: 56px;
+    background-color: var.$primaryColor;
+  }
+
+  .app-content {
+    height: 1%;
+    flex: 1;
+  }
 }

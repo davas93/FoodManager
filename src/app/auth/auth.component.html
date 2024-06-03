@@ -2,8 +2,8 @@
   <img src="assets/logo.svg" alt="fondital-logo" class="logo">
 
   <div class="auth-form">
-    <input type="text" pInputText>
-    <input type="text" pInputText>
-    <button pButton>Войти</button>
+    <input type="text" placeholder="Логин (почта)" pInputText [formControl]="loginData.controls.email">
+    <input type="password" placeholder="Пароль" pInputText [formControl]="loginData.controls.password">
+    <button pButton (click)="loginBtnClick$.next()">Войти</button>
   </div>
 </div>

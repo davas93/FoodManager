@@ -41,6 +41,10 @@ export class FirebaseDataService {
     this.db = getFirestore(this.app);
   }
 
+  get fbApp(): FirebaseApp {
+    return this.app;
+  }
+
   getItems<T>(collectionPath: string): Observable<T[]> {
     const collectionRef = collection(this.db, collectionPath);
 
@@ -52,7 +56,7 @@ export class FirebaseDataService {
     }));
   }
 
-  getItemById<T>(collectionPath: string, id: number): Observable<T | null> {
+  getItemById<T>(collectionPath: string, id: number | string): Observable<T | null> {
     const collectionRef = collection(this.db, collectionPath);
     const q = query(collectionRef, where('id', '==', id));
 
