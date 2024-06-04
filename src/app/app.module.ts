@@ -15,6 +15,8 @@ import {UserMenuComponent} from "./components/user-menu/user-menu.component";
 import {AdminPanelComponent} from "./components/admin-panel/admin-panel.component";
 import {DiningInfoComponent} from "./components/dining-info/dining-info.component";
 import {ToolbarComponent} from "./components/toolbar/toolbar.component";
+import {TabViewModule} from "primeng/tabview";
+import {TableModule} from "primeng/table";
 
 @NgModule({
   declarations: [
@@ -35,7 +37,9 @@ import {ToolbarComponent} from "./components/toolbar/toolbar.component";
     CalendarModule,
     InputNumberModule,
     InputTextModule,
-    ToolbarComponent
+    ToolbarComponent,
+    TabViewModule,
+    TableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

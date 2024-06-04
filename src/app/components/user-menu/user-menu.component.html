@@ -1,12 +1,60 @@
 <div class="user-menu-container">
   <app-toolbar></app-toolbar>
 
-  @if (currentUser$ | async; as employee) {
+  @if (currentUserMenu$ | async; as menu) {
     <div class="user-menu-content">
-      <div class="user-name">{{employee.fullName}}</div>
+      <div class="user-name">{{menu.employeeName}}</div>
 
       <div class="table-container">
-
+        <p-tabView>
+          @for (week of menu.weeks; track week) {
+            <p-tabPanel [header]="WEEKS[week.name]">
+              <p-table [value]="week.days"
+                       groupRowsBy="name"
+                       rowGroupMode="subheader" >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width:25%">
+                      Первое
+                    </th>
+                    <th style="width:25%">
+                      Второе
+                    </th>
+                    <th style="width:25%">
+                      Гарнир
+                    </th>
+                    <th style="width:25%">
+                      Салат
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="groupheader" let-weekDay>
+                  <tr pRowGroupHeader class="group-header">
+                    <td colspan="5">
+                      <span class="font-bold ml-2">{{DAYS_OF_WEEK[weekDay.name]}}</span>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-weekDay let-rowIndex="rowIndex">
+                  <tr>
+                    <td>
+                      {{weekDay.meals.firstCourse}}
+                    </td>
+                    <td>
+                      {{weekDay.meals.secondCourse}}
+                    </td>
+                    <td>
+                      {{weekDay.meals.sideDish}}
+                    </td>
+                    <td>
+                      {{weekDay.meals.salad}}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+          }
+        </p-tabView>
       </div>
     </div>
   }
