@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {AuthService} from "../../core/services/auth.service";
 import {FirebaseDataService} from "../../core/services/firebase-data.service";
 import {Observable, of, switchMap, tap} from "rxjs";
 import {isNil} from "lodash-es";
 import {EmployeeMenu} from "../../models/employee-menu.model";
 import {DAYS_OF_WEEK, WEEKS} from "../../consts/weeks-vocabulary";
+import {TableEditCompleteEvent} from "primeng/table";
 
 @Component({
   selector: 'app-user-menu',
@@ -17,7 +18,7 @@ export class UserMenuComponent implements OnInit {
   protected readonly WEEKS = WEEKS;
   protected readonly DAYS_OF_WEEK = DAYS_OF_WEEK;
 
-  constructor(private authService: AuthService, private fbService: FirebaseDataService) {
+  constructor(private authService: AuthService, private fbService: FirebaseDataService, private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -27,5 +28,9 @@ export class UserMenuComponent implements OnInit {
         else return of(null)
       })
     )
+  }
+
+  edit(event: EmployeeMenu) {
+    console.log(event)
   }
 }

@@ -39,7 +39,7 @@ import {TableModule} from "primeng/table";
     InputTextModule,
     ToolbarComponent,
     TabViewModule,
-    TableModule
+    TableModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -9,9 +9,9 @@
         <p-tabView>
           @for (week of menu.weeks; track week) {
             <p-tabPanel [header]="WEEKS[week.name]">
-              <p-table [value]="week.days"
+              <p-table #table [value]="week.days"
                        groupRowsBy="name"
-                       rowGroupMode="subheader" >
+                       rowGroupMode="subheader" (onEditComplete)="edit(menu)">
                 <ng-template pTemplate="header">
                   <tr>
                     <th style="width:25%">
@@ -37,17 +37,57 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-weekDay let-rowIndex="rowIndex">
                   <tr>
-                    <td>
-                      {{weekDay.meals.firstCourse}}
+                    <td [pEditableColumn]="weekDay.meals.firstCourse" pEditableColumnField="firstCourse">
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <p-dropdown
+                            placeholder="Выберите блюдо"
+                            [options]="['Cуп', 'Щи', 'Солянка', 'Нет']"
+                            [(ngModel)]="weekDay.meals.firstCourse"/>
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ weekDay.meals.firstCourse }}
+                        </ng-template>
+                      </p-cellEditor>
                     </td>
-                    <td>
-                      {{weekDay.meals.secondCourse}}
+                    <td [pEditableColumn]="weekDay.meals.secondCourse" pEditableColumnField="firstCourse">
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <input
+                            pInputText
+                            type="text"
+                            [(ngModel)]="weekDay.meals.secondCourse" />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ weekDay.meals.secondCourse }}
+                        </ng-template>
+                      </p-cellEditor>
                     </td>
-                    <td>
-                      {{weekDay.meals.sideDish}}
+                    <td [pEditableColumn]="weekDay.meals.sideDish" pEditableColumnField="firstCourse">
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <input
+                            pInputText
+                            type="text"
+                            [(ngModel)]="weekDay.meals.sideDish" />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ weekDay.meals.sideDish }}
+                        </ng-template>
+                      </p-cellEditor>
                     </td>
-                    <td>
-                      {{weekDay.meals.salad}}
+                    <td [pEditableColumn]="weekDay.meals.salad" pEditableColumnField="firstCourse">
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <input
+                            pInputText
+                            type="text"
+                            [(ngModel)]="weekDay.meals.salad" />
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ weekDay.meals.salad }}
+                        </ng-template>
+                      </p-cellEditor>
                     </td>
                   </tr>
                 </ng-template>
