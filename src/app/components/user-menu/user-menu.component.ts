@@ -1,11 +1,13 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {AuthService} from "../../core/services/auth.service";
 import {FirebaseDataService} from "../../core/services/firebase-data.service";
-import {Observable, of, switchMap, tap} from "rxjs";
-import {isNil} from "lodash-es";
+import {map, Observable, of, switchMap, tap} from "rxjs";
+import {indexOf, isNil} from "lodash-es";
 import {EmployeeMenu} from "../../models/employee-menu.model";
 import {DAYS_OF_WEEK, WEEKS} from "../../consts/weeks-vocabulary";
-import {TableEditCompleteEvent} from "primeng/table";
+import {GeneralMenu} from "../../models/general-menu.model";
+import {Dish} from "../../models/dishes.model";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-user-menu',
@@ -15,6 +17,8 @@ import {TableEditCompleteEvent} from "primeng/table";
 export class UserMenuComponent implements OnInit {
 
   public currentUserMenu$!: Observable<EmployeeMenu | null>;
+  public generalMenu$!: Observable<GeneralMenu | null>;
+
   protected readonly WEEKS = WEEKS;
   protected readonly DAYS_OF_WEEK = DAYS_OF_WEEK;
 
@@ -27,8 +31,11 @@ export class UserMenuComponent implements OnInit {
         if (!isNil(uid)) return this.fbService.getItemById<EmployeeMenu>('menus', uid);
         else return of(null)
       })
-    )
+    );
+
+    this.generalMenu$ = this.fbService.getItemById<GeneralMenu>('generalMenu', 1).pipe(tap(data => console.log(data)));
   }
+
 
   edit(event: EmployeeMenu) {
     console.log(event)

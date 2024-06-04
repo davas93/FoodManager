@@ -1,10 +1,11 @@
 import {isNil} from "lodash-es";
+import {Dish} from "./dishes.model";
 
 export class Meal {
-  firstCourse: string = "";
-  secondCourse: string = "";
-  sideDish: string ="";
-  salad: string = "";
+  firstCourse: string | Dish[] = "";
+  secondCourse: string | Dish[] = "";
+  sideDish: string | Dish[] ="";
+  salad: string | Dish[] = "";
 
   constructor(input?: Partial<Meal>) {
     if (!isNil(input)) Object.assign(this, input);

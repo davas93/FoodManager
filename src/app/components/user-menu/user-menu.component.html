@@ -7,7 +7,7 @@
 
       <div class="table-container">
         <p-tabView>
-          @for (week of menu.weeks; track week) {
+          @for (week of menu.weeks; track week; let i = $index) {
             <p-tabPanel [header]="WEEKS[week.name]">
               <p-table #table [value]="week.days"
                        groupRowsBy="name"
@@ -42,7 +42,9 @@
                         <ng-template pTemplate="input">
                           <p-dropdown
                             placeholder="Выберите блюдо"
-                            [options]="['Cуп', 'Щи', 'Солянка', 'Нет']"
+                            [options]="(generalMenu$ | async)?.weeks[i].days[rowIndex].meals.firstCourse"
+                            optionLabel="name"
+                            optionValue="name"
                             [(ngModel)]="weekDay.meals.firstCourse"/>
                         </ng-template>
                         <ng-template pTemplate="output">
@@ -50,39 +52,45 @@
                         </ng-template>
                       </p-cellEditor>
                     </td>
-                    <td [pEditableColumn]="weekDay.meals.secondCourse" pEditableColumnField="firstCourse">
+                    <td [pEditableColumn]="weekDay.meals.secondCourse" pEditableColumnField="secondCourse">
                       <p-cellEditor>
                         <ng-template pTemplate="input">
-                          <input
-                            pInputText
-                            type="text"
-                            [(ngModel)]="weekDay.meals.secondCourse" />
+                          <p-dropdown
+                            placeholder="Выберите блюдо"
+                            [options]="(generalMenu$ | async)?.weeks[i].days[rowIndex].meals.secondCourse"
+                            optionLabel="name"
+                            optionValue="name"
+                            [(ngModel)]="weekDay.meals.secondCourse"/>
                         </ng-template>
                         <ng-template pTemplate="output">
                           {{ weekDay.meals.secondCourse }}
                         </ng-template>
                       </p-cellEditor>
                     </td>
-                    <td [pEditableColumn]="weekDay.meals.sideDish" pEditableColumnField="firstCourse">
+                    <td [pEditableColumn]="weekDay.meals.sideDish" pEditableColumnField="sideDish">
                       <p-cellEditor>
                         <ng-template pTemplate="input">
-                          <input
-                            pInputText
-                            type="text"
-                            [(ngModel)]="weekDay.meals.sideDish" />
+                          <p-dropdown
+                            placeholder="Выберите блюдо"
+                            [options]="(generalMenu$ | async)?.weeks[i].days[rowIndex].meals.sideDish"
+                            optionLabel="name"
+                            optionValue="name"
+                            [(ngModel)]="weekDay.meals.sideDish"/>
                         </ng-template>
                         <ng-template pTemplate="output">
                           {{ weekDay.meals.sideDish }}
                         </ng-template>
                       </p-cellEditor>
                     </td>
-                    <td [pEditableColumn]="weekDay.meals.salad" pEditableColumnField="firstCourse">
+                    <td [pEditableColumn]="weekDay.meals.salad" pEditableColumnField="salad">
                       <p-cellEditor>
                         <ng-template pTemplate="input">
-                          <input
-                            pInputText
-                            type="text"
-                            [(ngModel)]="weekDay.meals.salad" />
+                          <p-dropdown
+                            placeholder="Выберите блюдо"
+                            [options]="(generalMenu$ | async)?.weeks[i].days[rowIndex].meals.salad"
+                            optionLabel="name"
+                            optionValue="name"
+                            [(ngModel)]="weekDay.meals.salad"/>
                         </ng-template>
                         <ng-template pTemplate="output">
                           {{ weekDay.meals.salad }}
