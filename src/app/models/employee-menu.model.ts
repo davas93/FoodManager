@@ -23,11 +23,11 @@ export class Day {
 export class Week {
   name: string = "";
   days: Day[] = [
-    new Day({name: "monday"}),
-    new Day({name: "tuesday"}),
-    new Day({name: "wednesday"}),
-    new Day({name: "thursday"}),
-    new Day({name: "friday"}),
+    new Day({name: "day1"}),
+    new Day({name: "day2"}),
+    new Day({name: "day3"}),
+    new Day({name: "day4"}),
+    new Day({name: "day5"}),
   ];
 
   constructor(input?: Partial<Week>) {
