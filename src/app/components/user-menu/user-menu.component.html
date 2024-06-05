@@ -19,5 +19,7 @@
 
       <button style="align-self: center" pButton [disabled]="getBtnState(menu, _cachedUserMenu)" (click)="saveMenuBtnClick$.next(menu)">Сохранить изменения</button>
     </div>
+  } @else {
+    <app-loading-screen></app-loading-screen>
   }
 </div>

@@ -21,6 +21,8 @@ import { UserMenuTableComponent } from './components/user-menu-table/user-menu-t
 import {IconFieldModule} from "primeng/iconfield";
 import {ToastModule} from "primeng/toast";
 import {MessageService} from "primeng/api";
+import {LoadingScreenComponent} from "./components/loading-screen/loading-screen.component";
+import {ProgressSpinnerModule} from "primeng/progressspinner";
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import {MessageService} from "primeng/api";
     AdminPanelComponent,
     DiningInfoComponent,
     UserMenuTableComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    LoadingScreenComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +49,8 @@ import {MessageService} from "primeng/api";
     TabViewModule,
     TableModule,
     IconFieldModule,
-    ToastModule
+    ToastModule,
+    ProgressSpinnerModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]
