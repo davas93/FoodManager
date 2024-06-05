@@ -1,0 +1,121 @@
+<p-tabView>
+  @for (week of weeks$ | async; track week; let i = $index) {
+    <p-tabPanel [header]="WEEKS[week.name]" class="menu-tabs">
+      <p-table #table [value]="week.days"
+               groupRowsBy="name"
+               rowGroupMode="subheader" (onEditComplete)="changeMenu.emit()">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width:25%">
+              Первое
+            </th>
+            <th style="width:25%">
+              Второе
+            </th>
+            <th style="width:25%">
+              Гарнир
+            </th>
+            <th style="width:25%">
+              Салат
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="groupheader" let-weekDay>
+          <tr pRowGroupHeader class="group-header">
+            <td colspan="5">
+              <span class="font-bold ml-2">{{DAYS_OF_WEEK[weekDay.name]}}</span>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-weekDay let-rowIndex="rowIndex">
+          <tr>
+            <td [pEditableColumn]="weekDay.meals.firstCourse" pEditableColumnField="firstCourse">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <p-dropdown
+                    placeholder="Выберите блюдо"
+                    [options]="(generalMenu$ | async)?.weeks[i].days[rowIndex].meals.firstCourse"
+                    optionLabel="name"
+                    optionValue="name"
+                    [(ngModel)]="weekDay.meals.firstCourse">
+                    <ng-template let-option pTemplate="item">
+                      <span [title]="option.name">
+                        {{option.name}}
+                      </span>
+                    </ng-template>
+                  </p-dropdown>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{ weekDay.meals.firstCourse }}
+                </ng-template>
+              </p-cellEditor>
+            </td>
+            <td [pEditableColumn]="weekDay.meals.secondCourse" pEditableColumnField="secondCourse">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <p-dropdown
+                    placeholder="Выберите блюдо"
+                    [options]="(generalMenu$ | async)?.weeks[i].days[rowIndex].meals.secondCourse"
+                    optionLabel="name"
+                    optionValue="name"
+                    [(ngModel)]="weekDay.meals.secondCourse">
+                    <ng-template let-option pTemplate="item">
+                      <span [title]="option.name">
+                        {{option.name}}
+                      </span>
+                    </ng-template>
+                  </p-dropdown>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{ weekDay.meals.secondCourse }}
+                </ng-template>
+              </p-cellEditor>
+            </td>
+            <td [pEditableColumn]="weekDay.meals.sideDish" pEditableColumnField="sideDish">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <p-dropdown
+                    placeholder="Выберите блюдо"
+                    [options]="(generalMenu$ | async)?.weeks[i].days[rowIndex].meals.sideDish"
+                    optionLabel="name"
+                    optionValue="name"
+                    [(ngModel)]="weekDay.meals.sideDish">
+                    <ng-template let-option pTemplate="item">
+                      <span [title]="option.name">
+                        {{option.name}}
+                      </span>
+                    </ng-template>
+                  </p-dropdown>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{ weekDay.meals.sideDish }}
+                </ng-template>
+              </p-cellEditor>
+            </td>
+            <td [pEditableColumn]="weekDay.meals.salad" pEditableColumnField="salad">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                  <p-dropdown
+                    placeholder="Выберите блюдо"
+                    [options]="(generalMenu$ | async)?.weeks[i].days[rowIndex].meals.salad"
+                    optionLabel="name"
+                    optionValue="name"
+                    [(ngModel)]="weekDay.meals.salad">
+                    <ng-template let-option pTemplate="item">
+                      <span [title]="option.name">
+                        {{option.name}}
+                      </span>
+                    </ng-template>
+                  </p-dropdown>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{ weekDay.meals.salad }}
+                </ng-template>
+              </p-cellEditor>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+  }
+</p-tabView>

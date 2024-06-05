@@ -1,1 +1,14 @@
 /* Customizations to the designer theme should be defined here */
+* {
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    margin-left: 5px;
+    margin-top: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+}

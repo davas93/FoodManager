@@ -1,4 +1,3 @@
-@use "themes/mytheme/variables" as var;
 
 .user-menu-container {
   display: flex;
@@ -21,18 +20,6 @@
     .table-container {
       height: 1%;
       flex: 1;
-
-      .group-header {
-        height: 40px;
-        background-color: var.$tableHeaderBg;
-
-        td {
-          padding: 0;
-          text-align: center;
-          font-weight: 500;
-          color: var.$primaryColor;
-        }
-      }
     }
   }
 }

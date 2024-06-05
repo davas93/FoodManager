@@ -17,6 +17,7 @@ import {DiningInfoComponent} from "./components/dining-info/dining-info.componen
 import {ToolbarComponent} from "./components/toolbar/toolbar.component";
 import {TabViewModule} from "primeng/tabview";
 import {TableModule} from "primeng/table";
+import { UserMenuTableComponent } from './components/user-menu-table/user-menu-table.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import {TableModule} from "primeng/table";
     AuthComponent,
     UserMenuComponent,
     AdminPanelComponent,
-    DiningInfoComponent
+    DiningInfoComponent,
+    UserMenuTableComponent
   ],
   imports: [
     BrowserModule,
