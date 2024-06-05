@@ -3,12 +3,17 @@
 
   @if (currentUserMenu$ | async; as menu) {
     <div class="user-menu-content">
-      <div class="user-name">{{menu.employeeName}}</div>
+      <div class="user-top-service">
+        <div class="user-name">{{menu.employeeName}}</div>
+        <div class="date">{{currentDate}}</div>
+      </div>
+
 
       <div class="table-container">
         <app-user-menu-table [weeks]="menu.weeks"
                              [generalMenu]="generalMenu$ | async"
-                             (changeMenu)="changedUserMenu$.next(menu); check(menu, _cachedUserMenu)">
+                             (changeMenu)="changedUserMenu$.next(menu);"
+                             [currentWeek]="currentWeek">
         </app-user-menu-table>
       </div>
 

@@ -7,6 +7,8 @@ import {EmployeeMenu} from "../../models/employee-menu.model";
 import {GeneralMenu} from "../../models/general-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {MessageService} from "primeng/api";
+import {WeekService} from "../../core/services/week.service";
+import {WEEKS} from "../../consts/weeks-vocabulary";
 
 @UntilDestroy()
 @Component({
@@ -21,6 +23,8 @@ export class UserMenuComponent implements OnInit {
   private userMenuData$!: Observable<EmployeeMenu | null>;
 
   public _cachedUserMenu!: EmployeeMenu | null;
+  public currentDate!: string;
+  public currentWeek!: string;
 
   public changedUserMenu$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
   public saveMenuBtnClick$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
@@ -28,10 +32,17 @@ export class UserMenuComponent implements OnInit {
 
   constructor(private authService: AuthService,
               private fbService: FirebaseDataService,
-              private messageService: MessageService) {
+              private messageService: MessageService,
+              private weekService: WeekService) {
   }
 
   ngOnInit(): void {
+    const formattedDate: string = new Date().toLocaleDateString('ru',{weekday: "long", day: "numeric", month: "long", year: "numeric"});
+
+    this.currentWeek = this.weekService.getCurrentWeek();
+
+    this.currentDate = `Сегодня ${formattedDate} ${WEEKS[this.currentWeek]}`;
+
     this.userMenuData$ = this.authService.userUid.pipe(
       switchMap(uid => {
         if (!isNil(uid)) {

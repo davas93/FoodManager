@@ -1,4 +1,4 @@
-<p-tabView>
+<p-tabView [(activeIndex)]="_currentWeekIndex">
   @for (week of weeks$ | async; track week; let i = $index) {
     <p-tabPanel [header]="WEEKS[week.name]" class="menu-tabs">
       <p-table #table [value]="week.days"
