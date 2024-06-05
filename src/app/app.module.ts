@@ -19,6 +19,8 @@ import {TabViewModule} from "primeng/tabview";
 import {TableModule} from "primeng/table";
 import { UserMenuTableComponent } from './components/user-menu-table/user-menu-table.component';
 import {IconFieldModule} from "primeng/iconfield";
+import {ToastModule} from "primeng/toast";
+import {MessageService} from "primeng/api";
 
 @NgModule({
   declarations: [
@@ -43,9 +45,10 @@ import {IconFieldModule} from "primeng/iconfield";
     InputTextModule,
     TabViewModule,
     TableModule,
-    IconFieldModule
+    IconFieldModule,
+    ToastModule
   ],
-  providers: [],
+  providers: [MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

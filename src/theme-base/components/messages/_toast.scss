@@ -109,7 +109,7 @@
                 }
             }
         }
-        
+
         @if variable-exists(contrastMessageBg) {
             &.p-toast-message-contrast {
                 background: $contrastMessageBg;

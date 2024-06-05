@@ -69,7 +69,7 @@ export class FirebaseDataService {
     return from(addPromise) as unknown as Observable<DocumentReference<T>>;
   }
 
-  updateItem<T>(collectionPath: string, id: number, data: Partial<T>): Observable<void> {
+  updateItem<T>(collectionPath: string, id: string | number, data: Partial<T>): Observable<void> {
     const collectionRef = collection(this.db, collectionPath);
     const q = query(collectionRef, where('id', '==', id));
 

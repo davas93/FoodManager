@@ -8,9 +8,11 @@
       <div class="table-container">
         <app-user-menu-table [weeks]="menu.weeks"
                              [generalMenu]="generalMenu$ | async"
-                             (changeMenu)="edit(menu)">
+                             (changeMenu)="changedUserMenu$.next(menu); check(menu, _cachedUserMenu)">
         </app-user-menu-table>
       </div>
+
+      <button style="align-self: center" pButton [disabled]="getBtnState(menu, _cachedUserMenu)" (click)="saveMenuBtnClick$.next(menu)">Сохранить изменения</button>
     </div>
   }
 </div>
