@@ -18,6 +18,7 @@ import {ToolbarComponent} from "./components/toolbar/toolbar.component";
 import {TabViewModule} from "primeng/tabview";
 import {TableModule} from "primeng/table";
 import { UserMenuTableComponent } from './components/user-menu-table/user-menu-table.component';
+import {IconFieldModule} from "primeng/iconfield";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { UserMenuTableComponent } from './components/user-menu-table/user-menu-t
     UserMenuComponent,
     AdminPanelComponent,
     DiningInfoComponent,
-    UserMenuTableComponent
+    UserMenuTableComponent,
+    ToolbarComponent
   ],
   imports: [
     BrowserModule,
@@ -39,9 +41,9 @@ import { UserMenuTableComponent } from './components/user-menu-table/user-menu-t
     CalendarModule,
     InputNumberModule,
     InputTextModule,
-    ToolbarComponent,
     TabViewModule,
     TableModule,
+    IconFieldModule
   ],
   providers: [],
   bootstrap: [AppComponent]

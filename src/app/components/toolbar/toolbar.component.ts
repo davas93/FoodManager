@@ -8,10 +8,6 @@ import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 @UntilDestroy()
 @Component({
   selector: 'app-toolbar',
-  standalone: true,
-    imports: [
-        ButtonDirective
-    ],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.scss'
 })

@@ -26,6 +26,7 @@
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
+    "@flaticon/flaticon-uicons": "^3.2.1",
     "@ngneat/until-destroy": "^10.0.0",
     "@types/lodash-es": "^4.17.12",
     "lodash-es": "^4.17.21",
