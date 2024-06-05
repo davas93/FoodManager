@@ -12,7 +12,6 @@
       <div class="table-container">
         <app-user-menu-table [weeks]="menu.weeks"
                              [generalMenu]="generalMenu$ | async"
-                             (changeMenu)="changedUserMenu$.next(menu);"
                              [currentWeek]="currentWeek">
         </app-user-menu-table>
       </div>

@@ -26,7 +26,6 @@ export class UserMenuComponent implements OnInit {
   public currentDate!: string;
   public currentWeek!: string;
 
-  public changedUserMenu$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
   public saveMenuBtnClick$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
   private refreshUserMenu$: Subject<void> = new Subject<void>();
 
