@@ -1,0 +1,85 @@
+@use "themes/mytheme/variables" as var;
+
+app-menu-administration {
+  .menu-administration-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: 100%;
+    padding: 0 32px 32px;
+
+    .tabs-container {
+      height: 1%;
+      flex: 1;
+
+      .p-tabview {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .p-tabview-panels {
+          flex: 1;
+          overflow: auto;
+
+          .p-tabview-panel {
+            height: 100%;
+
+            .p-datatable {
+              height: 100%;
+
+              .p-datatable-wrapper {
+                height: 100%;
+
+                thead {
+                  position: sticky;
+                  top: 0;
+                  z-index: 1;
+                }
+
+                .group-header {
+                  height: 40px;
+                  background-color: var.$tableHeaderBg;
+
+                  td {
+                    padding: 0;
+                    text-align: center;
+                    font-weight: 500;
+                    color: var.$primaryColor;
+                  }
+                }
+
+                tbody {
+                  tr:not(.group-header) {
+                    td {
+                      vertical-align: top;
+                      padding: 0;
+                      max-width: 50px;
+
+                      ul {
+                        margin: 0;
+                        padding: 0;
+
+                        li {
+                          list-style: none;
+                          padding: 16px;
+                          height: 50px;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          text-wrap: nowrap;
+
+                          &:not(:last-child) {
+                            border-bottom: var.$tableBodyCellBorder;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

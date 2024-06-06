@@ -1,17 +1,20 @@
 <p-tabView>
   <p-tabPanel header="Персональное меню">
     <div class="tab-content">
-      <app-personal-menu></app-personal-menu>
+      <app-personal-menu [userMenuData]="currentUserMenu$ | async"
+                         [generalMenu]="generalMenu$ | async"
+                         (refreshUserData)="refreshUserMenu$.next()">
+      </app-personal-menu>
     </div>
   </p-tabPanel>
   <p-tabPanel header="Администрирование меню">
-    <p>
-      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium...
-    </p>
+    <div class="tab-content">
+      <app-menu-administration [generalMenu]="generalMenu$ | async"></app-menu-administration>
+    </div>
   </p-tabPanel>
   <p-tabPanel header="Администрирование пользователей">
-    <p>
-      At vero eos et accusamus et iusto odio dignissimos...
-    </p>
+    <div class="tab-content">
+      <app-users-management></app-users-management>
+    </div>
   </p-tabPanel>
 </p-tabView>

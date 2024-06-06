@@ -1,0 +1,69 @@
+<div class="menu-administration-container">
+  <div class="tabs-container">
+    <p-tabView>
+      @for (week of (generalMenu$ | async)?.weeks; track week; let i = $index) {
+        <p-tabPanel [header]="WEEKS[week.name]" class="menu-tabs">
+          <p-table #table [value]="week.days"
+                   groupRowsBy="name"
+                   rowGroupMode="subheader">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width:25%">
+                  Первое
+                </th>
+                <th style="width:25%">
+                  Второе
+                </th>
+                <th style="width:25%">
+                  Гарнир
+                </th>
+                <th style="width:25%">
+                  Салат
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="groupheader" let-weekDay>
+              <tr pRowGroupHeader class="group-header">
+                <td colspan="5">
+                  <span class="font-bold ml-2">{{DAYS_OF_WEEK[weekDay.name]}}</span>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-weekDay let-rowIndex="rowIndex">
+              <tr>
+                <td pEditableColumnField="firstCourse">
+                  <ul>
+                    @for (firstCourse of weekDay.meals.firstCourse; track firstCourse.id) {
+                      <li>{{firstCourse.name}}</li>
+                    }
+                  </ul>
+                </td>
+                <td pEditableColumnField="secondCourse">
+                  <ul>
+                    @for (secondCourse of weekDay.meals.secondCourse; track secondCourse.id) {
+                      <li>{{secondCourse.name}}</li>
+                    }
+                  </ul>
+                </td>
+                <td pEditableColumnField="sideDish">
+                  <ul>
+                    @for (sideDish of weekDay.meals.sideDish; track sideDish.id) {
+                      <li>{{sideDish.name}}</li>
+                    }
+                  </ul>
+                </td>
+                <td pEditableColumnField="salad">
+                  <ul>
+                    @for (salad of weekDay.meals.salad; track salad.id) {
+                      <li>{{salad.name}}</li>
+                    }
+                  </ul>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabPanel>
+      }
+    </p-tabView>
+  </div>
+</div>

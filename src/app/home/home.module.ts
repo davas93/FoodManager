@@ -10,6 +10,8 @@ import {HomeRoutingModule} from "./home-routing.module";
 import {AdminPanelComponent} from "./components/admin-panel/admin-panel.component";
 import {SharedModule} from "../shared/shared.module";
 import { PersonalMenuComponent } from './components/admin-panel/components/personal-menu/personal-menu.component';
+import { MenuAdministrationComponent } from './components/admin-panel/components/menu-administration/menu-administration.component';
+import { UsersManagementComponent } from './components/admin-panel/components/users-management/users-management.component';
 
 
 
@@ -22,7 +24,9 @@ import { PersonalMenuComponent } from './components/admin-panel/components/perso
     UserMenuTableComponent,
     ToolbarComponent,
     LoadingScreenComponent,
-    PersonalMenuComponent
+    PersonalMenuComponent,
+    MenuAdministrationComponent,
+    UsersManagementComponent
   ],
   imports: [
     CommonModule,

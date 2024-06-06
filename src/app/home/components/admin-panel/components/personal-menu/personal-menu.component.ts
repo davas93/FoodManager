@@ -1,8 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {catchError, merge, Observable, of, Subject, switchMap, tap, throwError} from "rxjs";
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {catchError, ReplaySubject, Subject, switchMap, tap, throwError} from "rxjs";
 import {EmployeeMenu} from "../../../../../models/employee-menu.model";
 import {GeneralMenu} from "../../../../../models/general-menu.model";
-import {AuthService} from "../../../../../core/services/auth.service";
 import {FirebaseDataService} from "../../../../../core/services/firebase-data.service";
 import {MessageService} from "primeng/api";
 import {WeekService} from "../../../../../core/services/week.service";
@@ -17,19 +16,31 @@ import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
   styleUrl: './personal-menu.component.scss'
 })
 export class PersonalMenuComponent implements OnInit {
-  public currentUserMenu$!: Observable<EmployeeMenu | null>;
-  public generalMenu$!: Observable<GeneralMenu | null>;
-  private userMenuData$!: Observable<EmployeeMenu | null>;
+  @Input() set userMenuData(menu: EmployeeMenu | null) {
+    if (!isNil(menu)) {
+      this.currentUserMenu$.next(menu);
+
+      !isNil(menu) ? this._cachedUserMenu = cloneDeep(menu) : this._cachedUserMenu = null;
+      this._cachedUserMenu?.weeks.map(week => week.days.sort((a, b) => a.name > b.name ? 1 : -1));
+    }
+  }
+
+  @Input() set generalMenu(menu: GeneralMenu | null) {
+    if (!isNil(menu)) this.generalMenu$.next(menu);
+  }
+
+  @Output() refreshUserData: EventEmitter<void> = new EventEmitter<void>();
+
+  public generalMenu$: ReplaySubject<GeneralMenu | null> = new ReplaySubject<GeneralMenu | null>(1);
+  public currentUserMenu$: ReplaySubject<EmployeeMenu | null> = new ReplaySubject(1);
 
   public _cachedUserMenu!: EmployeeMenu | null;
   public currentDate!: string;
   public currentWeek!: string;
 
   public saveMenuBtnClick$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
-  private refreshUserMenu$: Subject<void> = new Subject<void>();
 
-  constructor(private authService: AuthService,
-              private fbService: FirebaseDataService,
+  constructor(private fbService: FirebaseDataService,
               private messageService: MessageService,
               private weekService: WeekService) {
   }
@@ -45,34 +56,6 @@ export class PersonalMenuComponent implements OnInit {
     this.currentWeek = this.weekService.getCurrentWeek();
 
     this.currentDate = `Сегодня ${formattedDate} ${WEEKS[this.currentWeek]}`;
-
-    this.userMenuData$ = this.authService.userUid.pipe(
-      switchMap(uid => {
-        if (!isNil(uid)) {
-          return this.fbService.getItemById<EmployeeMenu>('menus', uid)
-        } else return of(null)
-      }),
-      catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'При получении меню сотрудника произошла ошибка'});
-        return throwError(err);
-      }),
-      tap(menu => {
-        !isNil(menu) ? this._cachedUserMenu = cloneDeep(menu) : this._cachedUserMenu = null;
-        this._cachedUserMenu?.weeks.map(week => week.days.sort((a, b) => a.name > b.name ? 1 : -1));
-      })
-    );
-
-    this.currentUserMenu$ = merge(
-      this.userMenuData$,
-      this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
-    );
-
-    this.generalMenu$ = this.fbService.getItemById<GeneralMenu>('generalMenu', 1).pipe(
-      catchError(err => {
-        console.log(err);
-        return throwError(err);
-      }),
-    );
 
     this.initializeSideEffect()
   }
@@ -92,7 +75,7 @@ export class PersonalMenuComponent implements OnInit {
       untilDestroyed(this)
     ).subscribe(_ => {
       this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'});
-      this.refreshUserMenu$.next();
+      this.refreshUserData.emit();
     })
   }
 }
