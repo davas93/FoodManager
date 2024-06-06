@@ -8,18 +8,30 @@
                      groupRowsBy="name"
                      rowGroupMode="subheader">
               <ng-template pTemplate="header">
-                <tr (click)="logMenu(menu)">
+                <tr>
                   <th style="width:25%">
-                    Первое
+                    <div class="header-cell-service">
+                      <span>Первое</span>
+                      <button pButton icon="fi fi-br-plus" (click)="logMenu(menu)" size="small"></button>
+                    </div>
                   </th>
                   <th style="width:25%">
-                    Второе
+                    <div class="header-cell-service">
+                      <span>Второе</span>
+                      <button pButton icon="fi fi-br-plus" (click)="logMenu(menu)" size="small"></button>
+                    </div>
                   </th>
                   <th style="width:25%">
-                    Гарнир
+                    <div class="header-cell-service">
+                      <span>Гарнир</span>
+                      <button pButton icon="fi fi-br-plus" (click)="logMenu(menu)" size="small"></button>
+                    </div>
                   </th>
                   <th style="width:25%">
-                    Салат
+                    <div class="header-cell-service">
+                      <span>Салат</span>
+                      <button pButton icon="fi fi-br-plus" (click)="logMenu(menu)" size="small"></button>
+                    </div>
                   </th>
                 </tr>
               </ng-template>
@@ -66,6 +78,25 @@
           </p-tabPanel>
         }
       </p-tabView>
+
+      <p-dialog class="modal" header="Первое" [modal]="true" [(visible)]="isDialogShow">
+        <div class="modal-content">
+          <div class="form">
+            <p-multiSelect
+              appendTo="body"
+              [options]="['Cуп', 'Борщ', 'Солянка']"
+              placeholder="Выберите блюдо" />
+            <p-dropdown
+              appendTo="body"
+              placeholder="Выберите день недели"
+              [options]="['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница']"/>
+          </div>
+          <div class="modal-service">
+            <p-button label="Отмена" severity="secondary" text="true" (click)="isDialogShow = false" />
+            <p-button label="Добавить" (click)="isDialogShow = false" />
+          </div>
+        </div>
+      </p-dialog>
     } @else {
       <app-loading-screen></app-loading-screen>
     }

@@ -1,7 +1,6 @@
 import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {ReplaySubject} from "rxjs";
 import {GeneralMenu} from "../../../../../models/general-menu.model";
-import {FirebaseDataService} from "../../../../../core/services/firebase-data.service";
 import {DAYS_OF_WEEK, WEEKS} from "../../../../../consts/weeks-vocabulary";
 import {isNil} from "lodash-es";
 
@@ -20,7 +19,9 @@ export class MenuAdministrationComponent implements OnInit{
   protected readonly WEEKS = WEEKS;
   protected readonly DAYS_OF_WEEK = DAYS_OF_WEEK;
 
-  constructor(private fbService: FirebaseDataService) {
+  public isDialogShow: boolean = false;
+
+  constructor() {
   }
 
   public generalMenu$: ReplaySubject<GeneralMenu | null> = new ReplaySubject<GeneralMenu | null>(1);
@@ -29,6 +30,6 @@ export class MenuAdministrationComponent implements OnInit{
   }
 
   logMenu(menu: GeneralMenu) {
-    console.log(menu)
+    this.isDialogShow = true;
   }
 }

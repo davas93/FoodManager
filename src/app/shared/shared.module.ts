@@ -11,6 +11,8 @@ import {IconFieldModule} from "primeng/iconfield";
 import {ToastModule} from "primeng/toast";
 import {ProgressSpinnerModule} from "primeng/progressspinner";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {DialogModule} from "primeng/dialog";
+import {MultiSelectModule} from "primeng/multiselect";
 
 
 
@@ -29,7 +31,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     TableModule,
     IconFieldModule,
     ToastModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    DialogModule,
+    MultiSelectModule
   ],
   exports: [
     ReactiveFormsModule,
@@ -43,7 +47,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     TableModule,
     IconFieldModule,
     ToastModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    DialogModule,
+    MultiSelectModule
   ]
 })
 export class SharedModule { }

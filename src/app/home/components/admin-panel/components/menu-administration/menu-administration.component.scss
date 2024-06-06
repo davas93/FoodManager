@@ -34,6 +34,21 @@ app-menu-administration {
                   position: sticky;
                   top: 0;
                   z-index: 1;
+
+                  .header-cell-service {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    button {
+                      width: 30px;
+                      height: 30px;
+
+                      .p-button-icon {
+                        height: 14px;
+                      }
+                    }
+                  }
                 }
 
                 .group-header {
@@ -78,6 +93,33 @@ app-menu-administration {
               }
             }
           }
+        }
+      }
+
+
+      .modal-content {
+        min-width: 480px;
+        padding: 0 24px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+
+        .form {
+          margin-top: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+
+          .p-inputwrapper {
+            width: 100%;
+          }
+        }
+
+        .modal-service {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 8px;
         }
       }
     }
