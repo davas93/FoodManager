@@ -47,28 +47,28 @@
                   <td pEditableColumnField="firstCourse">
                     <ul>
                       @for (firstCourse of weekDay.meals.firstCourse; track firstCourse.id) {
-                        <li>{{firstCourse.name}}</li>
+                        <li [title]="firstCourse.name">{{firstCourse.name}}</li>
                       }
                     </ul>
                   </td>
                   <td pEditableColumnField="secondCourse">
                     <ul>
                       @for (secondCourse of weekDay.meals.secondCourse; track secondCourse.id) {
-                        <li>{{secondCourse.name}}</li>
+                        <li [title]="secondCourse.name">{{secondCourse.name}}</li>
                       }
                     </ul>
                   </td>
                   <td pEditableColumnField="sideDish">
                     <ul>
                       @for (sideDish of weekDay.meals.sideDish; track sideDish.id) {
-                        <li>{{sideDish.name}}</li>
+                        <li [title]="sideDish.name">{{sideDish.name}}</li>
                       }
                     </ul>
                   </td>
                   <td pEditableColumnField="salad">
                     <ul>
                       @for (salad of weekDay.meals.salad; track salad.id) {
-                        <li>{{salad.name}}</li>
+                        <li [title]="salad.name">{{salad.name}}</li>
                       }
                     </ul>
                   </td>
