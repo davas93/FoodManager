@@ -36,15 +36,15 @@ export class AuthComponent implements OnInit {
       if (user) {
         switch (user.role) {
           case "User":
-            this.router.navigate(["/user"]);
+            this.router.navigate(["/home/user"]);
             break;
 
           case "Admin":
-            this.router.navigate(["/admin"]);
+            this.router.navigate(["/home/admin"]);
             break;
 
           case "Dining":
-            this.router.navigate(["/dining"]);
+            this.router.navigate(["/home/dining"]);
             break;
         }
       }

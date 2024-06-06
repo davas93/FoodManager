@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ButtonDirective} from "primeng/button";
 import {catchError, of, Subject, switchMap} from "rxjs";
-import {AuthService} from "../../core/services/auth.service";
+import {AuthService} from "../../../core/services/auth.service";
 import {Router} from "@angular/router";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 

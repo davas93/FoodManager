@@ -3,12 +3,5 @@
   height: 100vh;
   min-width: 800px;
   min-height: 600px;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
-
-  .app-content {
-    height: 1%;
-    flex: 1;
-  }
 }

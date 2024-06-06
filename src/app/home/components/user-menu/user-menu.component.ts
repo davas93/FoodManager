@@ -1,14 +1,14 @@
 import { Component, OnInit} from '@angular/core';
-import {AuthService} from "../../core/services/auth.service";
-import {FirebaseDataService} from "../../core/services/firebase-data.service";
+import {AuthService} from "../../../core/services/auth.service";
+import {FirebaseDataService} from "../../../core/services/firebase-data.service";
 import {catchError, merge, Observable, of, Subject, switchMap, tap, throwError} from "rxjs";
 import {cloneDeep, isEqual, isNil} from "lodash-es";
-import {EmployeeMenu} from "../../models/employee-menu.model";
-import {GeneralMenu} from "../../models/general-menu.model";
+import {EmployeeMenu} from "../../../models/employee-menu.model";
+import {GeneralMenu} from "../../../models/general-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {MessageService} from "primeng/api";
-import {WeekService} from "../../core/services/week.service";
-import {WEEKS} from "../../consts/weeks-vocabulary";
+import {WeekService} from "../../../core/services/week.service";
+import {WEEKS} from "../../../consts/weeks-vocabulary";
 
 @UntilDestroy()
 @Component({
