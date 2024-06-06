@@ -9,6 +9,7 @@ import {LoadingScreenComponent} from "../shared/components/loading-screen/loadin
 import {HomeRoutingModule} from "./home-routing.module";
 import {AdminPanelComponent} from "./components/admin-panel/admin-panel.component";
 import {SharedModule} from "../shared/shared.module";
+import { PersonalMenuComponent } from './components/admin-panel/components/personal-menu/personal-menu.component';
 
 
 
@@ -20,7 +21,8 @@ import {SharedModule} from "../shared/shared.module";
     DiningInfoComponent,
     UserMenuTableComponent,
     ToolbarComponent,
-    LoadingScreenComponent
+    LoadingScreenComponent,
+    PersonalMenuComponent
   ],
   imports: [
     CommonModule,

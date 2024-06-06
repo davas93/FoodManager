@@ -46,7 +46,7 @@
                   </p-dropdown>
                 </ng-template>
                 <ng-template pTemplate="output">
-                  {{ weekDay.meals.firstCourse }}
+                  {{ weekDay.meals.firstCourse || 'Нет' }}
                 </ng-template>
               </p-cellEditor>
             </td>
@@ -67,7 +67,7 @@
                   </p-dropdown>
                 </ng-template>
                 <ng-template pTemplate="output">
-                  {{ weekDay.meals.secondCourse }}
+                  {{ weekDay.meals.secondCourse || 'Нет' }}
                 </ng-template>
               </p-cellEditor>
             </td>
@@ -88,7 +88,7 @@
                   </p-dropdown>
                 </ng-template>
                 <ng-template pTemplate="output">
-                  {{ weekDay.meals.sideDish }}
+                  {{ weekDay.meals.sideDish || 'Нет' }}
                 </ng-template>
               </p-cellEditor>
             </td>
@@ -109,7 +109,7 @@
                   </p-dropdown>
                 </ng-template>
                 <ng-template pTemplate="output">
-                  {{ weekDay.meals.salad }}
+                  {{ weekDay.meals.salad || 'Нет' }}
                 </ng-template>
               </p-cellEditor>
             </td>

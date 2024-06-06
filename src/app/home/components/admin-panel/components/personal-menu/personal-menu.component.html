@@ -1,0 +1,22 @@
+<div class="user-menu-container">
+  @if (currentUserMenu$ | async; as menu) {
+    <div class="user-menu-content">
+      <div class="user-top-service">
+        <div class="user-name">{{menu.employeeName}}</div>
+        <div class="date">{{currentDate}}</div>
+      </div>
+
+
+      <div class="table-container">
+        <app-user-menu-table [weeks]="menu.weeks"
+                             [generalMenu]="generalMenu$ | async"
+                             [currentWeek]="currentWeek">
+        </app-user-menu-table>
+      </div>
+
+      <button style="align-self: center" pButton [disabled]="getBtnState(menu, _cachedUserMenu)" (click)="saveMenuBtnClick$.next(menu)">Сохранить изменения</button>
+    </div>
+  } @else {
+    <app-loading-screen></app-loading-screen>
+  }
+</div>

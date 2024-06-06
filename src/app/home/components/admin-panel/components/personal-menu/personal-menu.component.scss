@@ -1,0 +1,30 @@
+.user-menu-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .user-menu-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: 1%;
+    flex: 1;
+    padding: 32px;
+
+    .user-top-service {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .user-name, .date {
+        font-size: 20px;
+        font-weight: 600;
+      }
+    }
+
+    .table-container {
+      height: 1%;
+      flex: 1;
+    }
+  }
+}
