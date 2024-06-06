@@ -10,7 +10,7 @@ export class Dishes {
 
 
 export class Dish {
-  id: string = "";
+  id: string | number = "";
   name: string = "";
 
   constructor(input?: Partial<Dish>) {

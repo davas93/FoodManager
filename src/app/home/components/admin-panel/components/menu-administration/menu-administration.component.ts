@@ -27,4 +27,8 @@ export class MenuAdministrationComponent implements OnInit{
 
   ngOnInit(): void {
   }
+
+  logMenu(menu: GeneralMenu) {
+    console.log(menu)
+  }
 }
