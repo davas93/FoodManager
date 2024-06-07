@@ -5,6 +5,7 @@
         @for (week of menu.weeks; track week.name; let i = $index) {
           <p-tabPanel [header]="WEEKS[week.name]" class="menu-tabs">
             <p-table #table [value]="week.days"
+                     styleClass="p-datatable-gridlines"
                      groupRowsBy="name"
                      rowGroupMode="subheader">
               <ng-template pTemplate="header">
@@ -55,16 +56,16 @@
                   weekDay.meals.salad
                 ); track row; let j = $index) {
                   <tr>
-                    <td pEditableColumnField="firstCourse" [title]="weekDay.meals.firstCourse[j]?.name">
+                    <td pEditableColumnField="firstCourse" [title]="weekDay.meals.firstCourse[j]?.name || 'Отсутствует'">
                       {{ weekDay.meals.firstCourse[j]?.name }}
                     </td>
-                    <td pEditableColumnField="secondCourse" [title]="weekDay.meals.secondCourse[j]?.name">
+                    <td pEditableColumnField="secondCourse" [title]="weekDay.meals.secondCourse[j]?.name || 'Отсутствует'">
                       {{ weekDay.meals.secondCourse[j]?.name }}
                     </td>
-                    <td pEditableColumnField="sideDish" [title]="weekDay.meals.sideDish[j]?.name">
+                    <td pEditableColumnField="sideDish" [title]="weekDay.meals.sideDish[j]?.name || 'Отсутствует'">
                       {{ weekDay.meals.sideDish[j]?.name }}
                     </td>
-                    <td pEditableColumnField="salad" [title]="weekDay.meals.salad[j]?.name">
+                    <td pEditableColumnField="salad" [title]="weekDay.meals.salad[j]?.name || 'Отсутствует'">
                       {{ weekDay.meals.salad[j]?.name }}
                     </td>
                   </tr>
@@ -92,9 +93,17 @@
                                placeholder="Выберите блюдо"
                                appendTo="body"
                                optionLabel="name"
+                               [panelStyle]="{'max-width': '400px'}"
+                               [selectedItemsLabel]="'Выбрано блюд: ' + selectedDishes$.value.length"
                                [disabled]="!weekDay.value"
                                [options]="dishOptions"
-                               (onChange)="selectedDishes$.next($event.value)"/>
+                               (onChange)="selectedDishes$.next($event.value)">
+                  <ng-template let-option pTemplate="item">
+                      <span [title]="option.name" style="overflow: hidden; text-overflow: ellipsis">
+                        {{option.name}}
+                      </span>
+                  </ng-template>
+                </p-multiSelect>
               </div>
 
               <div class="modal-service">
