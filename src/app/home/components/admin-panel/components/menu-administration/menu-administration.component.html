@@ -2,7 +2,7 @@
   <div class="tabs-container">
     @if (generalMenu$ | async; as menu) {
       <p-tabView>
-        @for (week of menu.weeks; track week; let i = $index) {
+        @for (week of menu.weeks; track week.name; let i = $index) {
           <p-tabPanel [header]="WEEKS[week.name]" class="menu-tabs">
             <p-table #table [value]="week.days | normalizeMeals"
                      groupRowsBy="name"
@@ -12,25 +12,25 @@
                   <th style="width:25%">
                     <div class="header-cell-service">
                       <span>Первое</span>
-                      <button pButton icon="fi fi-br-plus" (click)="logMenu(menu)" size="small"></button>
+                      <button pButton icon="fi fi-br-plus" (click)="openModal()" size="small"></button>
                     </div>
                   </th>
                   <th style="width:25%">
                     <div class="header-cell-service">
                       <span>Второе</span>
-                      <button pButton icon="fi fi-br-plus" (click)="logMenu(menu)" size="small"></button>
+                      <button pButton icon="fi fi-br-plus" (click)="openModal()" size="small"></button>
                     </div>
                   </th>
                   <th style="width:25%">
                     <div class="header-cell-service">
                       <span>Гарнир</span>
-                      <button pButton icon="fi fi-br-plus" (click)="logMenu(menu)" size="small"></button>
+                      <button pButton icon="fi fi-br-plus" (click)="openModal()" size="small"></button>
                     </div>
                   </th>
                   <th style="width:25%">
                     <div class="header-cell-service">
                       <span>Салат</span>
-                      <button pButton icon="fi fi-br-plus" (click)="logMenu(menu)" size="small"></button>
+                      <button pButton icon="fi fi-br-plus" (click)="openModal()" size="small"></button>
                     </div>
                   </th>
                 </tr>
@@ -83,13 +83,15 @@
         <div class="modal-content">
           <div class="form">
             <p-multiSelect
+              placeholder="Выберите блюдо"
               appendTo="body"
-              [options]="['Cуп', 'Борщ', 'Солянка']"
-              placeholder="Выберите блюдо" />
+              [options]="['Cуп', 'Борщ', 'Солянка']"/>
             <p-dropdown
-              appendTo="body"
               placeholder="Выберите день недели"
-              [options]="['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница']"/>
+              optionValue="key"
+              optionLabel="value"
+              appendTo="body"
+              [options]="DAYS_OF_WEEK | keyvalue"/>
           </div>
           <div class="modal-service">
             <p-button label="Отмена" severity="secondary" text="true" (click)="isDialogShow = false" />

@@ -1,12 +1,15 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {catchError, merge, Observable, of, Subject, switchMap, tap, throwError} from "rxjs";
+import {catchError, map, merge, Observable, of, Subject, switchMap, tap, throwError} from "rxjs";
 import {EmployeeMenu} from "../../../models/employee-menu.model";
 import {isNil} from "lodash-es";
 import {AuthService} from "../../../core/services/auth.service";
 import {FirebaseDataService} from "../../../core/services/firebase-data.service";
 import {MessageService} from "primeng/api";
 import {GeneralMenu} from "../../../models/general-menu.model";
+import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {Dish, Dishes} from "../../../models/dishes.model";
 
+@UntilDestroy()
 @Component({
   selector: 'app-admin-panel',
   templateUrl: './admin-panel.component.html',
@@ -17,7 +20,12 @@ export class AdminPanelComponent implements OnInit{
   private userMenuData$!: Observable<EmployeeMenu | null>;
   public currentUserMenu$!: Observable<EmployeeMenu | null>;
   public generalMenu$!: Observable<GeneralMenu | null>;
+  public firstCourses$!: Observable<Dish[]>;
+  public secondCourses$!: Observable<Dish[]>;
+  public sideDishes$!: Observable<Dish[]>;
+  public salads$!: Observable<Dish[]>;
 
+  public saveMenuData$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
   public refreshUserMenu$: Subject<void> = new Subject<void>();
 
 
@@ -50,6 +58,53 @@ export class AdminPanelComponent implements OnInit{
         this.userMenuData$,
         this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
       );
+
+      this.firstCourses$ = this.fbService.getItems<Dishes>('firstCourses').pipe(
+        map(dishes => dishes[0].dishes),
+        catchError(err => {
+          this.messageService.add({severity: 'error', detail: 'Не удалосб получить список первых блюд'});
+          return throwError(err);
+        })
+      );
+
+      this.secondCourses$ = this.fbService.getItems<Dishes>('secondCourses').pipe(
+        map(dishes => dishes[0].dishes),
+        catchError(err => {
+          this.messageService.add({severity: 'error', detail: 'Не удалосб получить список вторых блюд'});
+          return throwError(err);
+        })
+      );
+
+      this.sideDishes$ = this.fbService.getItems<Dishes>('sideDishes').pipe(
+        map(dishes => dishes[0].dishes),
+        catchError(err => {
+          this.messageService.add({severity: 'error', detail: 'Не удалосб получить список гарниров'});
+          return throwError(err);
+        })
+      );
+
+      this.salads$ = this.fbService.getItems<Dishes>('salads').pipe(
+        map(dishes => dishes[0].dishes),
+        catchError(err => {
+          this.messageService.add({severity: 'error', detail: 'Не удалосб получить список салатов'});
+          return throwError(err);
+        })
+      );
+
+      this.initializeSideEffect()
     }
 
+  private initializeSideEffect() {
+    this.saveMenuData$.pipe(
+      switchMap(menu => this.fbService.updateItem<EmployeeMenu>('menus', menu.id, menu)),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
+        return throwError(err);
+      }),
+      untilDestroyed(this)
+    ).subscribe(_ => {
+      this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'});
+      this.refreshUserMenu$.next();
+    })
+  }
 }

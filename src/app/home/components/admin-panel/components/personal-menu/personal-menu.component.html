@@ -14,7 +14,7 @@
         </app-user-menu-table>
       </div>
 
-      <button style="align-self: center" pButton [disabled]="getBtnState(menu, _cachedUserMenu)" (click)="saveMenuBtnClick$.next(menu)">Сохранить изменения</button>
+      <button style="align-self: center" pButton [disabled]="getBtnState(menu, _cachedUserMenu)" (click)="saveMenuData.emit(menu)">Сохранить изменения</button>
     </div>
   } @else {
     <app-loading-screen></app-loading-screen>

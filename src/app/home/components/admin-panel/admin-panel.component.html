@@ -3,13 +3,18 @@
     <div class="tab-content">
       <app-personal-menu [userMenuData]="currentUserMenu$ | async"
                          [generalMenu]="generalMenu$ | async"
-                         (refreshUserData)="refreshUserMenu$.next()">
+                         (saveMenuData)="saveMenuData$.next($event)">
       </app-personal-menu>
     </div>
   </p-tabPanel>
   <p-tabPanel header="Администрирование меню">
     <div class="tab-content">
-      <app-menu-administration [generalMenu]="generalMenu$ | async"></app-menu-administration>
+      <app-menu-administration [generalMenu]="generalMenu$ | async"
+                               [firstCourses]="firstCourses$ | async"
+                               [secondCourses]="secondCourses$ | async"
+                               [sideDishes]="sideDishes$ | async"
+                               [salads]="salads$ | async">
+      </app-menu-administration>
     </div>
   </p-tabPanel>
   <p-tabPanel header="Администрирование пользователей">
