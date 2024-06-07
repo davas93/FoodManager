@@ -13,25 +13,25 @@
                   <th style="width:25%">
                     <div class="header-cell-service">
                       <span>Первое</span>
-                      <button pButton icon="fi fi-br-plus" (click)="openModal(i, 'firstCourse')" size="small"></button>
+                      <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'firstCourse')" size="small"></button>
                     </div>
                   </th>
                   <th style="width:25%">
                     <div class="header-cell-service">
                       <span>Второе</span>
-                      <button pButton icon="fi fi-br-plus" (click)="openModal(i, 'secondCourse')" size="small"></button>
+                      <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'secondCourse')" size="small"></button>
                     </div>
                   </th>
                   <th style="width:25%">
                     <div class="header-cell-service">
                       <span>Гарнир</span>
-                      <button pButton icon="fi fi-br-plus" (click)="openModal(i, 'sideDish')" size="small"></button>
+                      <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'sideDish')" size="small"></button>
                     </div>
                   </th>
                   <th style="width:25%">
                     <div class="header-cell-service">
                       <span>Салат</span>
-                      <button pButton icon="fi fi-br-plus" (click)="openModal(i, 'salad');" size="small"></button>
+                      <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'salad');" size="small"></button>
                     </div>
                   </th>
                 </tr>
@@ -76,7 +76,7 @@
         }
       </p-tabView>
 
-      <p-dialog class="modal" [header]="(modalHeaderName$ | async) ?? ''" [modal]="true" [(visible)]="isDialogShow">
+      <p-dialog class="modal" [header]="(modalHeaderName$ | async) ?? ''" [modal]="true" [(visible)]="isDialogShow" (onHide)="resetData()">
         @if (isDialogShow) {
           <div class="modal-content">
             @if (dishOptions$ | async; as dishOptions) {
@@ -93,9 +93,11 @@
                                placeholder="Выберите блюдо"
                                appendTo="body"
                                optionLabel="name"
+                               [selectionLimit]="5"
                                [panelStyle]="{'max-width': '400px'}"
-                               [selectedItemsLabel]="'Выбрано блюд: ' + selectedDishes$.value.length"
+                               [selectedItemsLabel]="'Выбрано блюд: ' + dishes.value?.length"
                                [disabled]="!weekDay.value"
+                               [ngModel]="selectedOptions$ | async"
                                [options]="dishOptions"
                                (onChange)="selectedDishes$.next($event.value)">
                   <ng-template let-option pTemplate="item">
@@ -108,7 +110,7 @@
 
               <div class="modal-service">
                 <p-button label="Отмена" severity="secondary" text="true" (click)="isDialogShow = false"/>
-                <p-button label="Добавить" [disabled]="!dishes || !weekDay.value" (click)="updateMenu$.next(menu)"/>
+                <p-button label="Изменить" [disabled]="!dishes || !weekDay.value" (click)="updateMenu$.next(menu)"/>
               </div>
             }
           </div>

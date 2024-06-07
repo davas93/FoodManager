@@ -62,6 +62,7 @@ export class MenuAdministrationComponent implements OnInit{
 
   public dishOptions$!: Observable<Dish[]>;
   public modalHeaderName$!: Observable<string>;
+  public selectedOptions$!: Observable<Dish[]>;
 
   public generalMenu$: ReplaySubject<GeneralMenu | null> = new ReplaySubject<GeneralMenu | null>(1);
   public firstCourses$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
@@ -85,43 +86,39 @@ export class MenuAdministrationComponent implements OnInit{
       map(type => DISHES[type])
     );
 
-    this.dishOptions$ = this.currentDishType$.pipe(
-      switchMap(type => {
-        let dishes$: Observable<Dish[]>;
-        switch (type) {
-          case 'firstCourse':
-            dishes$ = this.firstCourses$;
-            break;
-          case 'secondCourse':
-            dishes$ = this.secondCourses$;
-            break;
-          case 'sideDish':
-            dishes$ = this.sideDishes$;
-            break;
-          case 'salad':
-            dishes$ = this.salads$;
-            break;
-          default:
-            dishes$ = of([]);
+    this.selectedOptions$ = combineLatest([this.generalMenu$, this.currentWeek$, this.selectedDay$, this.currentDishType$]).pipe(
+      map(([menu, week, day, type]) => {
+        if (!isNil(menu)) {
+          const dayIndex: number = menu.weeks[week].days.findIndex(option => option.name === day);
+          const dishes = menu.weeks[week].days[dayIndex]?.meals[type] as Dish[];
+          return dishes;
         }
 
-        return combineLatest([dishes$, this.selectedDay$, this.generalMenu$, this.currentWeek$]).pipe(
-          map(([dishes, day, menu, week]) => {
-            const meals = menu?.weeks[week]?.days.find(d => d.name === day)?.meals[type];
-            if (meals) {
-              return dishes.filter(dish => Array.isArray(meals) && !meals.find(m => m.id === dish.id));
-            }
-
-            return dishes
-          })
-        );
+        return []
       })
+    );
+
+    this.dishOptions$ = this.currentDishType$.pipe(
+      switchMap(type => {
+        switch (type) {
+          case 'firstCourse':
+            return this.firstCourses$;
+          case 'secondCourse':
+            return this.secondCourses$
+          case 'sideDish':
+            return this.sideDishes$
+          case 'salad':
+            return this.salads$
+          default:
+            return of([])
+        }
+      }),
     );
 
     this.initializeSideEffects();
   }
 
-  openModal(week: number, dishType: keyof Meal) {
+  public openModal(week: number, dishType: keyof Meal) {
     this.currentWeek$.next(week);
     this.currentDishType$.next(dishType);
     this.isDialogShow = true;
@@ -151,7 +148,12 @@ export class MenuAdministrationComponent implements OnInit{
     });
   }
 
-  getMaxArrayLength(arr1: unknown[], arr2: unknown[], arr3: unknown[], arr4: unknown[]): Array<unknown> {
+  public getMaxArrayLength(arr1: unknown[], arr2: unknown[], arr3: unknown[], arr4: unknown[]): Array<unknown> {
     return new Array(Math.max(arr1.length, arr2.length, arr3.length, arr4.length));
+  }
+
+  public resetData() {
+    this.selectedDishes$.next([]);
+    this.selectedDay$.next('')
   }
 }
