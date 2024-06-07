@@ -19,10 +19,10 @@ import {
   withLatestFrom
 } from "rxjs";
 import {GeneralMenu} from "../../../../../models/general-menu.model";
-import {DAYS_OF_WEEK, WEEKS} from "../../../../../consts/weeks-vocabulary";
+import {DAYS_OF_WEEK, DISHES, WEEKS} from "../../../../../consts/weeks-vocabulary";
 import {isNil} from "lodash-es";
 import {Dish} from "../../../../../models/dishes.model";
-import {Meal, Week} from "../../../../../models/employee-menu.model";
+import {Meal} from "../../../../../models/employee-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 
 @UntilDestroy()
@@ -61,7 +61,9 @@ export class MenuAdministrationComponent implements OnInit{
   protected readonly DAYS_OF_WEEK = DAYS_OF_WEEK;
 
   public dishOptions$!: Observable<Dish[]>;
+  public modalHeaderName$!: Observable<string>;
 
+  public generalMenu$: ReplaySubject<GeneralMenu | null> = new ReplaySubject<GeneralMenu | null>(1);
   public firstCourses$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
   public secondCourses$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
   public sideDishes$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
@@ -78,9 +80,11 @@ export class MenuAdministrationComponent implements OnInit{
   constructor() {
   }
 
-  public generalMenu$: ReplaySubject<GeneralMenu | null> = new ReplaySubject<GeneralMenu | null>(1);
-
   ngOnInit(): void {
+    this.modalHeaderName$ = this.currentDishType$.pipe(
+      map(type => DISHES[type])
+    );
+
     this.dishOptions$ = this.currentDishType$.pipe(
       switchMap(type => {
         let dishes$: Observable<Dish[]>;
@@ -104,7 +108,11 @@ export class MenuAdministrationComponent implements OnInit{
         return combineLatest([dishes$, this.selectedDay$, this.generalMenu$, this.currentWeek$]).pipe(
           map(([dishes, day, menu, week]) => {
             const meals = menu?.weeks[week]?.days.find(d => d.name === day)?.meals[type];
-            return dishes.filter(dish => Array.isArray(meals) && !meals.find(m => m.id === dish.id));
+            if (meals) {
+              return dishes.filter(dish => Array.isArray(meals) && !meals.find(m => m.id === dish.id));
+            }
+
+            return dishes
           })
         );
       })
@@ -126,15 +134,19 @@ export class MenuAdministrationComponent implements OnInit{
         const currentWeek = menu.weeks[week];
         const currentDay = currentWeek.days.find(d => d.name === day);
         if (currentDay) {
-          (currentDay.meals[type] as Dish[]).push(...dishes);
+
+          if (Array.isArray(currentDay.meals[type])) {
+            (currentDay.meals[type] as Dish[]).push(...dishes);
+          }
+
+          currentDay.meals[type] = dishes;
         }
 
         return menu
       }),
       untilDestroyed(this)
     ).subscribe(menu => {
-      //this.updateMenu.emit(menu);
-      this.generalMenu$.next(menu);
+      this.updateMenu.emit(menu);
       this.isDialogShow = false;
     });
   }

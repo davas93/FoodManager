@@ -12,3 +12,10 @@ export const WEEKS: { [key: string]: string } = {
   "week3": 'Неделя 3',
   "week4": 'Неделя 4'
 };
+
+export const DISHES: { [key: string]: string } = {
+  "firstCourse": "Первое",
+  "secondCourse": "Второе",
+  "sideDish": "Гарнир",
+  "salad": "Салат",
+}
