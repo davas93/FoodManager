@@ -19,14 +19,18 @@ import {Dish, Dishes} from "../../../models/dishes.model";
 export class AdminPanelComponent implements OnInit{
   private userMenuData$!: Observable<EmployeeMenu | null>;
   public currentUserMenu$!: Observable<EmployeeMenu | null>;
+  public generalMenuData$!: Observable<GeneralMenu | null>;
   public generalMenu$!: Observable<GeneralMenu | null>;
   public firstCourses$!: Observable<Dish[]>;
   public secondCourses$!: Observable<Dish[]>;
   public sideDishes$!: Observable<Dish[]>;
   public salads$!: Observable<Dish[]>;
 
-  public saveMenuData$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
+  public saveUserMenu$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
   public refreshUserMenu$: Subject<void> = new Subject<void>();
+
+  public saveGeneralMenu$: Subject<GeneralMenu> = new Subject<GeneralMenu>();
+  public refreshGeneralMenu$: Subject<void> = new Subject<void>();
 
 
   constructor(private authService: AuthService,
@@ -47,7 +51,7 @@ export class AdminPanelComponent implements OnInit{
         }),
       );
 
-      this.generalMenu$ = this.fbService.getItemById<GeneralMenu>('generalMenu', 1).pipe(
+      this.generalMenuData$ = this.fbService.getItemById<GeneralMenu>('generalMenu', 1).pipe(
         catchError(err => {
           console.log(err);
           return throwError(err);
@@ -56,6 +60,11 @@ export class AdminPanelComponent implements OnInit{
 
       this.currentUserMenu$ = merge(
         this.userMenuData$,
+        this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
+      );
+
+      this.generalMenu$ = merge(
+        this.generalMenuData$,
         this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
       );
 
@@ -95,7 +104,7 @@ export class AdminPanelComponent implements OnInit{
     }
 
   private initializeSideEffect() {
-    this.saveMenuData$.pipe(
+    this.saveUserMenu$.pipe(
       switchMap(menu => this.fbService.updateItem<EmployeeMenu>('menus', menu.id, menu)),
       catchError(err => {
         this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
@@ -105,6 +114,18 @@ export class AdminPanelComponent implements OnInit{
     ).subscribe(_ => {
       this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'});
       this.refreshUserMenu$.next();
-    })
+    });
+
+    this.saveGeneralMenu$.pipe(
+      switchMap(menu => this.fbService.updateItem<GeneralMenu>('generalMenu', 1, menu)),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
+        return throwError(err);
+      }),
+      untilDestroyed(this)
+    ).subscribe(_ => {
+      this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'});
+      this.refreshGeneralMenu$.next();
+    });
   }
 }
