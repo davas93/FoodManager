@@ -37,11 +37,26 @@ app-user-menu-table {
               }
             }
 
+            tr:not(.group-header) {
+              td {
+                height: 56px;
+                padding: 0 16px;
+
+                span {
+                  display: inline-block;
+                  width: 100%;
+                  text-wrap: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
+              }
+            }
+
             td {
               max-width: 50px;
 
               .p-dropdown {
-                max-width: 100%;
+                width: 100%;
 
                 .p-overlay {
                   max-width: 100%;
@@ -59,5 +74,16 @@ app-user-menu-table {
         }
       }
     }
+  }
+}
+
+.user-menu-table-dropdown-overlay {
+  max-width: 22%;
+
+  .dropdown-item {
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
