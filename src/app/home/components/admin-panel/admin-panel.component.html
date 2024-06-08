@@ -1,4 +1,4 @@
-<p-tabView [activeIndex]="1">
+<p-tabView [activeIndex]="2">
   <p-tabPanel header="Персональное меню">
     <div class="tab-content">
       <app-personal-menu [userMenuData]="currentUserMenu$ | async"
@@ -20,7 +20,7 @@
   </p-tabPanel>
   <p-tabPanel header="Администрирование пользователей">
     <div class="tab-content">
-      <app-users-management></app-users-management>
+      <app-users-management [employees]="employees$ | async"></app-users-management>
     </div>
   </p-tabPanel>
 </p-tabView>

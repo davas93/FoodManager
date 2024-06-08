@@ -8,6 +8,7 @@ import {MessageService} from "primeng/api";
 import {GeneralMenu} from "../../../models/general-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {Dish, Dishes} from "../../../models/dishes.model";
+import {Employee} from "../../../models/employee.model";
 
 @UntilDestroy()
 @Component({
@@ -25,6 +26,7 @@ export class AdminPanelComponent implements OnInit{
   public secondCourses$!: Observable<Dish[]>;
   public sideDishes$!: Observable<Dish[]>;
   public salads$!: Observable<Dish[]>;
+  public employees$!: Observable<Employee[]>;
 
   public saveUserMenu$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
   public refreshUserMenu$: Subject<void> = new Subject<void>();
@@ -39,6 +41,13 @@ export class AdminPanelComponent implements OnInit{
   }
 
     ngOnInit(): void {
+    this.employees$ = this.fbService.getItems<Employee>('employees').pipe(
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При получении cписка сотрудников произошла ошибка'});
+        return throwError(err);
+      })
+    );
+
       this.userMenuData$ = this.authService.userUid.pipe(
         switchMap(uid => {
           if (!isNil(uid)) {
