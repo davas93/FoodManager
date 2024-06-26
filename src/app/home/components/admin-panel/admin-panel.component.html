@@ -20,7 +20,10 @@
   </p-tabPanel>
   <p-tabPanel header="Администрирование пользователей">
     <div class="tab-content">
-      <app-users-management [employees]="employees$ | async"></app-users-management>
+      <app-users-management [employees]="employees$ | async"
+                            (addUser)="addNewUser$.next($event)"
+                            [serviceError]="errorSubject$ | async">
+      </app-users-management>
     </div>
   </p-tabPanel>
 </p-tabView>

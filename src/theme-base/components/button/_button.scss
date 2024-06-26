@@ -201,7 +201,7 @@
     }
 
     &:not(:disabled):focus {
-        box-shadow: $secondaryButtonFocusShadow;
+        box-shadow: none;
     }
 
     &:not(:disabled):active {

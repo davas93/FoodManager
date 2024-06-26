@@ -1,54 +1,109 @@
 <div class="users-management-container">
   @if (employees$ | async; as employees) {
-    <p-table #dt2
-      [value]="employees"
-      [globalFilterFields]="['fullName', 'role']">
-      <ng-template pTemplate="caption">
-        <div class="table-top-service">
-          <h2>Список сотрудников</h2>
+    <div class="table-container">
+      <p-table #dt2
+               [value]="employees"
+               [globalFilterFields]="['fullName', 'role']">
+        <ng-template pTemplate="caption">
+          <div class="table-top-service">
+            <h2>Список сотрудников</h2>
 
-          <p-iconField iconPosition="left" class="ml-auto">
-            <p-inputIcon>
-              <i class="fi fi-rr-search"></i>
-            </p-inputIcon>
-            <input
-              pInputText
-              type="text"
-              placeholder="Поиск"
-              (input)="dt2.filterGlobal($event.target.value, 'contains')" />
-          </p-iconField>
-        </div>
-      </ng-template>
-      <ng-template pTemplate="header">
-        <tr>
-          <th style="width:30%">№ п/п</th>
-          <th style="width:30%">ФИО</th>
-          <th style="width:30%">Роль</th>
-          <th style="width:50px"></th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-employee let-rowIndex="rowIndex">
-        <tr>
-          <td>
-            {{ rowIndex + 1 }}
-          </td>
-          <td>
-            {{ employee.fullName }}
-          </td>
-          <td>
-            {{ employee.role }}
-          </td>
-          <td style="max-width: 50px">
-            <button pButton icon="fi fi-rr-edit"
+            <p-iconField iconPosition="left" class="ml-auto">
+              <p-inputIcon>
+                <i class="fi fi-rr-search"></i>
+              </p-inputIcon>
+              <input
+                pInputText
+                type="text"
+                placeholder="Поиск"
+                (input)="dt2.filterGlobal($event.target.value, 'contains')"/>
+            </p-iconField>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width:50px">№ п/п</th>
+            <th style="width:25%">Имя пользователя</th>
+            <th style="width:25%">Фамилия Имя</th>
+            <th style="width:25%">Роль</th>
+            <th style="width:50px"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-employee let-rowIndex="rowIndex">
+          <tr>
+            <td>
+              {{ rowIndex + 1 }}
+            </td>
+            <td>
+              {{ employee.username }}
+            </td>
+            <td>
+              {{ employee.fullName }}
+            </td>
+            <td>
+              {{ employee.role }}
+            </td>
+            <td style="max-width: 50px">
+              <button pButton icon="fi fi-rr-edit"
                       severity="secondary"
                       size="large"
                       style="width: 42px; height: 42px"
                       [rounded]="true"
                       [text]="true">
-            </button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <button pButton (click)="showModal()">Добавить сотрудника</button>
+  } @else {
+    <app-loading-screen></app-loading-screen>
   }
 </div>
+
+<p-dialog class="modal"
+          [header]="'Добавление нового сотрудника'"
+          [modal]="true"
+          [(visible)]="isDialogShow"
+          (onHide)="resetForm()">
+  <div class="modal-content">
+    <div class="form">
+      <div class="form-field-wrapper">
+        <input pInputText placeholder="Введите Логин для сотрудника" [formControl]="userFormDto.controls.username">
+        <small>{{getErrorMessage(userFormDto.controls.username)}}</small>
+      </div>
+
+      <div class="form-field-wrapper">
+        <input pInputText placeholder="Введите Пароль для сотрудника" [formControl]="userFormDto.controls.password">
+        <small>{{getErrorMessage(userFormDto.controls.password)}}</small>
+      </div>
+
+      <div class="form-field-wrapper">
+        <input pInputText placeholder="Введите Фаимилию и Имя сотрудника" [formControl]="userFormDto.controls.fullName">
+        <small>{{getErrorMessage(userFormDto.controls.fullName)}}</small>
+      </div>
+
+      <div class="form-field-wrapper">
+        <p-dropdown
+          placeholder="Выберите роль сотрудника"
+          appendTo="body"
+          [options]="['User', 'Admin', 'Dining']"
+          [formControl]="userFormDto.controls.role"/>
+        <small>{{getErrorMessage(userFormDto.controls.role)}}</small>
+      </div>
+    </div>
+
+    <div class="modal-service">
+      <p-button label="Отмена" severity="secondary" text="true" (click)="isDialogShow = false"/>
+      <button pButton (click)="sendForm()" style="min-width: 110px; justify-content: center">
+        @if (isLoading$ | async) {
+          <p-progressSpinner [style]="{width: '18px', height: '18px'}" strokeWidth="6"></p-progressSpinner>
+        } @else {
+          Добавить
+        }
+      </button>
+    </div>
+  </div>
+</p-dialog>

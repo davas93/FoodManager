@@ -1,39 +1,94 @@
+@use "themes/mytheme/variables" as var;
+
 app-users-management {
 
   .users-management-container {
     width: 100%;
     height: 100%;
     padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
 
-    .p-datatable {
-      height: 100%;
+    .table-container {
+      height: 1%;
+      width: 100%;
+      flex: 1;
 
-      .table-top-service {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+      .p-datatable {
+        height: 100%;
 
-        h2 {
-          margin: 0;
-          font-size: 20px;
+        .table-top-service {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          h2 {
+            margin: 0;
+            font-size: 20px;
+          }
         }
-      }
 
-      thead {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-      }
+        thead {
+          position: sticky;
+          top: 0;
+          z-index: 1;
+        }
 
-      tr {
+        tr {
+          td {
+            height: 56px;
+            padding: 0 16px;
+          }
+        }
+
         td {
-          height: 56px;
-          padding: 0 16px;
+          max-width: 50px;
         }
       }
+    }
+  }
 
-      td {
-        max-width: 50px;
+  .modal-content {
+    min-width: 480px;
+    padding: 0 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .form {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .form-field-wrapper {
+        width: 100%;
+
+        input, .p-inputwrapper {
+          width: 100%;
+        }
+
+        small {
+          display: inline-block;
+          font-size: 10px;
+          height: 12px;
+          width: 100%;
+          color: var.$errorColor;
+        }
+      }
+    }
+
+    .modal-service {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+
+      .p-progress-spinner-circle {
+        stroke: white;
+        animation: none;
       }
     }
   }

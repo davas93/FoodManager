@@ -16,6 +16,7 @@ import {Employee} from "../../models/employee.model";
 import firebase from "firebase/compat";
 import DocumentReference = firebase.firestore.DocumentReference;
 import {LoginData} from "../../models/login-data.model";
+import {ServiceHelper} from "../../helpers/service.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +55,7 @@ export class AuthService {
       switchMap(user => {
         employee.id = user.user.uid;
 
-        return this.firestoreDataService.addItem<Employee>('employees', employee)
+        return this.firestoreDataService.addItem<Employee>('employees', ServiceHelper.toPlainObject(employee))
       })
     )
   }

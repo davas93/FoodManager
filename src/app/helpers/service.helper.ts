@@ -20,4 +20,19 @@ export class ServiceHelper {
 
     return plainObject;
   }
+
+  public static translateError(errorCode: string): string {
+    const firebaseErrorMessages: { [key: string]: string } = {
+      'auth/email-already-in-use': 'Этот адрес электронной почты уже используется.',
+      'auth/invalid-email': 'Недопустимый адрес электронной почты.',
+      'auth/user-not-found': 'Пользователь с таким адресом электронной почты не найден.',
+      'auth/wrong-password': 'Неверный пароль.',
+      'auth/weak-password': 'Пароль слишком слабый.',
+      'auth/invalid-verification-code': 'Недопустимый код подтверждения.',
+      'auth/invalid-verification-id': 'Недопустимый идентификатор подтверждения.',
+      'invalid-argument': 'Вы патаетесь добавить невалидный объект',
+    };
+
+    return firebaseErrorMessages[errorCode] || 'Произошла неизвестная ошибка.';
+  }
 }
