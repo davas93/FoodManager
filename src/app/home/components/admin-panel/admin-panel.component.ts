@@ -1,5 +1,18 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {catchError, map, merge, Observable, of, ReplaySubject, retry, Subject, switchMap, tap, throwError} from "rxjs";
+import {
+  catchError,
+  delay,
+  map,
+  merge,
+  Observable,
+  of,
+  ReplaySubject,
+  retry,
+  Subject,
+  switchMap,
+  tap,
+  throwError
+} from "rxjs";
 import {EmployeeMenu} from "../../../models/employee-menu.model";
 import {isNil} from "lodash-es";
 import {AuthService} from "../../../core/services/auth.service";
@@ -54,17 +67,16 @@ export class AdminPanelComponent implements OnInit{
   }
 
     ngOnInit(): void {
-    this.employeesData$ = this.fbService.getItems<Employee>('employees').pipe(
-      catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'При получении cписка сотрудников произошла ошибка'});
-        return throwError(err);
-      })
-    );
 
     this.employees$ = merge(
-      this.employeesData$,
-      this.refreshEmployees$.pipe(switchMap(_ => this.employeesData$))
-    )
+      this.fbService.getItems<Employee>('employees'),
+      this.refreshEmployees$.pipe(switchMap(_ => this.fbService.getItems<Employee>('employees')))
+    ).pipe(
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При списка сотрудников произошла ошибка'});
+        return throwError(err);
+      }),
+    );
 
       this.userMenuData$ = this.authService.userUid.pipe(
         switchMap(uid => {
@@ -114,7 +126,7 @@ export class AdminPanelComponent implements OnInit{
       this.sideDishes$ = this.fbService.getItems<Dishes>('sideDishes').pipe(
         map(dishes => dishes[0].dishes),
         catchError(err => {
-          this.messageService.add({severity: 'error', detail: 'Не удалосб получить список гарниров'});
+          this.messageService.add({severity: 'error', detail: 'Не удалось получить список гарниров'});
           return throwError(err);
         })
       );
@@ -122,7 +134,7 @@ export class AdminPanelComponent implements OnInit{
       this.salads$ = this.fbService.getItems<Dishes>('salads').pipe(
         map(dishes => dishes[0].dishes),
         catchError(err => {
-          this.messageService.add({severity: 'error', detail: 'Не удалосб получить список салатов'});
+          this.messageService.add({severity: 'error', detail: 'Не удалось получить список салатов'});
           return throwError(err);
         })
       );
@@ -175,9 +187,9 @@ export class AdminPanelComponent implements OnInit{
       retry(),
       untilDestroyed(this)
     ).subscribe(res => {
-      console.log(res);
+      console.log(res)
       this.messageService.add({severity: 'success', detail: 'Новый сотрудник успешно добавлен'});
-      this.refreshEmployees$.next();
+      this.refreshEmployees$.next()
     })
   }
 }

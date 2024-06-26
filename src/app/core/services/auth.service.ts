@@ -11,12 +11,13 @@ import {
   deleteUser,
   User
 } from "firebase/auth"
-import {BehaviorSubject, from, fromEvent, map, Observable, switchMap} from "rxjs";
+import {BehaviorSubject, combineLatest, from, fromEvent, map, Observable, of, switchMap} from "rxjs";
 import {Employee} from "../../models/employee.model";
 import firebase from "firebase/compat";
 import DocumentReference = firebase.firestore.DocumentReference;
 import {LoginData} from "../../models/login-data.model";
 import {ServiceHelper} from "../../helpers/service.helper";
+import {EmployeeMenu} from "../../models/employee-menu.model";
 
 @Injectable({
   providedIn: 'root'
@@ -50,12 +51,21 @@ export class AuthService {
     return from(signOut(this.auth));
   }
 
-  signUp(email: string, password: string, employee: Employee): Observable<DocumentReference<Employee>> {
+  signUp(email: string, password: string, employee: Employee): Observable<DocumentReference<EmployeeMenu>> {
     return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
       switchMap(user => {
         employee.id = user.user.uid;
 
-        return this.firestoreDataService.addItem<Employee>('employees', ServiceHelper.toPlainObject(employee))
+        return combineLatest([this.firestoreDataService.addItem<Employee>('employees', ServiceHelper.toPlainObject(employee)), of(user.user.uid)])
+      }),
+      switchMap(([_, uid]) => {
+
+        const userMenu = new EmployeeMenu({
+          id: uid,
+          employeeName: employee.fullName
+        })
+
+        return this.firestoreDataService.addItem<EmployeeMenu>('menus', ServiceHelper.toPlainObject(userMenu))
       })
     )
   }
