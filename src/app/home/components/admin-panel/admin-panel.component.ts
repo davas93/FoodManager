@@ -74,7 +74,7 @@ export class AdminPanelComponent implements OnInit{
 
       this.generalMenu$ = merge(
         this.generalMenuData$,
-        this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
+        this.refreshGeneralMenu$.pipe(switchMap(_ => this.generalMenuData$))
       );
 
       this.firstCourses$ = this.fbService.getItems<Dishes>('firstCourses').pipe(
