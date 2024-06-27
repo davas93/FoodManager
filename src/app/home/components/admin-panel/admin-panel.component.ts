@@ -200,7 +200,6 @@ export class AdminPanelComponent implements OnInit {
 
     this.removeUser$.pipe(
       switchMap(user => {
-        this.isLoading$.next(true);
         const confirmed$: Subject<boolean> = new Subject<boolean>();
 
         this.confirmationService.confirm({
@@ -213,8 +212,14 @@ export class AdminPanelComponent implements OnInit {
           acceptIcon: "none",
           rejectIcon: "none",
           blockScroll: false,
-          accept: () => confirmed$.next(true),
-          reject: () => confirmed$.next(false)
+          accept: () => {
+            this.isLoading$.next(true);
+            confirmed$.next(true);
+          },
+          reject: () => {
+            confirmed$.next(false);
+            this.isLoading$.next(false);
+          }
         })
 
         return confirmed$
