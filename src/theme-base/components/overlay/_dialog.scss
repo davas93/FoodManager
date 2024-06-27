@@ -62,6 +62,14 @@
             }
         }
 
+      .p-dialog-content {
+        overflow: visible;
+      }
+
+      .p-dialog-footer {
+        border-top: none;
+      }
+
         .p-confirm-dialog-message {
             margin-left: $inlineSpacing * 2;
         }

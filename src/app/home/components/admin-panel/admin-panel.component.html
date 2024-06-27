@@ -21,9 +21,14 @@
   <p-tabPanel header="Администрирование пользователей">
     <div class="tab-content">
       <app-users-management [employees]="employees$ | async"
+                            [serviceError]="errorSubject$ | async"
                             (addUser)="addNewUser$.next($event)"
-                            [serviceError]="errorSubject$ | async">
+                            (removeUser)="removeUser$.next($event)">
       </app-users-management>
     </div>
   </p-tabPanel>
 </p-tabView>
+
+@if (isLoading$ | async) {
+  <app-loading-screen></app-loading-screen>
+}

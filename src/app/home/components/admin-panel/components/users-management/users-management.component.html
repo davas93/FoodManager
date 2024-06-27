@@ -51,6 +51,15 @@
                       [rounded]="true"
                       [text]="true">
               </button>
+
+              <button pButton icon="fi fi-rr-trash"
+                      severity="secondary"
+                      size="large"
+                      style="width: 42px; height: 42px"
+                      [rounded]="true"
+                      [text]="true"
+                      (click)="deleteUser(employee)">
+              </button>
             </td>
           </tr>
         </ng-template>

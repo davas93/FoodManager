@@ -1,7 +1,8 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {
+  BehaviorSubject,
   catchError,
-  delay,
+  filter,
   map,
   merge,
   Observable,
@@ -10,14 +11,13 @@ import {
   retry,
   Subject,
   switchMap,
-  tap,
-  throwError
+  throwError, withLatestFrom
 } from "rxjs";
 import {EmployeeMenu} from "../../../models/employee-menu.model";
 import {isNil} from "lodash-es";
 import {AuthService} from "../../../core/services/auth.service";
 import {FirebaseDataService} from "../../../core/services/firebase-data.service";
-import {MessageService} from "primeng/api";
+import {ConfirmationService, MessageService} from "primeng/api";
 import {GeneralMenu} from "../../../models/general-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {Dish, Dishes} from "../../../models/dishes.model";
@@ -34,7 +34,9 @@ import {ServiceHelper} from "../../../helpers/service.helper";
   styleUrl: './admin-panel.component.scss',
   encapsulation: ViewEncapsulation.None
 })
-export class AdminPanelComponent implements OnInit{
+export class AdminPanelComponent implements OnInit {
+  public isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
   private userMenuData$!: Observable<EmployeeMenu | null>;
   public currentUserMenu$!: Observable<EmployeeMenu | null>;
   public generalMenuData$!: Observable<GeneralMenu | null>;
@@ -44,7 +46,6 @@ export class AdminPanelComponent implements OnInit{
   public sideDishes$!: Observable<Dish[]>;
   public salads$!: Observable<Dish[]>;
   public employees$!: Observable<Employee[]>;
-  private employeesData$!: Observable<Employee[]>;
 
   //Personal menu management
   public saveUserMenu$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
@@ -57,16 +58,21 @@ export class AdminPanelComponent implements OnInit{
   //Users management
   public addNewUser$: Subject<UserFormDto> = new Subject<UserFormDto>();
   public refreshEmployees$: Subject<void> = new Subject<void>();
+  public removeUser$: Subject<Employee> = new Subject<Employee>();
 
-  public errorSubject$: ReplaySubject<{error: boolean, timestamp: number}> = new ReplaySubject<{error: boolean, timestamp: number}>(1);
+  public errorSubject$: ReplaySubject<{ error: boolean, timestamp: number }> = new ReplaySubject<{
+    error: boolean,
+    timestamp: number
+  }>(1);
 
 
   constructor(private authService: AuthService,
               private fbService: FirebaseDataService,
-              private messageService: MessageService) {
+              private messageService: MessageService,
+              private confirmationService: ConfirmationService) {
   }
 
-    ngOnInit(): void {
+  ngOnInit(): void {
 
     this.employees$ = merge(
       this.fbService.getItems<Employee>('employees'),
@@ -78,69 +84,69 @@ export class AdminPanelComponent implements OnInit{
       }),
     );
 
-      this.userMenuData$ = this.authService.userUid.pipe(
-        switchMap(uid => {
-          if (!isNil(uid)) {
-            return this.fbService.getItemById<EmployeeMenu>('menus', uid)
-          } else return of(null)
-        }),
-        catchError(err => {
-          this.messageService.add({severity: 'error', detail: 'При получении меню сотрудника произошла ошибка'});
-          return throwError(err);
-        }),
-      );
+    this.userMenuData$ = this.authService.userUid.pipe(
+      switchMap(uid => {
+        if (!isNil(uid)) {
+          return this.fbService.getItemById<EmployeeMenu>('menus', uid)
+        } else return of(null)
+      }),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При получении меню сотрудника произошла ошибка'});
+        return throwError(err);
+      }),
+    );
 
-      this.generalMenuData$ = this.fbService.getItemById<GeneralMenu>('generalMenu', 1).pipe(
-        catchError(err => {
-          console.log(err);
-          return throwError(err);
-        }),
-      );
+    this.generalMenuData$ = this.fbService.getItemById<GeneralMenu>('generalMenu', 1).pipe(
+      catchError(err => {
+        console.log(err);
+        return throwError(err);
+      }),
+    );
 
-      this.currentUserMenu$ = merge(
-        this.userMenuData$,
-        this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
-      );
+    this.currentUserMenu$ = merge(
+      this.userMenuData$,
+      this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
+    );
 
-      this.generalMenu$ = merge(
-        this.generalMenuData$,
-        this.refreshGeneralMenu$.pipe(switchMap(_ => this.generalMenuData$))
-      );
+    this.generalMenu$ = merge(
+      this.generalMenuData$,
+      this.refreshGeneralMenu$.pipe(switchMap(_ => this.generalMenuData$))
+    );
 
-      this.firstCourses$ = this.fbService.getItems<Dishes>('firstCourses').pipe(
-        map(dishes => dishes[0].dishes),
-        catchError(err => {
-          this.messageService.add({severity: 'error', detail: 'Не удалосб получить список первых блюд'});
-          return throwError(err);
-        })
-      );
+    this.firstCourses$ = this.fbService.getItems<Dishes>('firstCourses').pipe(
+      map(dishes => dishes[0].dishes),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'Не удалосб получить список первых блюд'});
+        return throwError(err);
+      })
+    );
 
-      this.secondCourses$ = this.fbService.getItems<Dishes>('secondCourses').pipe(
-        map(dishes => dishes[0].dishes),
-        catchError(err => {
-          this.messageService.add({severity: 'error', detail: 'Не удалось получить список вторых блюд'});
-          return throwError(err);
-        })
-      );
+    this.secondCourses$ = this.fbService.getItems<Dishes>('secondCourses').pipe(
+      map(dishes => dishes[0].dishes),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'Не удалось получить список вторых блюд'});
+        return throwError(err);
+      })
+    );
 
-      this.sideDishes$ = this.fbService.getItems<Dishes>('sideDishes').pipe(
-        map(dishes => dishes[0].dishes),
-        catchError(err => {
-          this.messageService.add({severity: 'error', detail: 'Не удалось получить список гарниров'});
-          return throwError(err);
-        })
-      );
+    this.sideDishes$ = this.fbService.getItems<Dishes>('sideDishes').pipe(
+      map(dishes => dishes[0].dishes),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'Не удалось получить список гарниров'});
+        return throwError(err);
+      })
+    );
 
-      this.salads$ = this.fbService.getItems<Dishes>('salads').pipe(
-        map(dishes => dishes[0].dishes),
-        catchError(err => {
-          this.messageService.add({severity: 'error', detail: 'Не удалось получить список салатов'});
-          return throwError(err);
-        })
-      );
+    this.salads$ = this.fbService.getItems<Dishes>('salads').pipe(
+      map(dishes => dishes[0].dishes),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'Не удалось получить список салатов'});
+        return throwError(err);
+      })
+    );
 
-      this.initializeSideEffect()
-    }
+    this.initializeSideEffect()
+  }
 
   private initializeSideEffect() {
     this.saveUserMenu$.pipe(
@@ -170,18 +176,18 @@ export class AdminPanelComponent implements OnInit{
     //Users management
     this.addNewUser$.pipe(
       switchMap(userDto => {
-        const employee = new Employee({
-          username: userDto.username,
-          fullName: userDto.fullName,
-          role: userDto.role
-        });
+          const employee = new Employee({
+            username: userDto.username,
+            fullName: userDto.fullName,
+            role: userDto.role
+          });
 
-        return this.authService.signUp(userDto.username, userDto.password, employee)
-      }
+          return this.authService.signUp(userDto.username, userDto.password, employee)
+        }
       ),
       catchError((err: FirebaseError) => {
         this.messageService.add({severity: 'error', detail: ServiceHelper.translateError(err.code)});
-        this.errorSubject$.next({ error: true, timestamp: new Date().getTime() });
+        this.errorSubject$.next({error: true, timestamp: new Date().getTime()});
         return throwError(err);
       }),
       retry(),
@@ -190,6 +196,43 @@ export class AdminPanelComponent implements OnInit{
       console.log(res)
       this.messageService.add({severity: 'success', detail: 'Новый сотрудник успешно добавлен'});
       this.refreshEmployees$.next()
+    });
+
+    this.removeUser$.pipe(
+      switchMap(user => {
+        this.isLoading$.next(true);
+        const confirmed$: Subject<boolean> = new Subject<boolean>();
+
+        this.confirmationService.confirm({
+          header: "Удаление пользователя",
+          message: `Вы действительно хотите удалить пользователя ${user.fullName} ?`,
+          rejectLabel: "Отмена",
+          acceptLabel: "Удалить",
+          acceptButtonStyleClass: "p-button-primary",
+          rejectButtonStyleClass: "p-button-secondary p-button-text",
+          acceptIcon: "none",
+          rejectIcon: "none",
+          blockScroll: false,
+          accept: () => confirmed$.next(true),
+          reject: () => confirmed$.next(false)
+        })
+
+        return confirmed$
+      }),
+      filter(confirmed => confirmed),
+      withLatestFrom(this.removeUser$),
+      switchMap(([_, user]) => this.authService.deleteUser(user)),
+      catchError(err => {
+        this.isLoading$.next(false);
+        this.messageService.add({severity: 'error', detail: 'При удалении сотрудника произошла ошибка'});
+        return throwError(err);
+      }),
+      retry(),
+      untilDestroyed(this)
+    ).subscribe(_ => {
+      this.isLoading$.next(false);
+      this.messageService.add({severity: 'success', detail: 'Cотрудник успешно удален'});
+      this.refreshEmployees$.next();
     })
   }
 }

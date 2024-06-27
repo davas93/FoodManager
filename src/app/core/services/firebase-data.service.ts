@@ -83,7 +83,7 @@ export class FirebaseDataService {
     }));
   }
 
-  deleteItem(collectionPath: string, id: number): Observable<void> {
+  deleteItem(collectionPath: string, id: number | string): Observable<void> {
     const collectionRef = collection(this.db, collectionPath);
     const q = query(collectionRef, where('id', '==', id));
 

@@ -28,6 +28,7 @@ export class UsersManagementComponent {
   }
 
   @Output() addUser: EventEmitter<UserFormDto> = new EventEmitter<UserFormDto>();
+  @Output() removeUser: EventEmitter<Employee> = new EventEmitter<Employee>();
 
   public isDialogShow: boolean = false;
   public isLoading$: Observable<boolean>;
@@ -93,6 +94,10 @@ export class UsersManagementComponent {
 
     this.startLoading$.next();
     this.addUser.emit(this.userFormDto.value as UserFormDto);
+  }
+
+  public deleteUser(employee: Employee): void {
+    this.removeUser.emit(employee);
   }
 
   public resetForm(): void {
