@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {Week} from "../../../../../models/employee-menu.model";
+import {EmployeeMenu, Week} from "../../../../../models/employee-menu.model";
 import {GeneralMenu} from "../../../../../models/general-menu.model";
 import { ReplaySubject} from "rxjs";
 import {isNil} from "lodash-es";
@@ -52,6 +52,6 @@ export class UserMenuTableComponent implements OnInit{
 
 
   ngOnInit(): void {
-
+    console.log(new EmployeeMenu(), new GeneralMenu())
   }
 }

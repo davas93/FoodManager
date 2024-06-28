@@ -90,7 +90,7 @@ export class MenuAdministrationComponent implements OnInit{
       map(([menu, week, day, type]) => {
         if (!isNil(menu)) {
           const dayIndex: number = menu.weeks[week].days.findIndex(option => option.name === day);
-          const dishes = menu.weeks[week].days[dayIndex]?.meals[type] as Dish[];
+          const dishes = menu.weeks[week].days[dayIndex]?.meals[type];
           return dishes;
         }
 
@@ -132,10 +132,7 @@ export class MenuAdministrationComponent implements OnInit{
         const currentDay = currentWeek.days.find(d => d.name === day);
         if (currentDay) {
 
-          if (Array.isArray(currentDay.meals[type])) {
-            (currentDay.meals[type] as Dish[]).push(...dishes);
-          }
-
+          (currentDay.meals[type]).push(...dishes)
           currentDay.meals[type] = dishes;
         }
 

@@ -12,11 +12,11 @@
               <p-inputIcon>
                 <i class="fi fi-rr-search"></i>
               </p-inputIcon>
-              <input
+              <input #search
                 pInputText
                 type="text"
                 placeholder="Поиск"
-                (input)="dt2.filterGlobal($event.target.value, 'contains')"/>
+                (input)="dt2.filterGlobal(search.value, 'contains')"/>
             </p-iconField>
           </div>
         </ng-template>
