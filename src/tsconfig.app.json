@@ -1,12 +1,17 @@
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../out-tsc/app",
-    "module": "esnext",
-    "baseUrl": "",
-    "types": []
-  },
-  "exclude": [
-    "**/*.spec.ts"
-  ]
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "../out-tsc/app",
+        "module": "esnext",
+        "baseUrl": "",
+        "types": [],
+        "typeRoots": [
+            "node_modules/@types",
+            "src"
+        ]
+    },
+    "files": ["global.d.ts"],
+    "exclude": [
+        "**/*.spec.ts"
+    ]
 }

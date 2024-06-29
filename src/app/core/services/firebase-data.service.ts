@@ -76,8 +76,7 @@ export class FirebaseDataService {
     return from(getDocs(q).then(querySnapshot => {
       if (!querySnapshot.empty) {
         const docRef = querySnapshot.docs[0].ref;
-        // @ts-ignore
-          return updateDoc(docRef, data);
+          return updateDoc<DocumentData, DocumentData>(docRef, data);
       } else {
         throw new Error('Document not found');
       }

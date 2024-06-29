@@ -14,8 +14,8 @@ import {Router} from "@angular/router";
 })
 export class AuthComponent implements OnInit {
   public loginData: FormGroup<LoginFormData> = new FormGroup<LoginFormData>(<LoginFormData>{
-    email: new FormControl<string>('', Validators.required),
-    password: new FormControl<string>('', Validators.required)
+    email: new FormControl<string>('sevostyanov.i@fondital.ru', Validators.required),
+    password: new FormControl<string>('87654321', Validators.required)
   })
 
   public loginBtnClick$: Subject<void> = new Subject<void>();

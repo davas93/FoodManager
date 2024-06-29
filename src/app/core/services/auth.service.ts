@@ -3,26 +3,21 @@ import {FirebaseDataService} from "./firebase-data.service";
 import {
   Auth,
   getAuth,
-  UserCredential,
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
-  deleteUser,
   User
 } from "firebase/auth"
 import {
   BehaviorSubject,
   combineLatest,
-  concatMap, EMPTY,
-  filter,
   from,
   fromEvent,
   map,
   Observable,
   of,
   switchMap,
-  takeWhile
 } from "rxjs";
 import {Employee} from "../../models/employee.model";
 import firebase from "firebase/compat";
@@ -30,7 +25,7 @@ import DocumentReference = firebase.firestore.DocumentReference;
 import {LoginData} from "../../models/login-data.model";
 import {ServiceHelper} from "../../helpers/service.helper";
 import {EmployeeMenu} from "../../models/employee-menu.model";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -86,17 +81,15 @@ export class AuthService {
     )
   }
 
-  deleteUser(employee: Employee): Observable<void> {
-    const queryParams = new HttpParams().append("uid", `${employee.id}`);
-
-    return this.http.get(`https://food-manager-server.vercel.app/deleteUser`, {
-      params: queryParams,
-      responseType: 'text'
-    }).pipe(
-      switchMap(_ => this.firestoreDataService.deleteItem('employees', employee.id)),
-      switchMap(res => employee.role === "Dining" ? of(res) : this.firestoreDataService.deleteItem('menus', employee.id))
-    )
-  }
+    deleteUser(employee: Employee): Observable<void> {
+        return from(window.electron.deleteUser(employee.id)).pipe(
+            switchMap(_ =>
+                this.firestoreDataService.deleteItem('employees', employee.id).pipe(
+                    switchMap(res => employee.role === "Dining" ? of(res) : this.firestoreDataService.deleteItem('menus', employee.id))
+                )
+            )
+        );
+    }
 
   get isAuthenticated(): Observable<boolean> {
     return this.authState.asObservable().pipe(
