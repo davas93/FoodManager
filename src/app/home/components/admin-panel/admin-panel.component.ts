@@ -185,10 +185,13 @@ export class AdminPanelComponent implements OnInit {
             role: userDto.role
           });
 
+          this.isLoading$.next(true);
+
           return this.authService.signUp(userDto.username, userDto.password, employee)
         }
       ),
       catchError((err: FirebaseError) => {
+        this.isLoading$.next(false);
         this.messageService.add({severity: 'error', detail: ServiceHelper.translateError(err.code)});
         this.errorSubject$.next({error: true, timestamp: new Date().getTime()});
         return throwError(err);
@@ -196,7 +199,7 @@ export class AdminPanelComponent implements OnInit {
       retry(),
       untilDestroyed(this)
     ).subscribe(res => {
-      console.log(res)
+      this.isLoading$.next(false);
       this.messageService.add({severity: 'success', detail: 'Новый сотрудник успешно добавлен'});
       this.refreshEmployees$.next()
     });
