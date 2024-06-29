@@ -1,123 +1,139 @@
 <div class="menu-administration-container">
-  <div class="tabs-container">
-    @if (generalMenu$ | async; as menu) {
-      <p-tabView>
-        @for (week of menu.weeks; track week.name; let i = $index) {
-          <p-tabPanel [header]="WEEKS[week.name]" class="menu-tabs">
-            <p-table #table [value]="week.days"
-                     styleClass="p-datatable-gridlines"
-                     groupRowsBy="name"
-                     rowGroupMode="subheader">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th style="width:25%">
-                    <div class="header-cell-service">
-                      <span>Первое</span>
-                      <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'firstCourse')" size="small"></button>
-                    </div>
-                  </th>
-                  <th style="width:25%">
-                    <div class="header-cell-service">
-                      <span>Второе</span>
-                      <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'secondCourse')" size="small"></button>
-                    </div>
-                  </th>
-                  <th style="width:25%">
-                    <div class="header-cell-service">
-                      <span>Гарнир</span>
-                      <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'sideDish')" size="small"></button>
-                    </div>
-                  </th>
-                  <th style="width:25%">
-                    <div class="header-cell-service">
-                      <span>Салат</span>
-                      <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'salad');" size="small"></button>
-                    </div>
-                  </th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="groupheader" let-weekDay>
-                @if (!!weekDay.meals.firstCourse ||
-                !!weekDay.meals.secondCourse ||
-                !!weekDay.meals.sideDish ||
-                !!weekDay.meals.salad) {
-                  <tr pRowGroupHeader class="group-header">
-                    <td colspan="5">
-                      <span class="font-bold ml-2">{{ DAYS_OF_WEEK[weekDay.name] }}</span>
-                    </td>
-                  </tr>
-                }
-              </ng-template>
-              <ng-template pTemplate="body" let-weekDay let-rowIndex="rowIndex">
-                @for (row of getMaxArrayLength(
-                  weekDay.meals.firstCourse,
-                  weekDay.meals.secondCourse,
-                  weekDay.meals.sideDish,
-                  weekDay.meals.salad
-                ); track row; let j = $index) {
-                  <tr>
-                    <td pEditableColumnField="firstCourse" [title]="weekDay.meals.firstCourse[j]?.name || 'Отсутствует'">
-                      {{ weekDay.meals.firstCourse[j]?.name }}
-                    </td>
-                    <td pEditableColumnField="secondCourse" [title]="weekDay.meals.secondCourse[j]?.name || 'Отсутствует'">
-                      {{ weekDay.meals.secondCourse[j]?.name }}
-                    </td>
-                    <td pEditableColumnField="sideDish" [title]="weekDay.meals.sideDish[j]?.name || 'Отсутствует'">
-                      {{ weekDay.meals.sideDish[j]?.name }}
-                    </td>
-                    <td pEditableColumnField="salad" [title]="weekDay.meals.salad[j]?.name || 'Отсутствует'">
-                      {{ weekDay.meals.salad[j]?.name }}
-                    </td>
-                  </tr>
-                }
-              </ng-template>
-            </p-table>
-          </p-tabPanel>
-        }
-      </p-tabView>
+    <div class="user-top-service">
+        <div class="date">{{ currentDate }}</div>
+    </div>
 
-      <p-dialog class="modal" [header]="(modalHeaderName$ | async) ?? ''" [modal]="true" [(visible)]="isDialogShow" (onHide)="resetData()">
-        @if (isDialogShow) {
-          <div class="modal-content">
-            @if (dishOptions$ | async; as dishOptions) {
-              <div class="form">
-                <p-dropdown #weekDay
-                            placeholder="Выберите день недели"
-                            optionValue="key"
-                            optionLabel="value"
-                            appendTo="body"
-                            [options]="DAYS_OF_WEEK | keyvalue"
-                            (onChange)="selectedDay$.next($event.value)"/>
+    <div class="tabs-container">
+        @if (generalMenu$ | async; as menu) {
 
-                <p-multiSelect #dishes
-                               placeholder="Выберите блюдо"
-                               appendTo="body"
-                               optionLabel="name"
-                               [selectionLimit]="5"
-                               [panelStyle]="{'max-width': '400px'}"
-                               [selectedItemsLabel]="'Выбрано блюд: ' + dishes.value?.length"
-                               [disabled]="!weekDay.value"
-                               [ngModel]="selectedOptions$ | async"
-                               [options]="dishOptions"
-                               (onChange)="selectedDishes$.next($event.value)">
-                  <ng-template let-option pTemplate="item">
+            <p-tabView [(activeIndex)]="_currentWeekIndex">
+                @for (week of menu.weeks; track week.name; let i = $index) {
+                    <p-tabPanel [header]="WEEKS[week.name]" class="menu-tabs">
+                        <p-table #table [value]="week.days"
+                                 styleClass="p-datatable-gridlines"
+                                 groupRowsBy="name"
+                                 rowGroupMode="subheader">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width:25%">
+                                        <div class="header-cell-service">
+                                            <span>Первое</span>
+                                            <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'firstCourse')"
+                                                    size="small"></button>
+                                        </div>
+                                    </th>
+                                    <th style="width:25%">
+                                        <div class="header-cell-service">
+                                            <span>Второе</span>
+                                            <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'secondCourse')"
+                                                    size="small"></button>
+                                        </div>
+                                    </th>
+                                    <th style="width:25%">
+                                        <div class="header-cell-service">
+                                            <span>Гарнир</span>
+                                            <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'sideDish')"
+                                                    size="small"></button>
+                                        </div>
+                                    </th>
+                                    <th style="width:25%">
+                                        <div class="header-cell-service">
+                                            <span>Салат</span>
+                                            <button pButton icon="fi fi-rr-edit" (click)="openModal(i, 'salad');"
+                                                    size="small"></button>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="groupheader" let-weekDay>
+                                @if (!!weekDay.meals.firstCourse ||
+                                !!weekDay.meals.secondCourse ||
+                                !!weekDay.meals.sideDish ||
+                                !!weekDay.meals.salad) {
+                                    <tr pRowGroupHeader class="group-header">
+                                        <td colspan="5">
+                                            <span class="font-bold ml-2">{{ DAYS_OF_WEEK[weekDay.name] }}</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </ng-template>
+                            <ng-template pTemplate="body" let-weekDay let-rowIndex="rowIndex">
+                                @for (row of getMaxArrayLength(
+                                    weekDay.meals.firstCourse,
+                                    weekDay.meals.secondCourse,
+                                    weekDay.meals.sideDish,
+                                    weekDay.meals.salad
+                                ); track row; let j = $index) {
+                                    <tr>
+                                        <td pEditableColumnField="firstCourse"
+                                            [title]="weekDay.meals.firstCourse[j]?.name || 'Отсутствует'">
+                                            {{ weekDay.meals.firstCourse[j]?.name }}
+                                        </td>
+                                        <td pEditableColumnField="secondCourse"
+                                            [title]="weekDay.meals.secondCourse[j]?.name || 'Отсутствует'">
+                                            {{ weekDay.meals.secondCourse[j]?.name }}
+                                        </td>
+                                        <td pEditableColumnField="sideDish"
+                                            [title]="weekDay.meals.sideDish[j]?.name || 'Отсутствует'">
+                                            {{ weekDay.meals.sideDish[j]?.name }}
+                                        </td>
+                                        <td pEditableColumnField="salad"
+                                            [title]="weekDay.meals.salad[j]?.name || 'Отсутствует'">
+                                            {{ weekDay.meals.salad[j]?.name }}
+                                        </td>
+                                    </tr>
+                                }
+                            </ng-template>
+                        </p-table>
+                    </p-tabPanel>
+                }
+            </p-tabView>
+
+            <p-dialog class="modal" [header]="(modalHeaderName$ | async) ?? ''" [modal]="true"
+                      [(visible)]="isDialogShow" (onHide)="resetData()">
+                @if (isDialogShow) {
+                    <div class="modal-content">
+                        @if (dishOptions$ | async; as dishOptions) {
+                            <div class="form">
+                                <p-dropdown #weekDay
+                                            placeholder="Выберите день недели"
+                                            optionValue="key"
+                                            optionLabel="value"
+                                            appendTo="body"
+                                            [options]="DAYS_OF_WEEK | keyvalue"
+                                            (onChange)="selectedDay$.next($event.value)"/>
+
+                                <p-multiSelect #dishes
+                                               placeholder="Выберите блюдо"
+                                               appendTo="body"
+                                               optionLabel="name"
+                                               [selectionLimit]="5"
+                                               [panelStyle]="{'max-width': '400px'}"
+                                               [selectedItemsLabel]="'Выбрано блюд: ' + dishes.value?.length"
+                                               [disabled]="!weekDay.value"
+                                               [ngModel]="selectedOptions$ | async"
+                                               [options]="dishOptions"
+                                               (onChange)="selectedDishes$.next($event.value)">
+                                    <ng-template let-option pTemplate="item">
                       <span [title]="option.name" style="overflow: hidden; text-overflow: ellipsis">
-                        {{option.name}}
+                        {{ option.name }}
                       </span>
-                  </ng-template>
-                </p-multiSelect>
-              </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </div>
 
-              <div class="modal-service">
-                <p-button label="Отмена" severity="secondary" text="true" (click)="isDialogShow = false"/>
-                <p-button label="Изменить" [disabled]="!dishes || !weekDay.value" (click)="updateMenu$.next(menu)"/>
-              </div>
-            }
-          </div>
+                            <div class="modal-service">
+                                <p-button label="Отмена" severity="secondary" text="true"
+                                          (click)="isDialogShow = false"/>
+                                <p-button label="Изменить" [disabled]="!dishes || !weekDay.value"
+                                          (click)="updateMenu$.next(menu)"/>
+                            </div>
+                        }
+                    </div>
+                }
+            </p-dialog>
+        } @else {
+            <app-loading-screen></app-loading-screen>
         }
-      </p-dialog>
-    } @else {
-      <app-loading-screen></app-loading-screen>
-    }
-  </div>
+    </div>
 </div>
