@@ -1,4 +1,4 @@
-<p-tabView [activeIndex]="2">
+<p-tabView [activeIndex]="1">
   <p-tabPanel header="Персональное меню">
     <div class="tab-content">
       <app-personal-menu [userMenuData]="currentUserMenu$ | async"
@@ -14,7 +14,8 @@
                                [secondCourses]="secondCourses$ | async"
                                [sideDishes]="sideDishes$ | async"
                                [salads]="salads$ | async"
-                               (updateMenu)="saveGeneralMenu$.next($event)">
+                               (updateMenu)="saveGeneralMenu$.next($event)"
+                               (changeDishesWithDay)="selectedDishesWithDay$.next($event)">
       </app-menu-administration>
     </div>
   </p-tabPanel>

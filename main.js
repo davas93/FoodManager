@@ -120,25 +120,15 @@ try {
             createWindow();
         }
     });
-    electron_1.ipcMain.on('delete-user', function (event, uid) { return __awaiter(void 0, void 0, void 0, function () {
-        var error_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, admin.auth().deleteUser(uid)];
-                case 1:
-                    _a.sent();
-                    event.sender.send('delete-user-response', { success: true });
-                    return [3 /*break*/, 3];
-                case 2:
-                    error_1 = _a.sent();
-                    event.sender.send('delete-user-response', { success: false, error: error_1.message });
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
-            }
+    electron_1.ipcMain.on('delete-user', function (event, uid) {
+        admin.auth().deleteUser(uid)
+            .then(function () {
+            event.reply('delete-user-response', { success: true });
+        })
+            .catch(function (error) {
+            event.reply('delete-user-response', { success: false, error: error.message });
         });
-    }); });
+    });
 }
 catch (e) {
     // Catch Error

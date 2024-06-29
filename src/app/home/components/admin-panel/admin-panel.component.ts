@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {
   BehaviorSubject,
-  catchError,
+  catchError, combineLatest,
   filter,
   map,
   merge,
@@ -26,6 +26,8 @@ import {UserFormDto} from "../../../interfaces/user-form-dto.interface";
 import firebase from "firebase/compat";
 import FirebaseError = firebase.FirebaseError;
 import {ServiceHelper} from "../../../helpers/service.helper";
+import {SelectedMenuWithDay} from "../../../interfaces/selected-dishes-with-day.interface";
+import {take} from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -46,6 +48,7 @@ export class AdminPanelComponent implements OnInit {
   public sideDishes$!: Observable<Dish[]>;
   public salads$!: Observable<Dish[]>;
   public employees$!: Observable<Employee[]>;
+  private userMenus$!: Observable<EmployeeMenu[]>;
 
   //Personal menu management
   public saveUserMenu$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
@@ -54,6 +57,7 @@ export class AdminPanelComponent implements OnInit {
   //General menu management
   public saveGeneralMenu$: Subject<GeneralMenu> = new Subject<GeneralMenu>();
   public refreshGeneralMenu$: Subject<void> = new Subject<void>();
+  public selectedDishesWithDay$: ReplaySubject<SelectedMenuWithDay> = new ReplaySubject<SelectedMenuWithDay>(1);
 
   //Users management
   public addNewUser$: Subject<UserFormDto> = new Subject<UserFormDto>();
@@ -74,6 +78,7 @@ export class AdminPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.userMenus$ = this.fbService.getItems<EmployeeMenu>('menus');
 
     this.employees$ = merge(
       this.fbService.getItems<Employee>('employees'),
@@ -165,15 +170,30 @@ export class AdminPanelComponent implements OnInit {
 
     this.saveGeneralMenu$.pipe(
       switchMap(menu => this.fbService.updateItem<GeneralMenu>('generalMenu', 1, menu)),
+      switchMap(_ => combineLatest([this.userMenus$, this.selectedDishesWithDay$.pipe(take(1))])),
+      switchMap(([menus, selectedDishes]) => {
+        const filterCourses = selectedDishes.dishes.map(dish => dish.name);
+
+        const updatedMenus = menus.map(employeeMenu => {
+          const currentWeek = employeeMenu.weeks[selectedDishes.week];
+          const currentDay = currentWeek.days.find(day => day.name === selectedDishes.day);
+          if (!filterCourses.includes(currentDay.meals[selectedDishes.dishType])) {
+            currentDay.meals[selectedDishes.dishType] = "";
+          }
+          return employeeMenu;
+        });
+
+        return this.fbService.updateAllItems('menus', updatedMenus)
+      }),
       catchError(err => {
         this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
         return throwError(err);
       }),
       untilDestroyed(this),
-      retry(),
     ).subscribe(_ => {
       this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'});
       this.refreshGeneralMenu$.next();
+      this.refreshUserMenu$.next();
     });
 
     //Users management

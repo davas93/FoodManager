@@ -11,11 +11,13 @@ import {
   query,
   Firestore,
   DocumentData,
-  WithFieldValue
+  WithFieldValue,
+  writeBatch
 } from 'firebase/firestore/lite';
 import {from, Observable} from "rxjs";
 import firebase from "firebase/compat";
 import DocumentReference = firebase.firestore.DocumentReference;
+import {isEqual} from "lodash-es";
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +82,23 @@ export class FirebaseDataService {
       } else {
         throw new Error('Document not found');
       }
+    }));
+  }
+
+  updateAllItems(collectionPath: string, data: any): Observable<void> {
+    const collectionRef = collection(this.db, collectionPath);
+
+    return from(getDocs(collectionRef).then(querySnapshot => {
+      const batch = writeBatch(this.db);
+
+      querySnapshot.forEach((doc ) => {
+        const updateData = data.find(item => item.id === doc.data().id);
+        if (updateData && !isEqual(doc.data(), updateData)) {
+          batch.update(doc.ref, updateData);
+        }
+      });
+
+      return batch.commit();
     }));
   }
 

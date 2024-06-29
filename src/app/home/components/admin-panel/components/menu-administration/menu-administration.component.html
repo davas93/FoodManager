@@ -90,7 +90,7 @@
             </p-tabView>
 
             <p-dialog class="modal" [header]="(modalHeaderName$ | async) ?? ''" [modal]="true"
-                      [(visible)]="isDialogShow" (onHide)="resetData()">
+                      [(visible)]="isDialogShow">
                 @if (isDialogShow) {
                     <div class="modal-content">
                         @if (dishOptions$ | async; as dishOptions) {
@@ -123,10 +123,10 @@
                             </div>
 
                             <div class="modal-service">
-                                <p-button label="Отмена" severity="secondary" text="true"
-                                          (click)="isDialogShow = false"/>
-                                <p-button label="Изменить" [disabled]="!dishes || !weekDay.value"
-                                          (click)="updateMenu$.next(menu)"/>
+                                <button pButton label="Отмена" severity="secondary" text="true"
+                                          (click)="resetData()"></button>
+                                <button pButton label="Изменить" [disabled]="!dishes || !weekDay.value"
+                                          (click)="updateMenu$.next(menu)"></button>
                             </div>
                         }
                     </div>
