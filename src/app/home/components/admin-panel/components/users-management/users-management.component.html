@@ -60,7 +60,7 @@
                               [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
                               [options]="roles"
                               [(ngModel)]="employee.role"
-                              (onBlur)="userEdit(employee)">
+                              (onChange)="userEdit(employee)">
                   </p-dropdown>
                 </ng-template>
                 <ng-template pTemplate="output">
@@ -80,7 +80,7 @@
                               [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
                               [options]="employeeStatuses"
                               [(ngModel)]="employee.status"
-                              (onBlur)="userEdit(employee)">
+                              (onChange)="userEdit(employee)">
                   </p-dropdown>
                 </ng-template>
                 <ng-template pTemplate="output">
