@@ -30,16 +30,67 @@ app-users-management {
           }
         }
 
+        .sticky-left {
+          position: sticky;
+          left: 0;
+          z-index: 1;
+          min-width: 100px;
+        }
+
+        .sticky-right {
+          position: sticky;
+          right: 0;
+          z-index: 1;
+          padding: 0;
+          min-width: 60px;
+          text-align: center;
+        }
+
+        td:not(.sticky-left, .sticky-right) {
+          min-width: 240px;
+        }
+
         thead {
           position: sticky;
           top: 0;
           z-index: 1;
         }
 
+        tbody {
+          td {
+            background-color: var.$tableBodyRowBg ;
+          }
+        }
+
         tr {
           td {
             height: 56px;
             padding: 0 16px;
+
+            &.p-editable-column {
+              cursor: pointer;
+            }
+
+            .Working {
+              .p-tag {
+                background-color: var.$successMessageBg;
+                color: var.$successMessageTextColor;
+              }
+            }
+
+            .Vacation {
+              .p-tag {
+                background-color: var.$warningMessageBg;
+                color: var.$warningMessageTextColor;
+              }
+            }
+
+            .Mission {
+              .p-tag {
+                background-color: var.$errorMessageBg;
+                color: var.$errorMessageTextColor;
+              }
+            }
           }
         }
 

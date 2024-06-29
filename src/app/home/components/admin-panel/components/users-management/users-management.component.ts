@@ -7,6 +7,10 @@ import {Roles} from "../../../../../types/roles.type";
 import {customEmailValidator, noWhitespaceValidator} from "../../../../../form-validators/form-validators";
 import {UserFormDto} from "../../../../../interfaces/user-form-dto.interface";
 import {map} from "rxjs/operators";
+import {EMPLOYEE_STATUSES} from "../../../../../consts/emoloyee-statuses";
+import {ROLES} from "../../../../../consts/roles";
+import {STATUSES} from "../../../../../consts/employee-status-vocabulary";
+import {TableEditCompleteEvent} from "primeng/table";
 
 @Component({
   selector: 'app-users-management',
@@ -29,6 +33,11 @@ export class UsersManagementComponent {
 
   @Output() addUser: EventEmitter<UserFormDto> = new EventEmitter<UserFormDto>();
   @Output() removeUser: EventEmitter<Employee> = new EventEmitter<Employee>();
+  @Output() editUser: EventEmitter<Employee> = new EventEmitter<Employee>();
+
+  public readonly employeeStatuses: { label: string, value: string }[] = [];
+  public readonly roles = ROLES;
+  protected readonly STATUSES = STATUSES;
 
   public isDialogShow: boolean = false;
   public isLoading$: Observable<boolean>;
@@ -55,6 +64,11 @@ export class UsersManagementComponent {
     ).pipe(
       shareReplay({bufferSize: 1, refCount: true})
     )
+
+    this.employeeStatuses = Object.keys(STATUSES).map(key => ({
+      label: STATUSES[key],
+      value: key
+    }));
   }
 
   public showModal(): void {
@@ -102,6 +116,10 @@ export class UsersManagementComponent {
 
   public resetForm(): void {
     this.userFormDto.reset()
+  }
+
+  userEdit(employee: Employee) {
+    this.editUser.emit(employee);
   }
 }
 

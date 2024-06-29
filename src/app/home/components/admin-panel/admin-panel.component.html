@@ -23,7 +23,8 @@
       <app-users-management [employees]="employees$ | async"
                             [serviceError]="errorSubject$ | async"
                             (addUser)="addNewUser$.next($event)"
-                            (removeUser)="removeUser$.next($event)">
+                            (removeUser)="removeUser$.next($event)"
+                            (editUser)="editUser$.next($event)">
       </app-users-management>
     </div>
   </p-tabPanel>

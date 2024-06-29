@@ -59,6 +59,7 @@ export class AdminPanelComponent implements OnInit {
   public addNewUser$: Subject<UserFormDto> = new Subject<UserFormDto>();
   public refreshEmployees$: Subject<void> = new Subject<void>();
   public removeUser$: Subject<Employee> = new Subject<Employee>();
+  public editUser$: Subject<Employee> = new Subject<Employee>();
 
   public errorSubject$: ReplaySubject<{ error: boolean, timestamp: number }> = new ReplaySubject<{
     error: boolean,
@@ -155,6 +156,7 @@ export class AdminPanelComponent implements OnInit {
         this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
         return throwError(err);
       }),
+      retry(),
       untilDestroyed(this)
     ).subscribe(_ => {
       this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'});
@@ -167,7 +169,8 @@ export class AdminPanelComponent implements OnInit {
         this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
         return throwError(err);
       }),
-      untilDestroyed(this)
+      untilDestroyed(this),
+      retry(),
     ).subscribe(_ => {
       this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'});
       this.refreshGeneralMenu$.next();
@@ -238,6 +241,19 @@ export class AdminPanelComponent implements OnInit {
       this.isLoading$.next(false);
       this.messageService.add({severity: 'success', detail: 'Cотрудник успешно удален'});
       this.refreshEmployees$.next();
-    })
+    });
+
+    this.editUser$.pipe(
+      switchMap(user => this.fbService.updateItem<Employee>('employees', user.id, user)),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При изменении данных пользователя, произошла ошибка.'});
+        return throwError(err);
+      }),
+      retry(),
+      untilDestroyed(this)
+    ).subscribe(_ => {
+      this.messageService.add({severity: 'success', detail: 'Данные пользователя успешно сохранены'});
+      this.refreshEmployees$.next();
+    });
   }
 }
