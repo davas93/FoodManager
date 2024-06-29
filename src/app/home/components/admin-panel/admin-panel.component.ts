@@ -41,7 +41,6 @@ export class AdminPanelComponent implements OnInit {
 
   private userMenuData$!: Observable<EmployeeMenu | null>;
   public currentUserMenu$!: Observable<EmployeeMenu | null>;
-  public generalMenuData$!: Observable<GeneralMenu | null>;
   public generalMenu$!: Observable<GeneralMenu | null>;
   public firstCourses$!: Observable<Dish[]>;
   public secondCourses$!: Observable<Dish[]>;
@@ -102,22 +101,18 @@ export class AdminPanelComponent implements OnInit {
       }),
     );
 
-    this.generalMenuData$ = this.fbService.getItemById<GeneralMenu>('generalMenu', 1).pipe(
-      catchError(err => {
-        console.log(err);
-        return throwError(err);
-      }),
-    );
-
     this.currentUserMenu$ = merge(
       this.userMenuData$,
       this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
     );
 
     this.generalMenu$ = merge(
-      this.generalMenuData$,
-      this.refreshGeneralMenu$.pipe(switchMap(_ => this.generalMenuData$))
-    );
+      this.fbService.getItemById<GeneralMenu>('generalMenu', 1),
+      this.refreshGeneralMenu$.pipe(switchMap(_ => this.fbService.getItemById<GeneralMenu>('generalMenu', 1)))
+    ).pipe(catchError(err => {
+      console.log(err);
+      return throwError(err);
+    }));
 
     this.firstCourses$ = this.fbService.getItems<Dishes>('firstCourses').pipe(
       map(dishes => dishes[0].dishes),
@@ -187,8 +182,10 @@ export class AdminPanelComponent implements OnInit {
       }),
       catchError(err => {
         this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
+        this.errorSubject$.next({error: true, timestamp: new Date().getTime()});
         return throwError(err);
       }),
+      retry(),
       untilDestroyed(this),
     ).subscribe(_ => {
       this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'});

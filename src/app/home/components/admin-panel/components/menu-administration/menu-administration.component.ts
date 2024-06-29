@@ -10,12 +10,12 @@ import {
 import {
   BehaviorSubject,
   combineLatest, filter,
-  map,
+  map, merge,
   Observable,
   of,
-  ReplaySubject,
+  ReplaySubject, shareReplay,
   Subject,
-  switchMap,
+  switchMap, tap,
   withLatestFrom
 } from "rxjs";
 import {GeneralMenu} from "../../../../../models/general-menu.model";
@@ -38,7 +38,10 @@ import {SelectedMenuWithDay} from "../../../../../interfaces/selected-dishes-wit
 export class MenuAdministrationComponent implements OnInit {
 
   @Input() set generalMenu(menu: GeneralMenu | null) {
-    if (!isNil(menu)) this.generalMenu$.next(menu)
+    if (!isNil(menu)) {
+      this.generalMenu$.next(menu);
+      this.isDialogShow = false;
+    }
   }
 
   @Input() set firstCourses(dishes: Dish[] | null) {
@@ -57,6 +60,10 @@ export class MenuAdministrationComponent implements OnInit {
     if (!isNil(dishes)) this.salads$.next(dishes)
   }
 
+  @Input() set serviceError(error: {error: boolean, timestamp: number} | null) {
+    if (!isNil(error)) this.errorSubject$.next(error)
+  }
+
   @Output() updateMenu: EventEmitter<GeneralMenu> = new EventEmitter<GeneralMenu>();
   @Output() changeDishesWithDay: EventEmitter<SelectedMenuWithDay> = new EventEmitter<SelectedMenuWithDay>();
 
@@ -71,7 +78,7 @@ export class MenuAdministrationComponent implements OnInit {
   public modalHeaderName$!: Observable<string>;
   public selectedOptions$!: Observable<Dish[]>;
 
-  public generalMenu$: ReplaySubject<GeneralMenu | null> = new ReplaySubject<GeneralMenu | null>(1);
+  public generalMenu$: ReplaySubject<GeneralMenu> = new ReplaySubject<GeneralMenu>(1);
   public firstCourses$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
   public secondCourses$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
   public sideDishes$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
@@ -86,9 +93,14 @@ export class MenuAdministrationComponent implements OnInit {
   private selectedDishesWithDay$: Observable<SelectedMenuWithDay>;
 
   public isDialogShow: boolean = false;
+  public isLoading$: Observable<boolean>;
+  private startLoading$: Subject<void> = new Subject<void>();
+  private errorSubject$: ReplaySubject<{error: boolean, timestamp: number}> = new ReplaySubject<{error: boolean, timestamp: number}>(1);
 
   constructor(private weekService: WeekService) {
   }
+
+  swdded$: Subject<void> = new Subject<void>();
 
   ngOnInit(): void {
     const formattedDate: string = new Date().toLocaleDateString('ru', {
@@ -120,6 +132,14 @@ export class MenuAdministrationComponent implements OnInit {
         this._currentWeekIndex = 3;
         break;
     }
+
+    this.isLoading$ = merge(
+      this.generalMenu$.pipe(map(_ => false)),
+      this.startLoading$.pipe(map(_ => true)),
+      this.errorSubject$.pipe(map(_ => false))
+    ).pipe(
+      shareReplay({bufferSize: 1, refCount: true})
+    )
 
     this.selectedDishesWithDay$ = combineLatest([this.currentWeek$, this.selectedDay$, this.selectedDishes$, this.currentDishType$]).pipe(
       filter(([week, day, dishes, dishType]) => !isNil(week) && !isNil(day) && !isNil(dishes) && !isNil(dishType)),
@@ -193,7 +213,7 @@ export class MenuAdministrationComponent implements OnInit {
     ).subscribe(([menu, selectedMenuWithDay]) => {
       this.updateMenu.emit(menu);
       this.changeDishesWithDay.emit(selectedMenuWithDay);
-      this.isDialogShow = false;
+      this.startLoading$.next();
       this.resetData();
     });
   }

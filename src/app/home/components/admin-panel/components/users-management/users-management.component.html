@@ -144,8 +144,12 @@
     </div>
 
     <div class="modal-service">
-      <p-button label="Отмена" severity="secondary" text="true" (click)="isDialogShow = false"/>
-      <button pButton (click)="sendForm()" style="min-width: 110px; justify-content: center">
+      <button pButton label="Отмена"
+              severity="secondary"
+              text="true"
+              [disabled]="isLoading$ | async"
+              (click)="isDialogShow = false"></button>
+      <button pButton [disabled]="isLoading$ | async" (click)="sendForm()" style="min-width: 110px; justify-content: center">
         @if (isLoading$ | async) {
           <p-progressSpinner [style]="{width: '18px', height: '18px'}" strokeWidth="6"></p-progressSpinner>
         } @else {

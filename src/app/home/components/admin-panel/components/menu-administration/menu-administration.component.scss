@@ -116,6 +116,11 @@ app-menu-administration {
                     align-items: center;
                     justify-content: flex-end;
                     gap: 8px;
+
+                  .p-progress-spinner-circle {
+                    stroke: white;
+                    animation: none;
+                  }
                 }
             }
         }

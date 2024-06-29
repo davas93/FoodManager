@@ -14,6 +14,7 @@
                                [secondCourses]="secondCourses$ | async"
                                [sideDishes]="sideDishes$ | async"
                                [salads]="salads$ | async"
+                               [serviceError]="errorSubject$ | async"
                                (updateMenu)="saveGeneralMenu$.next($event)"
                                (changeDishesWithDay)="selectedDishesWithDay$.next($event)">
       </app-menu-administration>
