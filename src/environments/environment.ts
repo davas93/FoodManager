@@ -1,4 +1,4 @@
-export const APP_CONFIG = {
-  production: false,
-  environment: 'LOCAL'
-};
+import {AppGlobalConfig} from "./appConfig.model";
+
+export const AppConfig = new AppGlobalConfig({
+})

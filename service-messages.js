@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NOTIFICATION = exports.MAIN_TO_RENDERER_MESSAGES = exports.RENDERER_TO_MAIN_MESSAGES = void 0;
+var RENDERER_TO_MAIN_MESSAGES;
+(function (RENDERER_TO_MAIN_MESSAGES) {
+    RENDERER_TO_MAIN_MESSAGES["OPEN_FILE_SAVE_DIALOG"] = "OpenFileSaveDialog";
+})(RENDERER_TO_MAIN_MESSAGES || (exports.RENDERER_TO_MAIN_MESSAGES = RENDERER_TO_MAIN_MESSAGES = {}));
+var MAIN_TO_RENDERER_MESSAGES;
+(function (MAIN_TO_RENDERER_MESSAGES) {
+    MAIN_TO_RENDERER_MESSAGES["FILE_SAVE_DIALOG_RSLT"] = "FileSaveDialogRslt";
+})(MAIN_TO_RENDERER_MESSAGES || (exports.MAIN_TO_RENDERER_MESSAGES = MAIN_TO_RENDERER_MESSAGES = {}));
+var NOTIFICATION;
+(function (NOTIFICATION) {
+    NOTIFICATION["SHOW"] = "Show";
+})(NOTIFICATION || (exports.NOTIFICATION = NOTIFICATION = {}));
+//# sourceMappingURL=service-messages.js.map

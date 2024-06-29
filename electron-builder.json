@@ -1,21 +1,33 @@
 {
-    "asar": true,
+    "productName": "Food Manager",
+    "appId": "Food Manager",
     "directories": {
         "output": "release/"
     },
     "files": [
         "**/*",
         "!**/*.ts",
-        "!*.map",
+        "!LICENSE.md",
         "!package.json",
         "!package-lock.json",
-        {
-            "from": "../dist",
-            "filter": [
-                "**/*"
-            ]
-        }
+        "!angular.json",
+        "!_config.yml",
+        "!karma.conf.js",
+        "!tsconfig.json",
+        "!tslint.json",
+        "!*.code-workspace/*",
+        "!.angular/*",
+        "!.idea/*",
+        "!src/*",
+        "!e2e/*",
+        "!hooks/*",
+        "!release/*",
+        "!release-staging/*",
+        "!release-testing/*"
     ],
+    "win": {
+        "icon": "dist/assets/icons/favicon.png"
+    },
     "mac": {
         "icon": "dist/assets/icons",
         "target": [
@@ -27,5 +39,12 @@
         "target": [
             "AppImage"
         ]
-    }
+    },
+    "publish": [
+        {
+            "provider": "s3",
+            "bucket": "food-manager-update",
+            "endpoint": "https://storage.yandexcloud.net"
+        }
+    ]
 }

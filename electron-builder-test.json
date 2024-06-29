@@ -1,0 +1,50 @@
+{
+    "productName": "Food Manager Testing",
+    "appId": "Food Manager Testing",
+    "directories": {
+        "output": "release-testing/"
+    },
+    "files": [
+        "**/*",
+        "!**/*.ts",
+        "!LICENSE.md",
+        "!package.json",
+        "!package-lock.json",
+        "!angular.json",
+        "!_config.yml",
+        "!karma.conf.js",
+        "!tsconfig.json",
+        "!tslint.json",
+        "!*.code-workspace/*",
+        "!.angular/*",
+        "!.idea/*",
+        "!src/*",
+        "!e2e/*",
+        "!hooks/*",
+        "!release/*",
+        "!release-staging/*",
+        "!release-testing/*"
+    ],
+    "win": {
+        "icon": "dist/assets/icons/favicon.png"
+    },
+    "mac": {
+        "icon": "dist/assets/icons",
+        "target": [
+            "dmg"
+        ]
+    },
+    "linux": {
+        "icon": "dist/assets/icons",
+        "target": [
+            "AppImage"
+        ]
+    },
+    "publish": [
+        {
+            "provider": "s3",
+            "bucket": "dba-testing-update",
+            "endpoint": "https://storage.yandexcloud.net"
+        }
+    ]
+}
