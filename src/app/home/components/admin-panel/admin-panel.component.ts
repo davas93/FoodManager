@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {
   BehaviorSubject,
-  catchError, combineLatest,
+  catchError,
   filter,
   map,
   merge,
@@ -27,7 +27,6 @@ import firebase from "firebase/compat";
 import FirebaseError = firebase.FirebaseError;
 import {ServiceHelper} from "../../../helpers/service.helper";
 import {SelectedMenuWithDay} from "../../../interfaces/selected-dishes-with-day.interface";
-import {take} from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
@@ -39,7 +38,6 @@ import {take} from "rxjs/operators";
 export class AdminPanelComponent implements OnInit {
   public isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  private userMenuData$!: Observable<EmployeeMenu | null>;
   public currentUserMenu$!: Observable<EmployeeMenu | null>;
   public generalMenu$!: Observable<GeneralMenu | null>;
   public firstCourses$!: Observable<Dish[]>;
@@ -47,7 +45,6 @@ export class AdminPanelComponent implements OnInit {
   public sideDishes$!: Observable<Dish[]>;
   public salads$!: Observable<Dish[]>;
   public employees$!: Observable<Employee[]>;
-  private userMenus$!: Observable<EmployeeMenu[]>;
 
   //Personal menu management
   public saveUserMenu$: Subject<EmployeeMenu> = new Subject<EmployeeMenu>();
@@ -77,11 +74,10 @@ export class AdminPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userMenus$ = this.fbService.getItems<EmployeeMenu>('menus');
 
     this.employees$ = merge(
-      this.fbService.getItems<Employee>('employees'),
-      this.refreshEmployees$.pipe(switchMap(_ => this.fbService.getItems<Employee>('employees')))
+      this.employeesData$,
+      this.refreshEmployees$.pipe(switchMap(_ => this.employeesData$))
     ).pipe(
       catchError(err => {
         this.messageService.add({severity: 'error', detail: 'При списка сотрудников произошла ошибка'});
@@ -89,35 +85,29 @@ export class AdminPanelComponent implements OnInit {
       }),
     );
 
-    this.userMenuData$ = this.authService.userUid.pipe(
-      switchMap(uid => {
-        if (!isNil(uid)) {
-          return this.fbService.getItemById<EmployeeMenu>('menus', uid)
-        } else return of(null)
-      }),
-      catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'При получении меню сотрудника произошла ошибка'});
-        return throwError(err);
-      }),
-    );
-
     this.currentUserMenu$ = merge(
       this.userMenuData$,
       this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
+    ).pipe(
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При получении меню сотрудника произошла ошибка'});
+        return throwError(err);
+      })
     );
 
     this.generalMenu$ = merge(
-      this.fbService.getItemById<GeneralMenu>('generalMenu', 1),
-      this.refreshGeneralMenu$.pipe(switchMap(_ => this.fbService.getItemById<GeneralMenu>('generalMenu', 1)))
-    ).pipe(catchError(err => {
-      console.log(err);
-      return throwError(err);
-    }));
+      this.generalMenuData$,
+      this.refreshGeneralMenu$.pipe(switchMap(_ => this.generalMenuData$)
+      ).pipe(catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При получении основного меню произошла ошибка'});
+        return throwError(err);
+      }))
+    );
 
     this.firstCourses$ = this.fbService.getItems<Dishes>('firstCourses').pipe(
       map(dishes => dishes[0].dishes),
       catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'Не удалосб получить список первых блюд'});
+        this.messageService.add({severity: 'error', detail: 'Не удалось получить список первых блюд'});
         return throwError(err);
       })
     );
@@ -165,7 +155,8 @@ export class AdminPanelComponent implements OnInit {
 
     this.saveGeneralMenu$.pipe(
       switchMap(menu => this.fbService.updateItem<GeneralMenu>('generalMenu', 1, menu)),
-      switchMap(_ => combineLatest([this.userMenus$, this.selectedDishesWithDay$.pipe(take(1))])),
+      switchMap(_ => this.userMenus$),
+      withLatestFrom(this.selectedDishesWithDay$),
       switchMap(([menus, selectedDishes]) => {
         const filterCourses = selectedDishes.dishes.map(dish => dish.name);
 
@@ -275,5 +266,27 @@ export class AdminPanelComponent implements OnInit {
       this.messageService.add({severity: 'success', detail: 'Данные пользователя успешно сохранены'});
       this.refreshEmployees$.next();
     });
+  }
+
+  private get userMenus$(): Observable<EmployeeMenu[]> {
+    return this.fbService.getItems<EmployeeMenu>('menus');
+  }
+
+  private get userMenuData$(): Observable<EmployeeMenu> {
+    return this.authService.userUid.pipe(
+      switchMap(uid => {
+        if (!isNil(uid)) {
+          return this.fbService.getItemById<EmployeeMenu>('menus', uid)
+        } else return of(null)
+      })
+    );
+  }
+
+  private get generalMenuData$(): Observable<GeneralMenu> {
+    return this.fbService.getItemById<GeneralMenu>('generalMenu', 1);
+  }
+
+  private get employeesData$(): Observable<Employee[]> {
+    return this.fbService.getItems<Employee>('employees');
   }
 }
