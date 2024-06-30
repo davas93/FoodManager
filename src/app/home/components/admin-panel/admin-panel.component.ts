@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -8,13 +8,13 @@ import {
   Observable,
   of,
   ReplaySubject,
-  retry,
+  retry, share,
   Subject,
   switchMap,
   throwError, withLatestFrom
 } from "rxjs";
 import {EmployeeMenu} from "../../../models/employee-menu.model";
-import {isNil} from "lodash-es";
+import {isEqual, isNil} from "lodash-es";
 import {AuthService} from "../../../core/services/auth.service";
 import {FirebaseDataService} from "../../../core/services/firebase-data.service";
 import {ConfirmationService, MessageService} from "primeng/api";
@@ -27,6 +27,8 @@ import firebase from "firebase/compat";
 import FirebaseError = firebase.FirebaseError;
 import {ServiceHelper} from "../../../helpers/service.helper";
 import {SelectedMenuWithDay} from "../../../interfaces/selected-dishes-with-day.interface";
+import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
+import {PersonalMenuComponent} from "./components/personal-menu/personal-menu.component";
 
 @UntilDestroy()
 @Component({
@@ -36,6 +38,8 @@ import {SelectedMenuWithDay} from "../../../interfaces/selected-dishes-with-day.
   encapsulation: ViewEncapsulation.None
 })
 export class AdminPanelComponent implements OnInit {
+  @ViewChild('selectedUserMenuTemplate') modalTemplate: TemplateRef<any>;
+
   public isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   public currentUserMenu$!: Observable<EmployeeMenu | null>;
@@ -60,17 +64,23 @@ export class AdminPanelComponent implements OnInit {
   public refreshEmployees$: Subject<void> = new Subject<void>();
   public removeUser$: Subject<Employee> = new Subject<Employee>();
   public editUser$: Subject<Employee> = new Subject<Employee>();
+  public editSelectedUserMenu$: Subject<string> = new Subject<string>();
 
+  //oth
   public errorSubject$: ReplaySubject<{ error: boolean, timestamp: number }> = new ReplaySubject<{
     error: boolean,
     timestamp: number
   }>(1);
 
+  public ref: DynamicDialogRef;
+  public _selectedTabIndex: number = 0;
+
 
   constructor(private authService: AuthService,
               private fbService: FirebaseDataService,
               private messageService: MessageService,
-              private confirmationService: ConfirmationService) {
+              private confirmationService: ConfirmationService,
+              private dialogService: DialogService,) {
   }
 
   ngOnInit(): void {
@@ -92,7 +102,8 @@ export class AdminPanelComponent implements OnInit {
       catchError(err => {
         this.messageService.add({severity: 'error', detail: 'При получении меню сотрудника произошла ошибка'});
         return throwError(err);
-      })
+      }),
+      share()
     );
 
     this.generalMenu$ = merge(
@@ -266,6 +277,40 @@ export class AdminPanelComponent implements OnInit {
       this.messageService.add({severity: 'success', detail: 'Данные пользователя успешно сохранены'});
       this.refreshEmployees$.next();
     });
+
+    this.editSelectedUserMenu$.pipe(
+      withLatestFrom(this.currentUserMenu$),
+      filter(([id, currentUserMenu]) => {
+        if (isEqual(id, currentUserMenu.id)) {
+          this._selectedTabIndex = 0;
+          return false
+        }
+
+        return true;
+      }),
+      switchMap(([id, _]) => this.fbService.getItemById<EmployeeMenu>('menus', id)),
+      withLatestFrom(this.generalMenu$),
+      switchMap(([menu, generalMenu]) => {
+        this.ref = this.dialogService.open(PersonalMenuComponent, {
+          width: '95%',
+          height: '95%',
+          data: {
+            userMenuData: menu,
+            generalMenu: generalMenu
+          }
+        })
+
+        return this.ref.onClose as Observable<EmployeeMenu>;
+      }),
+      filter(menu => !isNil(menu)),
+      switchMap(menu => this.fbService.updateItem<EmployeeMenu>('menus', menu.id, menu)),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
+        return throwError(err);
+      }),
+      retry(),
+      untilDestroyed(this)
+    ).subscribe(_ => this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'}))
   }
 
   private get userMenus$(): Observable<EmployeeMenu[]> {

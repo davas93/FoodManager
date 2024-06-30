@@ -7,7 +7,7 @@ import {AuthComponent} from "./auth/auth.component";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {SharedModule} from "./shared/shared.module";
 import {HttpClientModule} from "@angular/common/http";
-import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {DialogService, DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 
 @NgModule({
   declarations: [
@@ -21,7 +21,12 @@ import {ConfirmDialogModule} from "primeng/confirmdialog";
     HttpClientModule,
     SharedModule,
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [
+    MessageService,
+    ConfirmationService,
+    DialogService,
+    DynamicDialogConfig,
+    DynamicDialogRef],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -5,11 +5,12 @@ import {GeneralMenu} from "../../../../../models/general-menu.model";
 import {WeekService} from "../../../../../core/services/week.service";
 import {WEEKS} from "../../../../../consts/weeks-vocabulary";
 import {cloneDeep, isEqual, isNil} from "lodash-es";
+import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 
 @Component({
   selector: 'app-personal-menu',
   templateUrl: './personal-menu.component.html',
-  styleUrl: './personal-menu.component.scss'
+  styleUrl: './personal-menu.component.scss',
 })
 export class PersonalMenuComponent implements OnInit {
   @Input() set userMenuData(menu: EmployeeMenu | null) {
@@ -35,7 +36,12 @@ export class PersonalMenuComponent implements OnInit {
   public currentWeek!: string;
 
 
-  constructor(private weekService: WeekService) {
+  constructor(private weekService: WeekService, public config: DynamicDialogConfig, public ref: DynamicDialogRef) {
+    if (config.data) {
+      this.currentUserMenu$.next(config.data.userMenuData);
+      this._cachedUserMenu = cloneDeep(config.data.userMenuData);
+      this.generalMenu$.next(config.data.generalMenu);
+    }
   }
 
   ngOnInit(): void {
@@ -53,5 +59,14 @@ export class PersonalMenuComponent implements OnInit {
 
   public getBtnState(changedMenu: EmployeeMenu, cachedMenu: EmployeeMenu | null): boolean {
     return isEqual(changedMenu, cachedMenu);
+  }
+
+  public onSave(menu: EmployeeMenu) {
+    this.saveMenuData.emit(menu);
+    this.ref.close(menu);
+  }
+
+  public onCancel() {
+    this.ref.close();
   }
 }

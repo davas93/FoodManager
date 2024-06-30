@@ -14,7 +14,7 @@ import {
   WithFieldValue,
   writeBatch
 } from 'firebase/firestore/lite';
-import {from, Observable} from "rxjs";
+import {from, Observable, of, switchMap} from "rxjs";
 import firebase from "firebase/compat";
 import DocumentReference = firebase.firestore.DocumentReference;
 import {isEqual} from "lodash-es";
@@ -102,7 +102,7 @@ export class FirebaseDataService {
     }));
   }
 
-  deleteItem(collectionPath: string, id: number | string): Observable<void> {
+  deleteItem(collectionPath: string, id: number | string): Observable<string | number> {
     const collectionRef = collection(this.db, collectionPath);
     const q = query(collectionRef, where('id', '==', id));
 
@@ -113,6 +113,6 @@ export class FirebaseDataService {
       } else {
         throw new Error('Document not found');
       }
-    }));
+    })).pipe(switchMap(_ => of(id)));
   }
 }

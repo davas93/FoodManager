@@ -1,4 +1,4 @@
-<p-tabView [activeIndex]="1">
+<p-tabView [(activeIndex)]="_selectedTabIndex">
   <p-tabPanel header="Персональное меню">
     <div class="tab-content">
       <app-personal-menu [userMenuData]="currentUserMenu$ | async"
@@ -26,7 +26,8 @@
                             [serviceError]="errorSubject$ | async"
                             (addUser)="addNewUser$.next($event)"
                             (removeUser)="removeUser$.next($event)"
-                            (editUser)="editUser$.next($event)">
+                            (editUser)="editUser$.next($event)"
+                            (openUserMenu)="editSelectedUserMenu$.next($event)">
       </app-users-management>
     </div>
   </p-tabPanel>

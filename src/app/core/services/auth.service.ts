@@ -81,7 +81,7 @@ export class AuthService {
     )
   }
 
-    deleteUser(employee: Employee): Observable<void> {
+    deleteUser(employee: Employee): Observable<string | number> {
         return from(window.electron.deleteUser(employee.id)).pipe(
             switchMap(_ =>
                 this.firestoreDataService.deleteItem('employees', employee.id).pipe(

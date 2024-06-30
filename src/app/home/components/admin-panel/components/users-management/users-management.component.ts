@@ -34,6 +34,7 @@ export class UsersManagementComponent {
   @Output() addUser: EventEmitter<UserFormDto> = new EventEmitter<UserFormDto>();
   @Output() removeUser: EventEmitter<Employee> = new EventEmitter<Employee>();
   @Output() editUser: EventEmitter<Employee> = new EventEmitter<Employee>();
+  @Output() openUserMenu: EventEmitter<string> = new EventEmitter<string>();
 
   public readonly employeeStatuses: { label: string, value: string }[] = [];
   public readonly roles = ROLES;
@@ -110,16 +111,8 @@ export class UsersManagementComponent {
     this.addUser.emit(this.userFormDto.value as UserFormDto);
   }
 
-  public deleteUser(employee: Employee): void {
-    this.removeUser.emit(employee);
-  }
-
   public resetForm(): void {
     this.userFormDto.reset()
-  }
-
-  userEdit(employee: Employee) {
-    this.editUser.emit(employee);
   }
 }
 

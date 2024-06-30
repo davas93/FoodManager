@@ -43,7 +43,7 @@
                 <ng-template pTemplate="input">
                   <input pInputText placeholder="Введите ФИО сотрудника"
                          [(ngModel)]="employee.fullName"
-                         (change)="userEdit(employee)">
+                         (change)="editUser.emit(employee)">
                 </ng-template>
                 <ng-template pTemplate="output">
                   <span>
@@ -60,7 +60,7 @@
                               [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
                               [options]="roles"
                               [(ngModel)]="employee.role"
-                              (onChange)="userEdit(employee)">
+                              (onChange)="editUser.emit(employee)">
                   </p-dropdown>
                 </ng-template>
                 <ng-template pTemplate="output">
@@ -80,7 +80,7 @@
                               [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
                               [options]="employeeStatuses"
                               [(ngModel)]="employee.status"
-                              (onChange)="userEdit(employee)">
+                              (onChange)="editUser.emit(employee)">
                   </p-dropdown>
                 </ng-template>
                 <ng-template pTemplate="output">
@@ -91,13 +91,24 @@
               </p-cellEditor>
             </td>
             <td style="max-width: 50px" class="sticky-right">
+              @if (employee.role !== "Dining") {
+                <button pButton icon="fi fi-rr-restaurant"
+                        severity="secondary"
+                        size="large"
+                        style="width: 42px; height: 42px"
+                        [rounded]="true"
+                        [text]="true"
+                        (click)="openUserMenu.emit(employee.id)">
+                </button>
+              }
+
               <button pButton icon="fi fi-rr-trash"
-                      severity="secondary"
+                      severity="danger"
                       size="large"
                       style="width: 42px; height: 42px"
                       [rounded]="true"
                       [text]="true"
-                      (click)="deleteUser(employee)">
+                      (click)="removeUser.emit(employee)">
               </button>
             </td>
           </tr>
