@@ -15,6 +15,13 @@
       <small>{{ getErrorMessage(loginData.controls.password) }}</small>
     </div>
 
-    <button pButton (click)="loginBtnClick$.next()">Войти</button>
+    <button pButton [disabled]="isLoading$ | async"
+            (click)="loginBtnClick$.next()">
+      @if (isLoading$ | async) {
+        <p-progressSpinner [style]="{width: '18px', height: '18px'}" strokeWidth="6"></p-progressSpinner>
+      } @else {
+        Войти
+      }
+    </button>
   </div>
 </div>

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
 import {LoginData} from "../models/login-data.model";
-import {catchError, filter, of, retry, Subject, switchMap, throwError} from "rxjs";
+import {BehaviorSubject, catchError, filter, of, retry, Subject, switchMap, throwError} from "rxjs";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {AuthService} from "../core/services/auth.service";
 import {Router} from "@angular/router";
@@ -22,6 +22,7 @@ export class AuthComponent implements OnInit {
   })
 
   public loginBtnClick$: Subject<void> = new Subject<void>();
+  public isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private authService: AuthService, private router: Router, private messageService: MessageService) {
   }
@@ -31,17 +32,21 @@ export class AuthComponent implements OnInit {
       filter(_ => this.loginData.valid),
       switchMap(_ => {
         const loginData: LoginData = this.loginData.value as LoginData;
+        this.isLoading$.next(true);
 
         loginData.serviceNumber = loginData.serviceNumber.concat('@fondital.ru')
         return this.authService.signIn(loginData);
       }),
       catchError(error => {
         this.messageService.add({severity: 'error', detail: ServiceHelper.translateError(error.code)});
+        this.isLoading$.next(false);
         return throwError(error);
       }),
       retry(),
       untilDestroyed(this)
     ).subscribe(user => {
+      this.isLoading$.next(false);
+
       if (user) {
         switch (user.role) {
           case "User":
