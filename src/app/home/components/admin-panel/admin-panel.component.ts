@@ -305,7 +305,7 @@ export class AdminPanelComponent implements OnInit {
       filter(menu => !isNil(menu)),
       switchMap(menu => this.fbService.updateItem<EmployeeMenu>('menus', menu.id, menu)),
       catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
+        this.messageService.add({severity: 'error', detail: err});
         return throwError(err);
       }),
       retry(),

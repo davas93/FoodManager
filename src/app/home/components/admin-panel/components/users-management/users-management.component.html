@@ -1,25 +1,24 @@
 <div class="users-management-container">
   @if (employees$ | async; as employees) {
+    <div class="table-top-service">
+      <h2>Список сотрудников</h2>
+
+      <p-iconField iconPosition="left" class="ml-auto">
+        <p-inputIcon>
+          <i class="fi fi-rr-search"></i>
+        </p-inputIcon>
+        <input #search
+               pInputText
+               type="text"
+               placeholder="Поиск"
+               (input)="dt2.filterGlobal(search.value, 'contains')"/>
+      </p-iconField>
+    </div>
+
     <div class="table-container">
       <p-table #dt2
                [value]="employees"
                [globalFilterFields]="['fullName', 'role', 'username']">
-        <ng-template pTemplate="caption">
-          <div class="table-top-service">
-            <h2>Список сотрудников</h2>
-
-            <p-iconField iconPosition="left" class="ml-auto">
-              <p-inputIcon>
-                <i class="fi fi-rr-search"></i>
-              </p-inputIcon>
-              <input #search
-                     pInputText
-                     type="text"
-                     placeholder="Поиск"
-                     (input)="dt2.filterGlobal(search.value, 'contains')"/>
-            </p-iconField>
-          </div>
-        </ng-template>
         <ng-template pTemplate="header">
           <tr>
             <th style="width:50px" class="sticky-left">№ п/п</th>
