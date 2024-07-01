@@ -53,8 +53,10 @@ export class DiningInfoComponent implements OnInit{
       withLatestFrom(this.employees$),
       map(([menus, employees]) => {
         const filteredMenus: EmployeeMenu[] = menus
-          .filter(menu => employees
-            .find(employee => employee.id === menu.id).status as EmployeeStatus !== ('Vacation' || 'Mission'));
+          .filter(menu => {
+            const employee = employees.find(employee => employee.id === menu.id);
+            return employee && employee.status !== 'Vacation' && employee.status !== 'Mission';
+          });
 
         return filteredMenus;
       }),
