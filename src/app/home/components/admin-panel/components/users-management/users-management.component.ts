@@ -20,6 +20,8 @@ export class UsersManagementComponent {
 
   @Input() set employees(employees: Employee[] | null) {
     if (!isNil(employees)) {
+      employees.sort((a, b) => a.fullName.localeCompare(b.fullName));
+
       this.employees$.next(employees);
       this.isDialogShow = false;
     }
