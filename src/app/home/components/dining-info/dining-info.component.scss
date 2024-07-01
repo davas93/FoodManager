@@ -1,0 +1,108 @@
+@use "themes/mytheme/variables" as var;
+
+app-dining-info {
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 32px;
+    gap: 24px;
+
+    .table-top-service {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+    }
+
+    .table-container {
+      flex: 1;
+      height: 1%;
+
+      .p-datatable {
+        height: 100%;
+
+        .p-datatable-wrapper {
+          height: 100%;
+
+          thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+          }
+
+          td {
+            max-width: 50px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            &:not(.sticky-left) {
+              min-width: 250px;
+            }
+          }
+
+          tbody {
+            td {
+              background-color: var.$tableBodyRowBg;
+            }
+          }
+
+          tfoot {
+            position: sticky;
+            bottom: 0;
+            z-index: 2;
+
+            .course-names {
+              .cell-wrapper {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                .course-name {
+                  flex: 1;
+                  overflow: hidden;
+                  white-space: nowrap;
+                  text-overflow: ellipsis;
+                }
+              }
+            }
+
+            td {
+              border-width: 1px 0 0 1px;
+
+              &:last-child {
+                border-width: 1px 1px 0 1px;
+              }
+
+              &.total {
+                border-width: 1px;
+                text-align: end;
+              }
+
+              &.group-cell {
+                border-width: 1px 0 0 1px;
+              }
+            }
+
+            .text-right {
+              text-align: right;
+            }
+          }
+
+          .sticky-left {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            min-width: 100px;
+          }
+        }
+      }
+    }
+  }
+}

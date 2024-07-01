@@ -1,1 +1,113 @@
-<p>dining-info works!</p>
+<div class="container">
+  @if (isWeekend$ | async) {
+    <p>Сегодня выходной, отдыхайте!!!</p>
+  }
+
+  @if (!(isWeekend$ | async) && employeeMenus$ | async; as menus) {
+    <div class="table-top-service">
+      <h2>{{ currentDateString }}</h2>
+
+      <p-iconField iconPosition="left" class="ml-auto">
+        <p-inputIcon>
+          <i class="fi fi-rr-search"></i>
+        </p-inputIcon>
+        <input #search
+               pInputText
+               type="text"
+               placeholder="Поиск"
+               (input)="dt.filterGlobal(search.value, 'contains')"/>
+      </p-iconField>
+    </div>
+
+    <div class="table-container">
+      <p-table #dt
+               styleClass="p-datatable-gridlines"
+               [value]="menus"
+               [globalFilterFields]="['employeeName']">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="sticky-left">№ п/п</th>
+            <th>ФИО</th>
+            <th>Первое</th>
+            <th>Второе</th>
+            <th>Гарнир</th>
+            <th>Салат</th>
+          </tr>
+        </ng-template>
+        <ng-template let-userMenu pTemplate="body" let-rowIndex="rowIndex">
+          <tr>
+            <td class="sticky-left">{{ rowIndex + 1 }}</td>
+            <td [title]="userMenu.employeeName">
+              {{ userMenu.employeeName }}
+            </td>
+            <td [title]="userMenu.weeks[_currentWeekIndex].days[_currentDayIndex].meals.firstCourse">
+              {{ userMenu.weeks[_currentWeekIndex].days[_currentDayIndex].meals.firstCourse || "Нет" }}
+            </td>
+            <td [title]="userMenu.weeks[_currentWeekIndex].days[_currentDayIndex].meals.secondCourse">
+              {{ userMenu.weeks[_currentWeekIndex].days[_currentDayIndex].meals.secondCourse || "Нет" }}
+            </td>
+            <td [title]="userMenu.weeks[_currentWeekIndex].days[_currentDayIndex].meals.sideDish">
+              {{ userMenu.weeks[_currentWeekIndex].days[_currentDayIndex].meals.sideDish || "Нет" }}
+            </td>
+            <td [title]="userMenu.weeks[_currentWeekIndex].days[_currentDayIndex].meals.salad">
+              {{ userMenu.weeks[_currentWeekIndex].days[_currentDayIndex].meals.salad || "Нет" }}
+            </td>
+          </tr>
+        </ng-template>
+        @if (mealCounts$ | async; as total) {
+          <ng-template pTemplate="footer">
+            <tr>
+              <td colspan="2" [attr.rowspan]="getMaxFooterRows(total).length + 1" class="group-cell">Блюда и
+                количество
+              </td>
+            </tr>
+            @for (row of getMaxFooterRows(total); track row; let i = $index) {
+              <tr class="course-names">
+                <td [title]="Object.keys(total.firstCourse)[i + 1] || ''">
+                  <div class="cell-wrapper">
+                    <span class="course-name">{{ Object.keys(total.firstCourse)[i + 1] }}</span>
+                    <span class="course-total">{{ Object.values(total.firstCourse)[i + 1] }}</span>
+                  </div>
+                </td>
+                <td [title]="Object.keys(total.secondCourse)[i + 1] || ''">
+                  <div class="cell-wrapper">
+                    <span class="course-name">{{ Object.keys(total.secondCourse)[i + 1] }}</span>
+                    <span class="course-total">{{ Object.values(total.secondCourse)[i + 1] }}</span>
+                  </div>
+                </td>
+                <td [title]="Object.keys(total.sideDish)[i + 1] || ''">
+                  <div class="cell-wrapper">
+                    <span class="course-name">{{ Object.keys(total.sideDish)[i + 1] }}</span>
+                    <span class="course-total">{{ Object.values(total.sideDish)[i + 1] }}</span>
+                  </div>
+                </td>
+                <td [title]="Object.keys(total.salad)[i + 1] || ''">
+                  <div class="cell-wrapper">
+                    <span class="course-name">{{ Object.keys(total.salad)[i + 1] }}</span>
+                    <span class="course-total">{{ Object.values(total.salad)[i + 1] }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+            <tr class="">
+              <td colspan="2">Всего</td>
+              <td class="text-right">{{ total.firstCourse.total }}</td>
+              <td class="text-right">{{ total.secondCourse.total }}</td>
+              <td class="text-right">{{ total.sideDish.total }}</td>
+              <td class="text-right">{{ total.salad.total }}</td>
+            </tr>
+            <tr>
+              <td colspan="6" class="total text-right">
+                Общее количество комплексных обедов: {{ total.complexMeals.total }}
+              </td>
+            </tr>
+          </ng-template>
+        }
+      </p-table>
+    </div>
+  }
+
+  @if (!(employeeMenus$ | async)) {
+    <app-loading-screen></app-loading-screen>
+  }
+</div>
