@@ -50,7 +50,7 @@ export class AuthService {
   }
 
   signIn(loginData: LoginData): Observable<Employee | null> {
-    return from(signInWithEmailAndPassword(this.auth, loginData.email, loginData.password)).pipe(
+    return from(signInWithEmailAndPassword(this.auth, loginData.serviceNumber, loginData.password)).pipe(
       switchMap(user => this.firestoreDataService.getItemById<Employee>('employees', user.user.uid))
     );
   }

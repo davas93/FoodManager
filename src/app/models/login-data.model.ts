@@ -1,7 +1,7 @@
 import {isNil} from "lodash-es";
 
 export class LoginData {
-  email: string = "";
+  serviceNumber: string = "";
   password: string = ""
 
   constructor(input?: Partial<LoginData>) {

@@ -1,10 +1,13 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
 import {LoginData} from "../models/login-data.model";
-import {catchError, filter, of, Subject, switchMap} from "rxjs";
+import {catchError, filter, of, retry, Subject, switchMap, throwError} from "rxjs";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {AuthService} from "../core/services/auth.service";
 import {Router} from "@angular/router";
+import {MessageService} from "primeng/api";
+import {ServiceHelper} from "../helpers/service.helper";
+import {noWhitespaceValidator} from "../form-validators/form-validators";
 
 @UntilDestroy()
 @Component({
@@ -14,23 +17,29 @@ import {Router} from "@angular/router";
 })
 export class AuthComponent implements OnInit {
   public loginData: FormGroup<LoginFormData> = new FormGroup<LoginFormData>(<LoginFormData>{
-    email: new FormControl<string>('00001@fondital.ru', Validators.required),
-    password: new FormControl<string>('000000', Validators.required)
+    serviceNumber: new FormControl<string>('00001', noWhitespaceValidator),
+    password: new FormControl<string>('000000', [noWhitespaceValidator, Validators.minLength(6)])
   })
 
   public loginBtnClick$: Subject<void> = new Subject<void>();
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService, private router: Router, private messageService: MessageService) {
   }
 
   ngOnInit(): void {
     this.loginBtnClick$.pipe(
       filter(_ => this.loginData.valid),
-      switchMap(_ => this.authService.signIn(this.loginData.value as LoginData).pipe(
-          catchError(error => {
-            console.error('Login error:', error);
-            return of(null);
-          }))),
+      switchMap(_ => {
+        const loginData: LoginData = this.loginData.value as LoginData;
+
+        loginData.serviceNumber = loginData.serviceNumber.concat('@fondital.ru')
+        return this.authService.signIn(loginData);
+      }),
+      catchError(error => {
+        this.messageService.add({severity: 'error', detail: ServiceHelper.translateError(error.code)});
+        return throwError(error);
+      }),
+      retry(),
       untilDestroyed(this)
     ).subscribe(user => {
       if (user) {
@@ -49,6 +58,25 @@ export class AuthComponent implements OnInit {
         }
       }
     });
+  }
+
+  public getErrorMessage(control: AbstractControl): string {
+    const errors = control.errors;
+
+    if (errors && control.dirty) {
+      switch (true) {
+        case !!errors['whitespace']:
+          return 'Поле обязательно для заполнения'
+
+        case !!errors['minlength']:
+          return 'Пароль должен быть не менее 6 символов';
+
+        default:
+          return ""
+      }
+    }
+
+    return ""
   }
 }
 

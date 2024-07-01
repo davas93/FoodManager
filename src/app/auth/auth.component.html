@@ -2,8 +2,19 @@
   <img src="assets/logo.svg" alt="fondital-logo" class="logo">
 
   <div class="auth-form">
-    <input type="text" placeholder="Логин (почта)" pInputText [formControl]="loginData.controls.email">
-    <input type="password" placeholder="Пароль" pInputText [formControl]="loginData.controls.password">
+    <div class="form-field-wrapper">
+      <p-inputMask mask="99999"
+                   type="text"
+                   placeholder="Табельный номер"
+                   [formControl]="loginData.controls.serviceNumber">
+      </p-inputMask>
+      <small>{{ getErrorMessage(loginData.controls.serviceNumber) }}</small>
+    </div>
+    <div class="form-field-wrapper">
+      <input type="password" placeholder="Пароль" pInputText [formControl]="loginData.controls.password">
+      <small>{{ getErrorMessage(loginData.controls.password) }}</small>
+    </div>
+
     <button pButton (click)="loginBtnClick$.next()">Войти</button>
   </div>
 </div>

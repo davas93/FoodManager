@@ -1,3 +1,5 @@
+@use "themes/mytheme/variables" as var;
+
 .auth-container {
   width: 100%;
   height: 100%;
@@ -13,13 +15,34 @@
   .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 4px;
     width: 350px;
     height: 30%;
     margin: auto 0;
 
     .p-button {
       display: inline-block;
+    }
+
+    p-inputMask {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-field-wrapper {
+      width: 100%;
+
+      input {
+        width: 100%;
+      }
+
+      small {
+        display: inline-block;
+        font-size: 10px;
+        height: 12px;
+        width: 100%;
+        color: var.$errorColor;
+      }
     }
   }
 }

@@ -4,13 +4,11 @@ import {merge, Observable, ReplaySubject, shareReplay, Subject} from "rxjs";
 import {isNil} from "lodash-es";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Roles} from "../../../../../types/roles.type";
-import {customEmailValidator, noWhitespaceValidator} from "../../../../../form-validators/form-validators";
+import {noWhitespaceValidator} from "../../../../../form-validators/form-validators";
 import {UserFormDto} from "../../../../../interfaces/user-form-dto.interface";
 import {map} from "rxjs/operators";
-import {EMPLOYEE_STATUSES} from "../../../../../consts/emoloyee-statuses";
 import {ROLES} from "../../../../../consts/roles";
 import {STATUSES} from "../../../../../consts/employee-status-vocabulary";
-import {TableEditCompleteEvent} from "primeng/table";
 
 @Component({
   selector: 'app-users-management',
