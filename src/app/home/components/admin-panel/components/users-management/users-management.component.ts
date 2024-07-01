@@ -52,7 +52,7 @@ export class UsersManagementComponent {
 
   constructor(private fb: FormBuilder) {
     this.userFormDto = this.fb.group<UserDtoFormGroup>({
-      username: new FormControl<string>('', [noWhitespaceValidator, customEmailValidator]),
+      username: new FormControl<string>('', [noWhitespaceValidator]),
       fullName: new FormControl<string>('', [noWhitespaceValidator]),
       password: new FormControl<string>('', [noWhitespaceValidator, Validators.minLength(6)]),
       role: new FormControl<Roles | null>(null, [noWhitespaceValidator]),
@@ -107,8 +107,11 @@ export class UsersManagementComponent {
       return;
     }
 
+    const sendData: UserFormDto = (this.userFormDto.value) as UserFormDto;
+    sendData.username = sendData.username.concat('@fondital.ru');
+
     this.startLoading$.next();
-    this.addUser.emit(this.userFormDto.value as UserFormDto);
+    this.addUser.emit(sendData);
   }
 
   public resetForm(): void {

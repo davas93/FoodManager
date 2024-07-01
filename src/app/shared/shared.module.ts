@@ -16,6 +16,7 @@ import {MultiSelectModule} from "primeng/multiselect";
 import {InputIconModule} from "primeng/inputicon";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {TagModule} from "primeng/tag";
+import {InputMaskModule} from "primeng/inputmask";
 
 
 
@@ -39,7 +40,8 @@ import {TagModule} from "primeng/tag";
     MultiSelectModule,
     InputIconModule,
     ConfirmDialogModule,
-    TagModule
+    TagModule,
+    InputMaskModule
   ],
   exports: [
     ReactiveFormsModule,
@@ -58,7 +60,8 @@ import {TagModule} from "primeng/tag";
     MultiSelectModule,
     InputIconModule,
     ConfirmDialogModule,
-    TagModule
+    TagModule,
+    InputMaskModule
   ]
 })
 export class SharedModule { }

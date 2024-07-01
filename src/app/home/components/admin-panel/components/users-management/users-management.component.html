@@ -23,7 +23,7 @@
         <ng-template pTemplate="header">
           <tr>
             <th style="width:50px" class="sticky-left">№ п/п</th>
-            <th style="width:20%">Имя пользователя</th>
+            <th style="width:20%">Табельный номер</th>
             <th style="width:20%">ФИО</th>
             <th style="width:20%">Роль</th>
             <th style="width:20%">Статус</th>
@@ -36,7 +36,7 @@
               {{ rowIndex + 1 }}
             </td>
             <td>
-              {{ employee.username }}
+              {{ employee.username.split('@')[0] }}
             </td>
             <td [pEditableColumn]="employee.fullName" pEditableColumnField="fullName">
               <p-cellEditor>
@@ -130,7 +130,7 @@
   <div class="modal-content">
     <div class="form">
       <div class="form-field-wrapper">
-        <input pInputText placeholder="Введите Логин для сотрудника" [formControl]="userFormDto.controls.username">
+        <p-inputMask mask="99999" placeholder="Введите табельный номер сотрудника" [formControl]="userFormDto.controls.username"></p-inputMask>
         <small>{{ getErrorMessage(userFormDto.controls.username) }}</small>
       </div>
 
