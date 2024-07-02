@@ -1,4 +1,4 @@
-import {Component, OnInit, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {
   BehaviorSubject,
   catchError,
@@ -6,15 +6,14 @@ import {
   map,
   merge,
   Observable,
-  of,
   ReplaySubject,
-  retry, share,
+  retry,
   Subject,
   switchMap,
   throwError, withLatestFrom
 } from "rxjs";
 import {EmployeeMenu} from "../../../models/employee-menu.model";
-import {isEqual, isNil} from "lodash-es";
+import {isNil} from "lodash-es";
 import {AuthService} from "../../../core/services/auth.service";
 import {FirebaseDataService} from "../../../core/services/firebase-data.service";
 import {ConfirmationService, MessageService} from "primeng/api";
@@ -38,11 +37,8 @@ import {PersonalMenuComponent} from "./components/personal-menu/personal-menu.co
   encapsulation: ViewEncapsulation.None
 })
 export class AdminPanelComponent implements OnInit {
-  @ViewChild('selectedUserMenuTemplate') modalTemplate: TemplateRef<any>;
-
   public isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  public currentUserMenu$!: Observable<EmployeeMenu | null>;
   public generalMenu$!: Observable<GeneralMenu | null>;
   public firstCourses$!: Observable<Dish[]>;
   public secondCourses$!: Observable<Dish[]>;
@@ -93,17 +89,6 @@ export class AdminPanelComponent implements OnInit {
         this.messageService.add({severity: 'error', detail: 'При списка сотрудников произошла ошибка'});
         return throwError(err);
       }),
-    );
-
-    this.currentUserMenu$ = merge(
-      this.userMenuData$,
-      this.refreshUserMenu$.pipe(switchMap(_ => this.userMenuData$))
-    ).pipe(
-      catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'При получении меню сотрудника произошла ошибка'});
-        return throwError(err);
-      }),
-      share()
     );
 
     this.generalMenu$ = merge(
@@ -279,16 +264,7 @@ export class AdminPanelComponent implements OnInit {
     });
 
     this.editSelectedUserMenu$.pipe(
-      withLatestFrom(this.currentUserMenu$),
-      filter(([id, currentUserMenu]) => {
-        if (isEqual(id, currentUserMenu.id)) {
-          this._selectedTabIndex = 0;
-          return false
-        }
-
-        return true;
-      }),
-      switchMap(([id, _]) => this.fbService.getItemById<EmployeeMenu>('menus', id)),
+      switchMap((id) => this.fbService.getItemById<EmployeeMenu>('menus', id)),
       withLatestFrom(this.generalMenu$),
       switchMap(([menu, generalMenu]) => {
         this.ref = this.dialogService.open(PersonalMenuComponent, {
@@ -315,16 +291,6 @@ export class AdminPanelComponent implements OnInit {
 
   private get userMenus$(): Observable<EmployeeMenu[]> {
     return this.fbService.getItems<EmployeeMenu>('menus');
-  }
-
-  private get userMenuData$(): Observable<EmployeeMenu> {
-    return this.authService.userUid.pipe(
-      switchMap(uid => {
-        if (!isNil(uid)) {
-          return this.fbService.getItemById<EmployeeMenu>('menus', uid)
-        } else return of(null)
-      })
-    );
   }
 
   private get generalMenuData$(): Observable<GeneralMenu> {

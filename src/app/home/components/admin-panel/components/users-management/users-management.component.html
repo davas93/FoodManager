@@ -51,23 +51,8 @@
                 </ng-template>
               </p-cellEditor>
             </td>
-            <td [pEditableColumn]="employee.role" pEditableColumnField="role">
-              <p-cellEditor>
-                <ng-template pTemplate="input">
-                  <p-dropdown placeholder="Выберите роль"
-                              appendTo="body"
-                              [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
-                              [options]="roles"
-                              [(ngModel)]="employee.role"
-                              (onChange)="editUser.emit(employee)">
-                  </p-dropdown>
-                </ng-template>
-                <ng-template pTemplate="output">
-                  <span>
-                    {{ employee.role }}
-                  </span>
-                </ng-template>
-              </p-cellEditor>
+            <td>
+              {{ employee.role }}
             </td>
             <td [pEditableColumn]="employee.status" pEditableColumnField="status">
               <p-cellEditor>
@@ -90,7 +75,7 @@
               </p-cellEditor>
             </td>
             <td style="max-width: 50px" class="sticky-right">
-              @if (employee.role !== "Dining") {
+              @if (employee.role !== "Dining" && employee.role !== "Admin" ) {
                 <button pButton icon="fi fi-rr-restaurant"
                         severity="secondary"
                         size="large"
