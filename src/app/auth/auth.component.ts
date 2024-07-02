@@ -18,8 +18,8 @@ import {Roles} from "../types/roles.type";
 })
 export class AuthComponent implements OnInit {
   public loginData: FormGroup<LoginFormData> = new FormGroup<LoginFormData>(<LoginFormData>{
-    serviceNumber: new FormControl<string>('00001', noWhitespaceValidator),
-    password: new FormControl<string>('000000', [noWhitespaceValidator, Validators.minLength(6)])
+    serviceNumber: new FormControl<string>('', noWhitespaceValidator),
+    password: new FormControl<string>('', [noWhitespaceValidator, Validators.minLength(6)])
   })
 
   public loginBtnClick$: Subject<void> = new Subject<void>();

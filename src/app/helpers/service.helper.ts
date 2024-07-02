@@ -23,7 +23,7 @@ export class ServiceHelper {
 
   public static translateError(errorCode: string): string {
     const firebaseErrorMessages: { [key: string]: string } = {
-      'auth/email-already-in-use': 'Этот адрес электронной почты уже используется.',
+      'auth/email-already-in-use': 'Пользователя с такими данными не существует',
       'auth/invalid-email': 'Пользователя с такими данными не существует',
       'auth/user-not-found': 'Пользователь с таким адресом электронной почты не найден.',
       'auth/wrong-password': 'Неверный пароль.',
