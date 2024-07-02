@@ -21,8 +21,9 @@ export class UsersManagementComponent {
   @Input() set employees(employees: Employee[] | null) {
     if (!isNil(employees)) {
       employees.sort((a, b) => a.fullName.localeCompare(b.fullName));
+      const filteredEmployees = employees.filter(employee => employee.id !== this.currentUserId)
 
-      this.employees$.next(employees);
+      this.employees$.next(filteredEmployees);
       this.isDialogShow = false;
     }
   }
@@ -48,9 +49,12 @@ export class UsersManagementComponent {
 
   public employees$: ReplaySubject<Employee[]> = new ReplaySubject<Employee[]>(1);
   public userFormDto: FormGroup<UserDtoFormGroup>;
+  public currentUserId: string;
 
 
   constructor(private fb: FormBuilder) {
+    this.currentUserId = JSON.parse(localStorage.getItem("userData")).id;
+
     this.userFormDto = this.fb.group<UserDtoFormGroup>({
       username: new FormControl<string>('', [noWhitespaceValidator]),
       fullName: new FormControl<string>('', [noWhitespaceValidator]),
