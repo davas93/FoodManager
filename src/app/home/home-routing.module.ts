@@ -4,6 +4,7 @@ import { HomeComponent } from "./home.component";
 import {UserMenuComponent} from "./components/user-menu/user-menu.component";
 import {AdminPanelComponent} from "./components/admin-panel/admin-panel.component";
 import {DiningInfoComponent} from "./components/dining-info/dining-info.component";
+import {authGuardDeactivate} from "../auth/guards/auth.guard";
 
 const routes: Routes = [
   {
@@ -13,14 +14,17 @@ const routes: Routes = [
       {
         path: 'user',
         component: UserMenuComponent,
+        canDeactivate: [authGuardDeactivate]
       },
       {
         path: 'admin',
         component: AdminPanelComponent,
+        canDeactivate: [authGuardDeactivate]
       },
       {
         path: 'dining',
         component: DiningInfoComponent,
+        canDeactivate: [authGuardDeactivate]
       },
     ]
   },

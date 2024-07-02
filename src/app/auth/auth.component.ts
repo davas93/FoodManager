@@ -8,6 +8,7 @@ import {Router} from "@angular/router";
 import {MessageService} from "primeng/api";
 import {ServiceHelper} from "../helpers/service.helper";
 import {noWhitespaceValidator} from "../form-validators/form-validators";
+import {Roles} from "../types/roles.type";
 
 @UntilDestroy()
 @Component({
@@ -47,21 +48,15 @@ export class AuthComponent implements OnInit {
     ).subscribe(user => {
       this.isLoading$.next(false);
 
-      if (user) {
-        switch (user.role) {
-          case "User":
-            this.router.navigate(["/home/user"]);
-            break;
-
-          case "Admin":
-            this.router.navigate(["/home/admin"]);
-            break;
-
-          case "Dining":
-            this.router.navigate(["/home/dining"]);
-            break;
-        }
+      const userData: UserData = {
+        id: user.id,
+        fullName: user.fullName,
+        role: user.role,
+        serviceNumber: user.username.split('@')[0]
       }
+
+      localStorage.setItem('userData', JSON.stringify(userData));
+      this.navigateUser(user.role);
     });
   }
 
@@ -83,6 +78,24 @@ export class AuthComponent implements OnInit {
 
     return ""
   }
+
+  private navigateUser(role: string): void {
+    if (role) {
+      switch (role) {
+        case "User":
+          this.router.navigate(["/home/user"]);
+          break;
+
+        case "Admin":
+          this.router.navigate(["/home/admin"]);
+          break;
+
+        case "Dining":
+          this.router.navigate(["/home/dining"]);
+          break;
+      }
+    }
+  }
 }
 
 type PartialLoginDataControls<T> = {
@@ -90,3 +103,10 @@ type PartialLoginDataControls<T> = {
 }
 
 type LoginFormData = PartialLoginDataControls<LoginData>;
+
+interface UserData {
+  id: string;
+  fullName: string;
+  serviceNumber: string;
+  role: Roles
+}

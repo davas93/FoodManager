@@ -20,3 +20,16 @@ export const authGuardFn = (): Observable<boolean> => {
     })
   );
 };
+
+export const authGuardDeactivate = (): Observable<boolean> => {
+  const authService = inject(AuthService);
+
+  return authService.isAuthenticated.pipe(
+    take(1),
+    map(isAuthenticated => {
+      if (isAuthenticated) {
+        return false;
+      }
+    })
+  );
+};
