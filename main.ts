@@ -1,7 +1,6 @@
-import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Notification, screen } from 'electron';
+import { app, BrowserWindow, globalShortcut, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-const admin = require('./firebase-admin/firebase-admin.js');
 
 
 let win: BrowserWindow | null = null;
@@ -93,16 +92,6 @@ try {
         if (win === null) {
             createWindow();
         }
-    });
-
-    ipcMain.on('delete-user', (event, uid) => {
-        admin.auth().deleteUser(uid)
-            .then(() => {
-                event.reply('delete-user-response', { success: true });
-            })
-            .catch((error) => {
-                event.reply('delete-user-response', { success: false, error: error.message });
-            });
     });
 
 } catch (e) {

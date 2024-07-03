@@ -191,7 +191,7 @@ export class AdminPanelComponent implements OnInit {
 
           this.isLoading$.next(true);
 
-          return this.authService.signUp(userDto.username, userDto.password, employee)
+          return this.authService.createUser(userDto.username, userDto.password, employee)
         }
       ),
       catchError((err: FirebaseError) => {
