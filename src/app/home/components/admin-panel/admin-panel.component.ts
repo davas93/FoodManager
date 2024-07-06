@@ -12,7 +12,7 @@ import {
   switchMap,
   throwError, withLatestFrom
 } from "rxjs";
-import {EmployeeMenu} from "../../../models/employee-menu.model";
+import {EmployeeMenu, Week} from "../../../models/employee-menu.model";
 import {isNil} from "lodash-es";
 import {AuthService} from "../../../core/services/auth.service";
 import {FirebaseDataService} from "../../../core/services/firebase-data.service";
@@ -258,8 +258,20 @@ export class AdminPanelComponent implements OnInit {
 
     //Weeks management
     this.addNewWeek$.pipe(
-      switchMap(week => this.fbService.addItemToArray<GeneralMenuWeek>('generalMenu', 'weeks', week)),
+      switchMap(week => {
+        const newEmployeeWeek: Week = ServiceHelper.toPlainObject(new Week({
+          name: week.name,
+          displayName: week.displayName
+        }));
+
+        return this.fbService.addItemToArray<GeneralMenuWeek, Week>(
+          'generalMenu',
+          'weeks',
+          week,
+          'menus', newEmployeeWeek)
+      }),
       catchError(err => {
+        this.errorSubject$.next({error: true, timestamp: new Date().getTime()});
         this.messageService.add({severity: 'error', detail: err});
         return throwError(err);
       }),
@@ -297,11 +309,16 @@ export class AdminPanelComponent implements OnInit {
       }),
       filter(confirmed => confirmed),
       withLatestFrom(this.removeWeek$),
-      switchMap(([_, week]) => this.fbService.removeItemFromArray<GeneralMenuWeek>('generalMenu', 'weeks', week)),
+      switchMap(([_, week]) => this.fbService.removeItemFromArray<GeneralMenuWeek>(
+        'generalMenu',
+        'weeks',
+        'name',
+        week.name,
+        'menus')),
       switchMap(_ => this.fbService.renameArrayItems<GeneralMenuWeek>('generalMenu', 'weeks', (week , i) => ({
         ...week,
         name: `week${i + 1}`,
-      }))),
+      }), 'menus', (week , i)=> ({...week, name: `week${i + 1}`}))),
       catchError(err => {
         this.messageService.add({severity: 'error', detail: err});
         return throwError(err);
@@ -314,7 +331,10 @@ export class AdminPanelComponent implements OnInit {
     });
 
     this.renameWeek$.pipe(
-      switchMap(weekData => this.fbService.renameArrayItems<GeneralMenuWeek>('generalMenu', 'weeks', (week) => {
+      switchMap(weekData => this.fbService.renameArrayItems<GeneralMenuWeek>(
+        'generalMenu',
+        'weeks',
+        (week) => {
         if (week.name === weekData.weekName) {
           return {
             ...week,
@@ -323,8 +343,18 @@ export class AdminPanelComponent implements OnInit {
         }
 
         return week;
-      })),
+      }, 'menus', (week) => {
+          if (week.name === weekData.weekName) {
+            return {
+              ...week,
+              displayName: weekData.newDisplayName
+            }
+          }
+
+          return week;
+        })),
       catchError(err => {
+        this.errorSubject$.next({error: true, timestamp: new Date().getTime()});
         this.messageService.add({severity: 'error', detail: err});
         return throwError(err);
       }),

@@ -11,6 +11,7 @@ import {
   getDoc,
   query,
   arrayUnion,
+  runTransaction,
   arrayRemove,
   Firestore,
   DocumentData,
@@ -119,59 +120,102 @@ export class FirebaseDataService {
     })).pipe(switchMap(_ => of(id)));
   }
 
-  addItemToArray<T>(collectionPath: string, arrayField: string, newItem: T): Observable<void> {
-    const collectionRef = collection(this.db, collectionPath);
-
-    return from(getDocs(collectionRef).then(querySnapshot => {
-      if (!querySnapshot.empty) {
-        const docRef = querySnapshot.docs[0].ref;
-        return updateDoc(docRef, {
-          [arrayField]: arrayUnion(newItem)
-        });
-      } else {
-        throw new Error('Document not found');
+  addItemToArray<T, K>(collectionPath: string, arrayField: string, newItem: T, dependentCollectionPath: string, newDependentItem: K): Observable<void> {
+    return from(runTransaction(this.db, async (transaction) => {
+      const collectionRef = collection(this.db, collectionPath);
+      const querySnapshot = await getDocs(collectionRef);
+      if (querySnapshot.empty) {
+        throw new Error('No documents found in collection');
       }
+
+      querySnapshot.forEach(docSnapshot => {
+        const docData = docSnapshot.data();
+        const array = docData[arrayField] || [];
+        array.push(newItem);
+        transaction.update(docSnapshot.ref, { [arrayField]: array });
+      });
+
+      const dependentRef = collection(this.db, dependentCollectionPath);
+      const dependentSnapshot = await getDocs(dependentRef);
+
+      dependentSnapshot.forEach(dependentDoc => {
+        const dependentData = dependentDoc.data();
+        const dependentArray = dependentData[arrayField] || [];
+        dependentArray.push(newDependentItem);
+        transaction.update(dependentDoc.ref, { [arrayField]: dependentArray });
+      });
     }));
   }
 
-  removeItemFromArray<T>(collectionPath: string, arrayField: string, itemToRemove: T): Observable<void> {
-    const collectionRef = collection(this.db, collectionPath);
-
-    return from(getDocs(collectionRef).then(querySnapshot => {
-      if (!querySnapshot.empty) {
-        const docRef = querySnapshot.docs[0].ref;
-        return updateDoc(docRef, {
-          [arrayField]: arrayRemove(itemToRemove)
-        });
-      } else {
-        throw new Error('Document not found');
+  removeItemFromArray<T>(
+    collectionPath: string,
+    arrayField: string,
+    itemField: keyof T,
+    fieldValue: any,
+    dependentCollectionPath: string
+  ): Observable<void> {
+    return from(runTransaction(this.db, async (transaction) => {
+      const collectionRef = collection(this.db, collectionPath);
+      const querySnapshot = await getDocs(collectionRef);
+      if (querySnapshot.empty) {
+        throw new Error('No documents found in collection');
       }
+
+      querySnapshot.forEach(docSnapshot => {
+        const docData = docSnapshot.data();
+        const array = docData[arrayField] || [];
+        const itemIndex = array.findIndex((item: T) => item[itemField] === fieldValue);
+        if (itemIndex !== -1) {
+          transaction.update(docSnapshot.ref, { [arrayField]: arrayRemove(array[itemIndex]) });
+        }
+      });
+
+      const dependentRef = collection(this.db, dependentCollectionPath);
+      const dependentSnapshot = await getDocs(dependentRef);
+
+      dependentSnapshot.forEach(dependentDoc => {
+        const dependentData = dependentDoc.data();
+        const dependentArray = dependentData[arrayField] || [];
+        const dependentItemIndex = dependentArray.findIndex((item: T) => item[itemField] === fieldValue);
+        if (dependentItemIndex !== -1) {
+          transaction.update(dependentDoc.ref, { [arrayField]: arrayRemove(dependentArray[dependentItemIndex]) });
+        }
+      });
     }));
   }
 
   renameArrayItems<T>(
     collectionPath: string,
     arrayField: string,
-    renameFunction: (item: T, index: number) => T
+    renameFunction: (item: T, index: number) => T,
+    dependentCollectionPath: string,
+    dependentRenameFunction: (item: T, index: number) => T
   ): Observable<void> {
-    const collectionRef = collection(this.db, collectionPath);
-
-    return from(getDocs(collectionRef).then(querySnapshot => {
-      if (!querySnapshot.empty) {
-        const docRef = querySnapshot.docs[0].ref;
-        return getDoc(docRef).then(docSnapshot => {
-          const data = docSnapshot.data();
-          const items = data[arrayField] as T[];
-
-          const renamedItems = items.map((item, index) => renameFunction(item, index));
-
-          return updateDoc(docRef, {
-            [arrayField]: renamedItems
-          });
-        });
-      } else {
-        throw new Error('Document not found');
+    return from(runTransaction(this.db, async (transaction) => {
+      const collectionRef = collection(this.db, collectionPath);
+      const querySnapshot = await getDocs(collectionRef);
+      if (querySnapshot.empty) {
+        throw new Error('No documents found in collection');
       }
+
+      // Обработка основной коллекции
+      querySnapshot.forEach(docSnapshot => {
+        const docData = docSnapshot.data();
+        const items = docData[arrayField] as T[];
+        const renamedItems = items.map((item, index) => renameFunction(item, index));
+        transaction.update(docSnapshot.ref, { [arrayField]: renamedItems });
+      });
+
+      // Обработка зависимой коллекции
+      const dependentRef = collection(this.db, dependentCollectionPath);
+      const dependentSnapshot = await getDocs(dependentRef);
+
+      dependentSnapshot.forEach(dependentDoc => {
+        const dependentData = dependentDoc.data();
+        const dependentItems = dependentData[arrayField] as T[];
+        const renamedDependentItems = dependentItems.map((item, index) => dependentRenameFunction(item, index));
+        transaction.update(dependentDoc.ref, { [arrayField]: renamedDependentItems });
+      });
     }));
   }
 }
