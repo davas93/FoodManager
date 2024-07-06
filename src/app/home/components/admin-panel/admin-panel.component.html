@@ -5,6 +5,8 @@
                                [serviceError]="errorSubject$ | async"
                                (updateMenu)="saveGeneralMenu$.next($event)"
                                (addNewWeek)="addNewWeek$.next($event)"
+                               (removeWeek)="removeWeek$.next($event)"
+                               (renameWeek)="renameWeek$.next($event)"
                                (changeDishesWithDay)="selectedDishesWithDay$.next($event)">
       </app-menu-administration>
     </div>

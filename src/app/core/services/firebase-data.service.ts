@@ -8,8 +8,10 @@ import {
   updateDoc,
   deleteDoc,
   getDocs,
+  getDoc,
   query,
   arrayUnion,
+  arrayRemove,
   Firestore,
   DocumentData,
   WithFieldValue,
@@ -125,6 +127,47 @@ export class FirebaseDataService {
         const docRef = querySnapshot.docs[0].ref;
         return updateDoc(docRef, {
           [arrayField]: arrayUnion(newItem)
+        });
+      } else {
+        throw new Error('Document not found');
+      }
+    }));
+  }
+
+  removeItemFromArray<T>(collectionPath: string, arrayField: string, itemToRemove: T): Observable<void> {
+    const collectionRef = collection(this.db, collectionPath);
+
+    return from(getDocs(collectionRef).then(querySnapshot => {
+      if (!querySnapshot.empty) {
+        const docRef = querySnapshot.docs[0].ref;
+        return updateDoc(docRef, {
+          [arrayField]: arrayRemove(itemToRemove)
+        });
+      } else {
+        throw new Error('Document not found');
+      }
+    }));
+  }
+
+  renameArrayItems<T>(
+    collectionPath: string,
+    arrayField: string,
+    renameFunction: (item: T, index: number) => T
+  ): Observable<void> {
+    const collectionRef = collection(this.db, collectionPath);
+
+    return from(getDocs(collectionRef).then(querySnapshot => {
+      if (!querySnapshot.empty) {
+        const docRef = querySnapshot.docs[0].ref;
+        return getDoc(docRef).then(docSnapshot => {
+          const data = docSnapshot.data();
+          const items = data[arrayField] as T[];
+
+          const renamedItems = items.map((item, index) => renameFunction(item, index));
+
+          return updateDoc(docRef, {
+            [arrayField]: renamedItems
+          });
         });
       } else {
         throw new Error('Document not found');

@@ -45,6 +45,7 @@ export class MenuAdministrationComponent implements OnInit {
       this.generalMenu$.next(menu);
       this.isDialogShow = false;
       this.isNewWeekDialogShow = false;
+      this._currentWeekIndex = 0;
     }
   }
 
@@ -55,6 +56,8 @@ export class MenuAdministrationComponent implements OnInit {
   @Output() updateMenu: EventEmitter<GeneralMenu> = new EventEmitter<GeneralMenu>();
   @Output() changeDishesWithDay: EventEmitter<SelectedMenuWithDay> = new EventEmitter<SelectedMenuWithDay>();
   @Output() addNewWeek: EventEmitter<GeneralMenuWeek> = new EventEmitter<GeneralMenuWeek>();
+  @Output() removeWeek: EventEmitter<GeneralMenuWeek> = new EventEmitter<GeneralMenuWeek>();
+  @Output() renameWeek: EventEmitter<{weekName: string; newDisplayName: string }> = new EventEmitter<{weekName: string; newDisplayName: string }>();
 
   protected readonly WEEKS = WEEKS;
   protected readonly DAYS_OF_WEEK = DAYS_OF_WEEK;
@@ -88,6 +91,11 @@ export class MenuAdministrationComponent implements OnInit {
   //weeks management
   public weekDisplayNameFormControl: FormControl<string> = new FormControl<string>('', noWhitespaceValidator);
   public addNewWeekClick$: Subject<void> = new Subject<void>();
+  public removeWeekClick$: Subject<GeneralMenuWeek> = new Subject<GeneralMenuWeek>();
+  public renameWeekClick$: Subject<string> = new Subject<string>();
+  public openModalMode$: BehaviorSubject<'new' | 'edit'> = new BehaviorSubject<"new" | "edit">('new');
+  public weekModalHeaderName$: BehaviorSubject<string> = new BehaviorSubject<string>('Добавление новой недели');
+  public selectedWeekName$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(private weekService: WeekService, private fb: FormBuilder) {
   }
@@ -225,7 +233,20 @@ export class MenuAdministrationComponent implements OnInit {
       this.addNewWeek.emit(ServiceHelper.toPlainObject(week));
       this.startLoading$.next();
       this.weekDisplayNameFormControl.reset();
-    })
+    });
+
+    this.removeWeekClick$.pipe(untilDestroyed(this)).subscribe(week => {
+      this.removeWeek.emit(week);
+    });
+
+    this.renameWeekClick$.pipe(untilDestroyed(this)).subscribe(newDisplayName => {
+      this.renameWeek.emit({
+        weekName: this.selectedWeekName$.value,
+        newDisplayName: newDisplayName
+      });
+
+      this.startLoading$.next()
+    });
   }
 
   public getMaxArrayLength(arr1: unknown[], arr2: unknown[], arr3: unknown[], arr4: unknown[]): Array<unknown> {
@@ -239,5 +260,19 @@ export class MenuAdministrationComponent implements OnInit {
     this.currentDishType$.next(null);
     this.mealsForm = this.fb.array<string>([]);
     this.isDialogShow = false;
+  }
+
+  public openWeekModal(week?: GeneralMenuWeek) {
+    if (!isNil(week)) {
+      this.openModalMode$.next('edit');
+      this.weekDisplayNameFormControl.setValue(week.displayName);
+      this.weekModalHeaderName$.next(`Редактирование недели "${week.displayName}"`);
+      this.selectedWeekName$.next(week.name);
+    } else {
+      this.openModalMode$.next('new');
+      this.weekModalHeaderName$.next('Добавление новой недели');
+    }
+
+    this.isNewWeekDialogShow = true;
   }
 }

@@ -59,6 +59,8 @@ export class AdminPanelComponent implements OnInit {
 
   //Weeks management
   public addNewWeek$: Subject<GeneralMenuWeek> = new Subject<GeneralMenuWeek>();
+  public removeWeek$: Subject<GeneralMenuWeek> = new Subject<GeneralMenuWeek>();
+  public renameWeek$: Subject<{weekName: string; newDisplayName: string }> = new Subject<{weekName: string; newDisplayName: string }>();
 
   //oth
   public errorSubject$: ReplaySubject<{ error: boolean, timestamp: number }> = new ReplaySubject<{
@@ -265,7 +267,72 @@ export class AdminPanelComponent implements OnInit {
     ).subscribe(_ => {
       this.messageService.add({severity: 'success', detail: 'Новая неделя успешно добавлена'});
       this.refreshGeneralMenu$.next();
-    })
+    });
+
+    this.removeWeek$.pipe(
+      switchMap(week => {
+        const confirmed$: Subject<boolean> = new Subject<boolean>();
+
+        this.confirmationService.confirm({
+          header: "Удаление недели",
+          message: `Вы действительно хотите удалить "${week.displayName}"? Все меню этой недели будет утеряно`,
+          rejectLabel: "Отмена",
+          acceptLabel: "Удалить",
+          acceptButtonStyleClass: "p-button-primary",
+          rejectButtonStyleClass: "p-button-secondary p-button-text",
+          acceptIcon: "none",
+          rejectIcon: "none",
+          blockScroll: false,
+          accept: () => {
+            this.isLoading$.next(true);
+            confirmed$.next(true);
+          },
+          reject: () => {
+            confirmed$.next(false);
+            this.isLoading$.next(false);
+          }
+        })
+
+        return confirmed$
+      }),
+      filter(confirmed => confirmed),
+      withLatestFrom(this.removeWeek$),
+      switchMap(([_, week]) => this.fbService.removeItemFromArray<GeneralMenuWeek>('generalMenu', 'weeks', week)),
+      switchMap(_ => this.fbService.renameArrayItems<GeneralMenuWeek>('generalMenu', 'weeks', (week , i) => ({
+        ...week,
+        name: `week${i + 1}`,
+      }))),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: err});
+        return throwError(err);
+      }),
+      untilDestroyed(this)
+    ).subscribe(_ => {
+      this.isLoading$.next(false);
+      this.messageService.add({severity: 'success', detail: 'Неделя успешно удалена'});
+      this.refreshGeneralMenu$.next();
+    });
+
+    this.renameWeek$.pipe(
+      switchMap(weekData => this.fbService.renameArrayItems<GeneralMenuWeek>('generalMenu', 'weeks', (week) => {
+        if (week.name === weekData.weekName) {
+          return {
+            ...week,
+            displayName: weekData.newDisplayName
+          }
+        }
+
+        return week;
+      })),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: err});
+        return throwError(err);
+      }),
+      untilDestroyed(this)
+    ).subscribe(_ => {
+      this.messageService.add({severity: 'success', detail: 'Неделя успешно переименована'});
+      this.refreshGeneralMenu$.next();
+    });
   }
 
   private get userMenus$(): Observable<EmployeeMenu[]> {

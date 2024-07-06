@@ -28,6 +28,20 @@ app-menu-administration {
         display: flex;
         flex-direction: column;
 
+        .tab-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          i {
+            transform: translateY(2px);
+
+            &:hover {
+              opacity: 0.7;
+            }
+          }
+        }
+
         .p-tabview-panels {
           flex: 1;
           overflow: auto;
