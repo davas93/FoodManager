@@ -3,10 +3,7 @@ import {Dish} from "./dishes.model";
 
 export class GeneralMenu {
   weeks: GeneralMenuWeek[]  = [
-    new GeneralMenuWeek({name: "week1"}),
-    new GeneralMenuWeek({name: "week2"}),
-    new GeneralMenuWeek({name: "week3"}),
-    new GeneralMenuWeek({name: "week4"})
+    new GeneralMenuWeek({name: "week1", displayName: "Неделя 1"}),
   ];
 
   constructor(input?: Partial<GeneralMenu>) {
@@ -27,6 +24,7 @@ export class GeneralMenuMeal {
 
 export class GeneralMenuDay {
   name: string = "";
+  displayName: string = "";
   meals: GeneralMenuMeal = new GeneralMenuMeal();
 
   constructor(input?: Partial<GeneralMenuDay>) {
@@ -36,12 +34,13 @@ export class GeneralMenuDay {
 
 export class GeneralMenuWeek {
   name: string = "";
+  displayName: string = "";
   days: GeneralMenuDay[] = [
-    new GeneralMenuDay({name: "day1"}),
-    new GeneralMenuDay({name: "day2"}),
-    new GeneralMenuDay({name: "day3"}),
-    new GeneralMenuDay({name: "day4"}),
-    new GeneralMenuDay({name: "day5"}),
+    new GeneralMenuDay({name: "day1", displayName: "Понедельник"}),
+    new GeneralMenuDay({name: "day2", displayName: "Вторник"}),
+    new GeneralMenuDay({name: "day3", displayName: "Среда"}),
+    new GeneralMenuDay({name: "day4", displayName: "Четверг"}),
+    new GeneralMenuDay({name: "day5", displayName: "Пятница"}),
   ];
 
   constructor(input?: Partial<GeneralMenuWeek>) {

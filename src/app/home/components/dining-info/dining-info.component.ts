@@ -37,7 +37,7 @@ export class DiningInfoComponent implements OnInit{
     const formattedDate: string = this.currentDate.toLocaleDateString('ru',{weekday: "long", day: "numeric", month: "long", year: "numeric"});
     this.currentWeekDay = this.currentDate.toLocaleDateString('ru', {weekday: "long"});
 
-    this.currentWeek = this.weekService.getCurrentWeek();
+    this.currentWeek = this.weekService.getCurrentWeek(4);
     this.currentDateString = `Сегодня ${formattedDate} ${WEEKS[this.currentWeek]}`;
     this._currentWeekIndex = Object.keys(WEEKS).indexOf(this.currentWeek);
 

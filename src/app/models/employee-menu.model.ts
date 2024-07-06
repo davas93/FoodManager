@@ -1,5 +1,4 @@
 import {isNil} from "lodash-es";
-import {Dish} from "./dishes.model";
 
 export class Meal {
   firstCourse: string = "";
@@ -14,6 +13,7 @@ export class Meal {
 
 export class Day {
   name: string = "";
+  displayName: string = "";
   meals: Meal = new Meal();
 
   constructor(input?: Partial<Day>) {
@@ -23,12 +23,13 @@ export class Day {
 
 export class Week {
   name: string = "";
+  displayName: string = "";
   days: Day[] = [
-    new Day({name: "day1"}),
-    new Day({name: "day2"}),
-    new Day({name: "day3"}),
-    new Day({name: "day4"}),
-    new Day({name: "day5"}),
+    new Day({name: "day1", displayName: "Понедельник"}),
+    new Day({name: "day2", displayName: "Вторник"}),
+    new Day({name: "day3", displayName: "Среда"}),
+    new Day({name: "day4", displayName: "Четверг"}),
+    new Day({name: "day5", displayName: "Пятница"}),
   ];
 
   constructor(input?: Partial<Week>) {
@@ -40,10 +41,7 @@ export class EmployeeMenu {
   id: string = "";
   employeeName: string = "";
   weeks: Week[] = [
-    new Week({name: "week1"}),
-    new Week({name: "week2"}),
-    new Week({name: "week3"}),
-    new Week({name: "week4"})
+    new Week({name: "week1", displayName: "Неделя 1"}),
   ];
 
   constructor(input?: Partial<EmployeeMenu>) {

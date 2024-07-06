@@ -110,7 +110,7 @@ export class MenuAdministrationComponent implements OnInit {
       year: "numeric"
     });
 
-    this.currentWeek = this.weekService.getCurrentWeek();
+    this.currentWeek = this.weekService.getCurrentWeek(4);
 
     this.currentDate = `Сегодня ${formattedDate} ${WEEKS[this.currentWeek]}`;
 

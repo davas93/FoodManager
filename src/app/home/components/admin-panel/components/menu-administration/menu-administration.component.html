@@ -8,7 +8,7 @@
 
       <p-tabView [(activeIndex)]="_currentWeekIndex">
         @for (week of menu.weeks; track week.name; let i = $index) {
-          <p-tabPanel [header]="WEEKS[week.name]" class="menu-tabs">
+          <p-tabPanel [header]="week.displayName" class="menu-tabs">
             <p-table #table [value]="week.days"
                      styleClass="p-datatable-gridlines"
                      groupRowsBy="name"
@@ -52,7 +52,7 @@
                 !!weekDay.meals.salad) {
                   <tr pRowGroupHeader class="group-header">
                     <td colspan="5">
-                      <span class="font-bold ml-2">{{ DAYS_OF_WEEK[weekDay.name] }}</span>
+                      <span class="font-bold ml-2">{{ weekDay.displayName }}</span>
                     </td>
                   </tr>
                 }

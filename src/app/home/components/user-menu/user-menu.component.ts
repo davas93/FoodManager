@@ -38,7 +38,7 @@ export class UserMenuComponent implements OnInit {
   ngOnInit(): void {
     const formattedDate: string = new Date().toLocaleDateString('ru',{weekday: "long", day: "numeric", month: "long", year: "numeric"});
 
-    this.currentWeek = this.weekService.getCurrentWeek();
+    this.currentWeek = this.weekService.getCurrentWeek(4);
 
     this.currentDate = `Сегодня ${formattedDate} ${WEEKS[this.currentWeek]}`;
 
