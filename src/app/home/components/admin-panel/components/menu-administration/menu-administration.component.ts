@@ -18,7 +18,7 @@ import {
   switchMap, tap,
   withLatestFrom
 } from "rxjs";
-import {GeneralMenu} from "../../../../../models/general-menu.model";
+import {GeneralMenu, GeneralMenuWeek} from "../../../../../models/general-menu.model";
 import {DAYS_OF_WEEK, DISHES, WEEKS} from "../../../../../consts/weeks-vocabulary";
 import {isNil} from "lodash-es";
 import {Meal} from "../../../../../models/employee-menu.model";
@@ -27,6 +27,8 @@ import {WeekService} from "../../../../../core/services/week.service";
 import {SelectedMenuWithDay} from "../../../../../interfaces/selected-dishes-with-day.interface";
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {noWhitespaceValidator} from "../../../../../form-validators/form-validators";
+import {UserFormDto} from "../../../../../interfaces/user-form-dto.interface";
+import {ServiceHelper} from "../../../../../helpers/service.helper";
 
 @UntilDestroy()
 @Component({
@@ -42,6 +44,7 @@ export class MenuAdministrationComponent implements OnInit {
     if (!isNil(menu)) {
       this.generalMenu$.next(menu);
       this.isDialogShow = false;
+      this.isNewWeekDialogShow = false;
     }
   }
 
@@ -51,6 +54,7 @@ export class MenuAdministrationComponent implements OnInit {
 
   @Output() updateMenu: EventEmitter<GeneralMenu> = new EventEmitter<GeneralMenu>();
   @Output() changeDishesWithDay: EventEmitter<SelectedMenuWithDay> = new EventEmitter<SelectedMenuWithDay>();
+  @Output() addNewWeek: EventEmitter<GeneralMenuWeek> = new EventEmitter<GeneralMenuWeek>();
 
   protected readonly WEEKS = WEEKS;
   protected readonly DAYS_OF_WEEK = DAYS_OF_WEEK;
@@ -74,11 +78,16 @@ export class MenuAdministrationComponent implements OnInit {
   private selectedDishesWithDay$: Observable<SelectedMenuWithDay>;
 
   public isDialogShow: boolean = false;
+  public isNewWeekDialogShow: boolean = false;
   public isLoading$: Observable<boolean>;
   private startLoading$: Subject<void> = new Subject<void>();
   private errorSubject$: ReplaySubject<{error: boolean, timestamp: number}> = new ReplaySubject<{error: boolean, timestamp: number}>(1);
 
   public mealsForm: FormArray<FormControl<string>>;
+
+  //weeks management
+  public weekDisplayNameFormControl: FormControl<string> = new FormControl<string>('', noWhitespaceValidator);
+  public addNewWeekClick$: Subject<void> = new Subject<void>();
 
   constructor(private weekService: WeekService, private fb: FormBuilder) {
   }
@@ -197,6 +206,26 @@ export class MenuAdministrationComponent implements OnInit {
       this.startLoading$.next();
       this.resetData();
     });
+
+    //Weeks management
+    this.addNewWeekClick$.pipe(
+      filter(_ => this.weekDisplayNameFormControl.valid),
+      withLatestFrom(this.generalMenu$),
+      map(([_ ,menu]) => {
+        this.isNewWeekDialogShow = true;
+
+        const totalWeeks = menu.weeks.length;
+
+        return new GeneralMenuWeek({
+          name: `week${totalWeeks + 1}`,
+          displayName: this.weekDisplayNameFormControl.value
+        })
+      })
+    ).subscribe(week => {
+      this.addNewWeek.emit(ServiceHelper.toPlainObject(week));
+      this.startLoading$.next();
+      this.weekDisplayNameFormControl.reset();
+    })
   }
 
   public getMaxArrayLength(arr1: unknown[], arr2: unknown[], arr3: unknown[], arr4: unknown[]): Array<unknown> {

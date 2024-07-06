@@ -1,5 +1,6 @@
 <div class="menu-administration-container">
   <div class="user-top-service">
+    <button pButton (click)="isNewWeekDialogShow = true">Добавить новую неделю</button>
     <div class="date">{{ currentDate }}</div>
   </div>
 
@@ -144,6 +145,34 @@
             }
           </div>
         }
+      </p-dialog>
+
+      <p-dialog class="modal"
+                modal="true"
+                header="Добавление новой недели"
+                [(visible)]="isNewWeekDialogShow">
+        <div class="modal-content">
+          <input pInputText placeholder="Введите название для новой недели" [formControl]="weekDisplayNameFormControl">
+
+          <div class="modal-service">
+            <button pButton label="Отмена"
+                    severity="secondary"
+                    text="true"
+                    [disabled]="(isLoading$ | async)"
+                    (click)="isNewWeekDialogShow = false; weekDisplayNameFormControl.reset()">
+            </button>
+            <button pButton
+                    style="min-width: 110px; justify-content: center"
+                    [disabled]="weekDisplayNameFormControl.invalid || (isLoading$ | async)"
+                    (click)="addNewWeekClick$.next()">
+              @if (isLoading$ | async) {
+                <p-progressSpinner [style]="{width: '18px', height: '18px'}" strokeWidth="6"></p-progressSpinner>
+              } @else {
+                Добавить
+              }
+            </button>
+          </div>
+        </div>
       </p-dialog>
     } @else {
       <app-loading-screen></app-loading-screen>

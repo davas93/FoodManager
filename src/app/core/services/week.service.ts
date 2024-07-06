@@ -8,6 +8,8 @@ export class WeekService {
   constructor() { }
 
   public getCurrentWeek(weeksLength: number): string {
+    console.log(weeksLength)
+
     const currentDate: Date = new Date();
     const startOfYear: Date = new Date(currentDate.getFullYear(), 5, 3);
     const diff: number = currentDate.getTime() - startOfYear.getTime();

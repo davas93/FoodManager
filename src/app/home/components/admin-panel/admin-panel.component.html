@@ -4,6 +4,7 @@
       <app-menu-administration [generalMenu]="generalMenu$ | async"
                                [serviceError]="errorSubject$ | async"
                                (updateMenu)="saveGeneralMenu$.next($event)"
+                               (addNewWeek)="addNewWeek$.next($event)"
                                (changeDishesWithDay)="selectedDishesWithDay$.next($event)">
       </app-menu-administration>
     </div>

@@ -5,7 +5,7 @@ import {
   filter,
   map,
   merge,
-  Observable,
+  Observable, of,
   ReplaySubject,
   retry,
   Subject,
@@ -17,7 +17,7 @@ import {isNil} from "lodash-es";
 import {AuthService} from "../../../core/services/auth.service";
 import {FirebaseDataService} from "../../../core/services/firebase-data.service";
 import {ConfirmationService, MessageService} from "primeng/api";
-import {GeneralMenu} from "../../../models/general-menu.model";
+import {GeneralMenu, GeneralMenuWeek} from "../../../models/general-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {Employee} from "../../../models/employee.model";
 import {UserFormDto} from "../../../interfaces/user-form-dto.interface";
@@ -56,6 +56,9 @@ export class AdminPanelComponent implements OnInit {
   public removeUser$: Subject<Employee> = new Subject<Employee>();
   public editUser$: Subject<Employee> = new Subject<Employee>();
   public editSelectedUserMenu$: Subject<string> = new Subject<string>();
+
+  //Weeks management
+  public addNewWeek$: Subject<GeneralMenuWeek> = new Subject<GeneralMenuWeek>();
 
   //oth
   public errorSubject$: ReplaySubject<{ error: boolean, timestamp: number }> = new ReplaySubject<{
@@ -131,7 +134,7 @@ export class AdminPanelComponent implements OnInit {
         return this.fbService.updateAllItems('menus', updatedMenus)
       }),
       catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'При сохранении меню произошла ошибка'});
+        this.messageService.add({severity: 'error', detail: err});
         this.errorSubject$.next({error: true, timestamp: new Date().getTime()});
         return throwError(err);
       }),
@@ -250,6 +253,19 @@ export class AdminPanelComponent implements OnInit {
       retry(),
       untilDestroyed(this)
     ).subscribe(_ => this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'}))
+
+    //Weeks management
+    this.addNewWeek$.pipe(
+      switchMap(week => this.fbService.addItemToArray<GeneralMenuWeek>('generalMenu', 'weeks', week)),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: err});
+        return throwError(err);
+      }),
+      untilDestroyed(this)
+    ).subscribe(_ => {
+      this.messageService.add({severity: 'success', detail: 'Новая неделя успешно добавлена'});
+      this.refreshGeneralMenu$.next();
+    })
   }
 
   private get userMenus$(): Observable<EmployeeMenu[]> {

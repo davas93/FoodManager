@@ -9,6 +9,7 @@ import {
   deleteDoc,
   getDocs,
   query,
+  arrayUnion,
   Firestore,
   DocumentData,
   WithFieldValue,
@@ -114,5 +115,20 @@ export class FirebaseDataService {
         throw new Error('Document not found');
       }
     })).pipe(switchMap(_ => of(id)));
+  }
+
+  addItemToArray<T>(collectionPath: string, arrayField: string, newItem: T): Observable<void> {
+    const collectionRef = collection(this.db, collectionPath);
+
+    return from(getDocs(collectionRef).then(querySnapshot => {
+      if (!querySnapshot.empty) {
+        const docRef = querySnapshot.docs[0].ref;
+        return updateDoc(docRef, {
+          [arrayField]: arrayUnion(newItem)
+        });
+      } else {
+        throw new Error('Document not found');
+      }
+    }));
   }
 }
