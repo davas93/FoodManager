@@ -1,5 +1,4 @@
 import {isNil} from "lodash-es";
-import {Dish} from "./dishes.model";
 
 export class GeneralMenu {
   weeks: GeneralMenuWeek[]  = [
@@ -12,10 +11,10 @@ export class GeneralMenu {
 }
 
 export class GeneralMenuMeal {
-  firstCourse: Dish[] = [];
-  secondCourse: Dish[] = [];
-  sideDish: Dish[] = [];
-  salad: Dish[] = [];
+  firstCourse: string[] = [];
+  secondCourse: string[] = [];
+  sideDish: string[] = [];
+  salad: string[] = [];
 
   constructor(input?: Partial<GeneralMenuMeal>) {
     if (!isNil(input)) Object.assign(this, input);

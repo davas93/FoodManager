@@ -2,10 +2,6 @@
   <p-tabPanel header="Администрирование меню">
     <div class="tab-content">
       <app-menu-administration [generalMenu]="generalMenu$ | async"
-                               [firstCourses]="firstCourses$ | async"
-                               [secondCourses]="secondCourses$ | async"
-                               [sideDishes]="sideDishes$ | async"
-                               [salads]="salads$ | async"
                                [serviceError]="errorSubject$ | async"
                                (updateMenu)="saveGeneralMenu$.next($event)"
                                (changeDishesWithDay)="selectedDishesWithDay$.next($event)">

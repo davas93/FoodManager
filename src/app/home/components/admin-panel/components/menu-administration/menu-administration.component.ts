@@ -21,11 +21,12 @@ import {
 import {GeneralMenu} from "../../../../../models/general-menu.model";
 import {DAYS_OF_WEEK, DISHES, WEEKS} from "../../../../../consts/weeks-vocabulary";
 import {isNil} from "lodash-es";
-import {Dish} from "../../../../../models/dishes.model";
 import {Meal} from "../../../../../models/employee-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {WeekService} from "../../../../../core/services/week.service";
 import {SelectedMenuWithDay} from "../../../../../interfaces/selected-dishes-with-day.interface";
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {noWhitespaceValidator} from "../../../../../form-validators/form-validators";
 
 @UntilDestroy()
 @Component({
@@ -44,22 +45,6 @@ export class MenuAdministrationComponent implements OnInit {
     }
   }
 
-  @Input() set firstCourses(dishes: Dish[] | null) {
-    if (!isNil(dishes)) this.firstCourses$.next(dishes)
-  }
-
-  @Input() set secondCourses(dishes: Dish[] | null) {
-    if (!isNil(dishes)) this.secondCourses$.next(dishes)
-  }
-
-  @Input() set sideDishes(dishes: Dish[] | null) {
-    if (!isNil(dishes)) this.sideDishes$.next(dishes)
-  }
-
-  @Input() set salads(dishes: Dish[] | null) {
-    if (!isNil(dishes)) this.salads$.next(dishes)
-  }
-
   @Input() set serviceError(error: {error: boolean, timestamp: number} | null) {
     if (!isNil(error)) this.errorSubject$.next(error)
   }
@@ -74,20 +59,16 @@ export class MenuAdministrationComponent implements OnInit {
   public currentWeek!: string;
   public _currentWeekIndex = 0;
 
-  public dishOptions$!: Observable<Dish[]>;
+  public dishOptions$!: Observable<string[]>;
   public modalHeaderName$!: Observable<string>;
-  public selectedOptions$!: Observable<Dish[]>;
+  public selectedOptions$!: Observable<string[]>;
 
   public generalMenu$: ReplaySubject<GeneralMenu> = new ReplaySubject<GeneralMenu>(1);
-  public firstCourses$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
-  public secondCourses$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
-  public sideDishes$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
-  public salads$: ReplaySubject<Dish[]> = new ReplaySubject<Dish[]>(1);
 
   public currentDishType$: BehaviorSubject<keyof Meal> = new BehaviorSubject<keyof Meal>("firstCourse");
   public currentWeek$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public selectedDay$: BehaviorSubject<string> = new BehaviorSubject<string>("");
-  public selectedDishes$: BehaviorSubject<Dish[]> = new BehaviorSubject<Dish[]>([]);
+  public selectedDishes$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
   public updateMenu$: Subject<GeneralMenu> = new Subject<GeneralMenu>();
 
   private selectedDishesWithDay$: Observable<SelectedMenuWithDay>;
@@ -97,12 +78,14 @@ export class MenuAdministrationComponent implements OnInit {
   private startLoading$: Subject<void> = new Subject<void>();
   private errorSubject$: ReplaySubject<{error: boolean, timestamp: number}> = new ReplaySubject<{error: boolean, timestamp: number}>(1);
 
-  constructor(private weekService: WeekService) {
+  public mealsForm: FormArray<FormControl<string>>;
+
+  constructor(private weekService: WeekService, private fb: FormBuilder) {
   }
 
-  swdded$: Subject<void> = new Subject<void>();
-
   ngOnInit(): void {
+    this.mealsForm = this.fb.array<string>([]);
+
     const formattedDate: string = new Date().toLocaleDateString('ru', {
       weekday: "long",
       day: "numeric",
@@ -141,7 +124,7 @@ export class MenuAdministrationComponent implements OnInit {
       shareReplay({bufferSize: 1, refCount: true})
     )
 
-    this.selectedDishesWithDay$ = combineLatest([this.currentWeek$, this.selectedDay$, this.selectedDishes$, this.currentDishType$]).pipe(
+    this.selectedDishesWithDay$ = combineLatest([this.currentWeek$, this.selectedDay$, this.mealsForm.valueChanges, this.currentDishType$]).pipe(
       filter(([week, day, dishes, dishType]) => !isNil(week) && !isNil(day) && !isNil(dishes) && !isNil(dishType)),
       map(([week, day, dishes, dishType]) => {
         const data: SelectedMenuWithDay = {
@@ -165,27 +148,18 @@ export class MenuAdministrationComponent implements OnInit {
 
       return []
     })
-  )
-    ;
-
-    this.dishOptions$ = this.currentDishType$.pipe(
-      switchMap(type => {
-        switch (type) {
-          case 'firstCourse':
-            return this.firstCourses$;
-          case 'secondCourse':
-            return this.secondCourses$
-          case 'sideDish':
-            return this.sideDishes$
-          case 'salad':
-            return this.salads$
-          default:
-            return of([])
-        }
-      }),
-    );
+  );
 
     this.initializeSideEffects();
+  }
+
+
+  public addMeal(value: string = ""): void {
+    this.mealsForm.push(this.fb.control(value, noWhitespaceValidator));  // Добавление нового FormControl в FormArray
+  }
+
+  public removeMeal(index: number): void {
+    this.mealsForm.removeAt(index);
   }
 
   public openModal(week: number, dishType: keyof Meal) {
@@ -195,15 +169,22 @@ export class MenuAdministrationComponent implements OnInit {
   }
 
   private initializeSideEffects() {
+    this.selectedOptions$.pipe(untilDestroyed(this)).subscribe(meals => {
+      if (!isNil(meals)) {
+        meals.forEach(meal => this.addMeal(meal))
+      }
+    });
+
     this.updateMenu$.pipe(
-      withLatestFrom(this.currentWeek$, this.selectedDay$, this.currentDishType$, this.selectedDishes$),
-      map(([menu, week, day, type, dishes]) => {
+      filter(_ => this.mealsForm.valid),
+      withLatestFrom(this.currentWeek$, this.selectedDay$, this.currentDishType$),
+      map(([menu, week, day, type]) => {
         const currentWeek = menu.weeks[week];
         const currentDay = currentWeek.days.find(d => d.name === day);
         if (currentDay) {
 
-          (currentDay.meals[type]).push(...dishes)
-          currentDay.meals[type] = dishes;
+          (currentDay.meals[type]).push(...this.mealsForm.value)
+          currentDay.meals[type] = this.mealsForm.value;
         }
 
         return menu
@@ -227,6 +208,7 @@ export class MenuAdministrationComponent implements OnInit {
     this.selectedDay$.next(null);
     this.currentWeek$.next(null);
     this.currentDishType$.next(null);
+    this.mealsForm = this.fb.array<string>([]);
     this.isDialogShow = false;
   }
 }

@@ -1,128 +1,143 @@
 @use "themes/mytheme/variables" as var;
 
 app-menu-administration {
-    .menu-administration-container {
+  .menu-administration-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    padding: 32px;
+
+    .user-top-service {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      .date {
+        font-size: 20px;
+        font-weight: 600;
+      }
+    }
+
+    .tabs-container {
+      height: 1%;
+      flex: 1;
+
+      .p-tabview {
+        height: 100%;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        height: 100%;
-        padding: 32px;
 
-        .user-top-service {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+        .p-tabview-panels {
+          flex: 1;
+          overflow: auto;
 
-            .date {
-                font-size: 20px;
-                font-weight: 600;
-            }
-        }
+          .p-tabview-panel {
+            height: 100%;
 
-        .tabs-container {
-            height: 1%;
-            flex: 1;
+            .p-datatable {
+              height: 100%;
 
-            .p-tabview {
+              .p-datatable-wrapper {
                 height: 100%;
-                display: flex;
-                flex-direction: column;
 
-                .p-tabview-panels {
-                    flex: 1;
-                    overflow: auto;
+                thead {
+                  position: sticky;
+                  top: 0;
+                  z-index: 1;
 
-                    .p-tabview-panel {
-                        height: 100%;
-
-                        .p-datatable {
-                            height: 100%;
-
-                            .p-datatable-wrapper {
-                                height: 100%;
-
-                                thead {
-                                    position: sticky;
-                                    top: 0;
-                                    z-index: 1;
-
-                                    .header-cell-service {
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: space-between;
-
-                                        button {
-                                            width: 30px;
-                                            height: 30px;
-
-                                            .p-button-icon {
-                                                height: 14px;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                .group-header {
-                                    height: 40px;
-                                    background-color: var.$tableHeaderBg;
-
-                                    td {
-                                        padding: 0;
-                                        text-align: center;
-                                        font-weight: 500;
-                                        color: var.$primaryColor;
-                                    }
-                                }
-
-                                tbody {
-                                    tr:not(.group-header) {
-                                        td {
-                                            max-width: 50px;
-                                            height: 50px;
-                                            text-wrap: nowrap;
-                                            overflow: hidden;
-                                            text-overflow: ellipsis;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            .modal-content {
-                min-width: 480px;
-                padding: 0 24px 24px;
-                display: flex;
-                flex-direction: column;
-                gap: 24px;
-
-                .form {
-                    margin-top: 24px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 16px;
-                    max-width: 400px;
-
-                    .p-inputwrapper {
-                        width: 100%;
-                    }
-                }
-
-                .modal-service {
+                  .header-cell-service {
                     display: flex;
                     align-items: center;
-                    justify-content: flex-end;
-                    gap: 8px;
+                    justify-content: space-between;
 
-                  .p-progress-spinner-circle {
-                    stroke: white;
-                    animation: none;
+                    button {
+                      width: 30px;
+                      height: 30px;
+
+                      .p-button-icon {
+                        height: 14px;
+                      }
+                    }
                   }
                 }
+
+                .group-header {
+                  height: 40px;
+                  background-color: var.$tableHeaderBg;
+
+                  td {
+                    padding: 0;
+                    text-align: center;
+                    font-weight: 500;
+                    color: var.$primaryColor;
+                  }
+                }
+
+                tbody {
+                  tr:not(.group-header) {
+                    td {
+                      max-width: 50px;
+                      height: 50px;
+                      text-wrap: nowrap;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    }
+                  }
+                }
+              }
             }
+          }
         }
+      }
+
+
+      .modal-content {
+        min-width: 480px;
+        padding: 0 24px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+
+        .form {
+          margin-top: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+
+          .p-inputwrapper {
+            width: 100%;
+          }
+
+          .form-field-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            small {
+              font-size: 10px;
+              color: var.$errorMessageTextColor;
+            }
+          }
+
+          .add-meal-btn {
+            align-self: end;
+          }
+        }
+
+        .modal-service {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 8px;
+
+          .p-progress-spinner-circle {
+            stroke: white;
+            animation: none;
+          }
+        }
+      }
     }
+  }
 }

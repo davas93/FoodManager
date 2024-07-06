@@ -66,20 +66,20 @@
                 ); track row; let j = $index) {
                   <tr>
                     <td pEditableColumnField="firstCourse"
-                        [title]="weekDay.meals.firstCourse[j]?.name || 'Отсутствует'">
-                      {{ weekDay.meals.firstCourse[j]?.name }}
+                        [title]="weekDay.meals.firstCourse[j] || ''">
+                      {{ weekDay.meals.firstCourse[j] }}
                     </td>
                     <td pEditableColumnField="secondCourse"
-                        [title]="weekDay.meals.secondCourse[j]?.name || 'Отсутствует'">
-                      {{ weekDay.meals.secondCourse[j]?.name }}
+                        [title]="weekDay.meals.secondCourse[j] || ''">
+                      {{ weekDay.meals.secondCourse[j] }}
                     </td>
                     <td pEditableColumnField="sideDish"
-                        [title]="weekDay.meals.sideDish[j]?.name || 'Отсутствует'">
-                      {{ weekDay.meals.sideDish[j]?.name }}
+                        [title]="weekDay.meals.sideDish[j] || ''">
+                      {{ weekDay.meals.sideDish[j] }}
                     </td>
                     <td pEditableColumnField="salad"
-                        [title]="weekDay.meals.salad[j]?.name || 'Отсутствует'">
-                      {{ weekDay.meals.salad[j]?.name }}
+                        [title]="weekDay.meals.salad[j] || ''">
+                      {{ weekDay.meals.salad[j] }}
                     </td>
                   </tr>
                 }
@@ -93,7 +93,7 @@
                 [(visible)]="isDialogShow">
         @if (isDialogShow) {
           <div class="modal-content">
-            @if (dishOptions$ | async; as dishOptions) {
+            @if (currentDishType$ | async; as dishType) {
               <div class="form">
                 <p-dropdown #weekDay
                             placeholder="Выберите день недели"
@@ -103,23 +103,27 @@
                             [options]="DAYS_OF_WEEK | keyvalue"
                             (onChange)="selectedDay$.next($event.value)"/>
 
-                <p-multiSelect #dishes
-                               placeholder="Выберите блюдо"
-                               appendTo="body"
-                               optionLabel="name"
-                               [selectionLimit]="5"
-                               [panelStyle]="{'max-width': '400px'}"
-                               [selectedItemsLabel]="'Выбрано блюд: ' + dishes.value?.length"
-                               [disabled]="!weekDay.value"
-                               [ngModel]="selectedOptions$ | async"
-                               [options]="dishOptions"
-                               (onChange)="selectedDishes$.next($event.value)">
-                  <ng-template let-option pTemplate="item">
-                      <span [title]="option.name" style="overflow: hidden; text-overflow: ellipsis">
-                        {{ option.name }}
-                      </span>
-                  </ng-template>
-                </p-multiSelect>
+                @if (selectedDay$ | async; as selectedDay) {
+                  @for (meal of mealsForm.controls; track meal; let i = $index) {
+                    <div class="form-field-wrapper">
+                      <p-inputGroup>
+                        <input pInputText
+                               placeholder="Введите название блюда"
+                               [formControl]="mealsForm.controls[i]" />
+                        <button type="button" pButton icon="fi fi-rr-trash" (click)="removeMeal(i)"></button>
+                      </p-inputGroup>
+                      @if (mealsForm.controls[i].getError('whitespace') && mealsForm.controls[i].dirty) {
+                        <small>Поле должно быть заполнено</small>
+                      }
+                    </div>
+                  }
+
+                  <button class="add-meal-btn" pButton text="true"
+                          [disabled]="mealsForm.controls.length >=5"
+                          (click)="addMeal()"
+                          label="Добавить блюдо">
+                  </button>
+                }
               </div>
 
               <div class="modal-service">
@@ -128,7 +132,7 @@
                         (click)="resetData()"></button>
                 <button pButton
                         style="min-width: 110px; justify-content: center"
-                        [disabled]="!dishes || !weekDay.value || (isLoading$ | async)"
+                        [disabled]="!mealsForm.value.length || mealsForm.invalid || !weekDay.value || (isLoading$ | async)"
                         (click)="updateMenu$.next(menu)">
                   @if (isLoading$ | async) {
                     <p-progressSpinner [style]="{width: '18px', height: '18px'}" strokeWidth="6"></p-progressSpinner>

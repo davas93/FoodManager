@@ -19,7 +19,6 @@ import {FirebaseDataService} from "../../../core/services/firebase-data.service"
 import {ConfirmationService, MessageService} from "primeng/api";
 import {GeneralMenu} from "../../../models/general-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
-import {Dish, Dishes} from "../../../models/dishes.model";
 import {Employee} from "../../../models/employee.model";
 import {UserFormDto} from "../../../interfaces/user-form-dto.interface";
 import firebase from "firebase/compat";
@@ -40,10 +39,6 @@ export class AdminPanelComponent implements OnInit {
   public isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   public generalMenu$!: Observable<GeneralMenu | null>;
-  public firstCourses$!: Observable<Dish[]>;
-  public secondCourses$!: Observable<Dish[]>;
-  public sideDishes$!: Observable<Dish[]>;
-  public salads$!: Observable<Dish[]>;
   public employees$!: Observable<Employee[]>;
 
   //Personal menu management
@@ -100,38 +95,6 @@ export class AdminPanelComponent implements OnInit {
       }))
     );
 
-    this.firstCourses$ = this.fbService.getItems<Dishes>('firstCourses').pipe(
-      map(dishes => dishes[0].dishes),
-      catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'Не удалось получить список первых блюд'});
-        return throwError(err);
-      })
-    );
-
-    this.secondCourses$ = this.fbService.getItems<Dishes>('secondCourses').pipe(
-      map(dishes => dishes[0].dishes),
-      catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'Не удалось получить список вторых блюд'});
-        return throwError(err);
-      })
-    );
-
-    this.sideDishes$ = this.fbService.getItems<Dishes>('sideDishes').pipe(
-      map(dishes => dishes[0].dishes),
-      catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'Не удалось получить список гарниров'});
-        return throwError(err);
-      })
-    );
-
-    this.salads$ = this.fbService.getItems<Dishes>('salads').pipe(
-      map(dishes => dishes[0].dishes),
-      catchError(err => {
-        this.messageService.add({severity: 'error', detail: 'Не удалось получить список салатов'});
-        return throwError(err);
-      })
-    );
-
     this.initializeSideEffect()
   }
 
@@ -154,7 +117,7 @@ export class AdminPanelComponent implements OnInit {
       switchMap(_ => this.userMenus$),
       withLatestFrom(this.selectedDishesWithDay$),
       switchMap(([menus, selectedDishes]) => {
-        const filterCourses = selectedDishes.dishes.map(dish => dish.name);
+        const filterCourses = selectedDishes.dishes.map(dish => dish);
 
         const updatedMenus = menus.map(employeeMenu => {
           const currentWeek = employeeMenu.weeks[selectedDishes.week];

@@ -34,16 +34,19 @@
                 <p-cellEditor>
                   <ng-template pTemplate="input">
                     <p-dropdown placeholder="Выберите блюдо"
-                                optionLabel="name"
-                                optionValue="name"
                                 appendTo="body"
                                 [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
-                                [options]="generalMenu.weeks[i].days[rowIndex].meals.firstCourse"
+                                [options]="[''].concat(generalMenu.weeks[i].days[rowIndex].meals.firstCourse)"
                                 [(ngModel)]="weekDay.meals.firstCourse">
                       <ng-template let-option pTemplate="item">
-                      <span [title]="option.name" class="dropdown-item">
-                        {{ option.name }}
-                      </span>
+                        <span [title]="option" class="dropdown-item">
+                          {{ option ? option : "Нет" }}
+                        </span>
+                      </ng-template>
+                      <ng-template let-selectedOption pTemplate="selectedItem">
+                        <span [title]="selectedOption" class="dropdown-item">
+                          {{ selectedOption ? selectedOption : "" }}
+                        </span>
                       </ng-template>
                     </p-dropdown>
                   </ng-template>
@@ -58,16 +61,19 @@
                 <p-cellEditor>
                   <ng-template pTemplate="input">
                     <p-dropdown placeholder="Выберите блюдо"
-                                optionLabel="name"
-                                optionValue="name"
                                 appendTo="body"
                                 [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
-                                [options]="generalMenu.weeks[i].days[rowIndex].meals.secondCourse"
+                                [options]="[''].concat(generalMenu.weeks[i].days[rowIndex].meals.secondCourse)"
                                 [(ngModel)]="weekDay.meals.secondCourse">
                       <ng-template let-option pTemplate="item">
-                      <span [title]="option.name" class="dropdown-item">
-                        {{ option.name }}
-                      </span>
+                        <span [title]="option" class="dropdown-item">
+                          {{ option ? option : "Нет" }}
+                        </span>
+                      </ng-template>
+                      <ng-template let-selectedOption pTemplate="selectedItem">
+                        <span [title]="selectedOption" class="dropdown-item">
+                          {{ selectedOption ? selectedOption : "" }}
+                        </span>
                       </ng-template>
                     </p-dropdown>
                   </ng-template>
@@ -82,16 +88,19 @@
                 <p-cellEditor>
                   <ng-template pTemplate="input">
                     <p-dropdown placeholder="Выберите блюдо"
-                                optionLabel="name"
-                                optionValue="name"
                                 appendTo="body"
                                 [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
-                                [options]="generalMenu.weeks[i].days[rowIndex].meals.sideDish"
+                                [options]="[''].concat(generalMenu.weeks[i].days[rowIndex].meals.sideDish)"
                                 [(ngModel)]="weekDay.meals.sideDish">
                       <ng-template let-option pTemplate="item">
-                      <span [title]="option.name" class="dropdown-item">
-                        {{ option.name }}
-                      </span>
+                        <span [title]="option" class="dropdown-item">
+                          {{ option ? option : "Нет" }}
+                        </span>
+                      </ng-template>
+                      <ng-template let-selectedOption pTemplate="selectedItem">
+                        <span [title]="selectedOption" class="dropdown-item">
+                          {{ selectedOption ? selectedOption : "" }}
+                        </span>
                       </ng-template>
                     </p-dropdown>
                   </ng-template>
@@ -106,16 +115,19 @@
                 <p-cellEditor>
                   <ng-template pTemplate="input">
                     <p-dropdown placeholder="Выберите блюдо"
-                                optionLabel="name"
-                                optionValue="name"
                                 appendTo="body"
                                 [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
-                                [options]="generalMenu.weeks[i].days[rowIndex].meals.salad"
+                                [options]="[''].concat(generalMenu.weeks[i].days[rowIndex].meals.salad)"
                                 [(ngModel)]="weekDay.meals.salad">
                       <ng-template let-option pTemplate="item">
-                      <span [title]="option.name" class="dropdown-item">
-                        {{ option.name }}
-                      </span>
+                        <span [title]="option" class="dropdown-item">
+                          {{ option ? option : "Нет" }}
+                        </span>
+                      </ng-template>
+                      <ng-template let-selectedOption pTemplate="selectedItem">
+                        <span [title]="selectedOption" class="dropdown-item">
+                          {{ selectedOption ? selectedOption : "" }}
+                        </span>
                       </ng-template>
                     </p-dropdown>
                   </ng-template>
