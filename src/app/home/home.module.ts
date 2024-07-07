@@ -13,6 +13,7 @@ import { PersonalMenuComponent } from './components/admin-panel/components/perso
 import { MenuAdministrationComponent } from './components/admin-panel/components/menu-administration/menu-administration.component';
 import { UsersManagementComponent } from './components/admin-panel/components/users-management/users-management.component';
 import {FullCalendarModule} from "@fullcalendar/angular";
+import {OnlyNumberDirective} from "../shared/directives/only-number.directive";
 
 
 
@@ -29,11 +30,12 @@ import {FullCalendarModule} from "@fullcalendar/angular";
     MenuAdministrationComponent,
     UsersManagementComponent
   ],
-  imports: [
-    CommonModule,
-    HomeRoutingModule,
-    SharedModule,
-    FullCalendarModule
-  ]
+    imports: [
+        CommonModule,
+        HomeRoutingModule,
+        SharedModule,
+        FullCalendarModule,
+        OnlyNumberDirective
+    ]
 })
 export class HomeModule { }

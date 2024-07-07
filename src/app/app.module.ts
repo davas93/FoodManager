@@ -8,19 +8,21 @@ import {ConfirmationService, MessageService} from "primeng/api";
 import {SharedModule} from "./shared/shared.module";
 import {HttpClientModule} from "@angular/common/http";
 import {DialogService, DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
+import {OnlyNumberDirective} from "./shared/directives/only-number.directive";
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    SharedModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        SharedModule,
+        OnlyNumberDirective,
+    ],
   providers: [
     MessageService,
     ConfirmationService,

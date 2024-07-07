@@ -3,11 +3,9 @@
 
   <div class="auth-form">
     <div class="form-field-wrapper">
-      <p-inputMask mask="99999"
-                   type="text"
-                   placeholder="Табельный номер"
-                   [formControl]="loginData.controls.serviceNumber">
-      </p-inputMask>
+      <input appOnlyNumber pInputText type="text"
+             placeholder="Табельный номер"
+             [formControl]="loginData.controls.serviceNumber">
       <small>{{ getErrorMessage(loginData.controls.serviceNumber) }}</small>
     </div>
     <div class="form-field-wrapper">
