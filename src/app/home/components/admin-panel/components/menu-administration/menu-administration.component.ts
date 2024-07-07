@@ -4,7 +4,7 @@ import {
   EventEmitter,
   Input,
   OnInit,
-  Output,
+  Output, ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {
@@ -26,6 +26,11 @@ import {SelectedMenuWithDay} from "../../../../../interfaces/selected-dishes-wit
 import {FormArray, FormBuilder, FormControl} from "@angular/forms";
 import {noWhitespaceValidator} from "../../../../../form-validators/form-validators";
 import {ServiceHelper} from "../../../../../helpers/service.helper";
+import {CalendarOptions} from "@fullcalendar/core";
+import dayGridPlugin from '@fullcalendar/daygrid';
+import ruLocale from '@fullcalendar/core/locales/ru';
+import {addDays} from "date-fns";
+import {FullCalendarComponent} from "@fullcalendar/angular";
 
 @UntilDestroy()
 @Component({
@@ -36,6 +41,7 @@ import {ServiceHelper} from "../../../../../helpers/service.helper";
   encapsulation: ViewEncapsulation.None
 })
 export class MenuAdministrationComponent implements OnInit {
+  @ViewChild('calendar') calendarComponent: FullCalendarComponent;
 
   @Input() set generalMenu(menu: GeneralMenu | null) {
     if (!isNil(menu)) {
@@ -78,6 +84,7 @@ export class MenuAdministrationComponent implements OnInit {
 
   public isDialogShow: boolean = false;
   public isNewWeekDialogShow: boolean = false;
+  public isCalendarDialogShow: boolean = false;
   public isLoading$: Observable<boolean>;
   private startLoading$: Subject<void> = new Subject<void>();
   private errorSubject$: ReplaySubject<{error: boolean, timestamp: number}> = new ReplaySubject<{error: boolean, timestamp: number}>(1);
@@ -93,6 +100,8 @@ export class MenuAdministrationComponent implements OnInit {
   public weekModalHeaderName$: BehaviorSubject<string> = new BehaviorSubject<string>('Добавление новой недели');
   public selectedWeekName$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private weekAction$: BehaviorSubject<'add' | 'delete' | 'update'> = new BehaviorSubject<"add" | "delete" | "update">('add');
+
+  public calendarOptions$: Observable<CalendarOptions>;
 
   constructor(private weekService: WeekService, private fb: FormBuilder) {
   }
@@ -115,6 +124,31 @@ export class MenuAdministrationComponent implements OnInit {
         return `Сегодня ${formattedDate} ${currentWeekDisplayName}`
       })
     );
+
+    this.calendarOptions$ = this.generalMenu$.pipe(
+      map(menu => {
+        const colors = ['#63A0EB', '#EB4F67', '#9BD366', '#F6C855', '#F4BCDB', '#96CFEB', '#F096A2', '#68A33A', '#D09433', '#B077B0', '#3567A4', '#DD6DA7', '#499E8D', '#EF8532'];
+        const weekRanges = this.weekService.getWeekRangesForCurrentYear();
+
+        const events = weekRanges.map((range, index) => ({
+          title: `${menu.weeks[index % menu.weeks.length].displayName}`,
+          start: range.start.toISOString().split('T')[0],
+          end: addDays(range.end, 1).toISOString().split('T')[0],
+          backgroundColor: colors[index % menu.weeks.length],
+          borderColor: colors[index % menu.weeks.length]
+        }));
+
+        const calendarOptions: CalendarOptions = {
+          plugins: [dayGridPlugin],
+          initialView: 'dayGridMonth',
+          events: events,
+          firstDay: 1,
+          locale: ruLocale
+        };
+
+        return calendarOptions;
+      })
+    )
 
     this.modalHeaderName$ = this.currentDishType$.pipe(
       map(type => DISHES[type])
@@ -264,5 +298,12 @@ export class MenuAdministrationComponent implements OnInit {
     }
 
     this.isNewWeekDialogShow = true;
+  }
+
+  public openCalendarDialog() {
+    this.isCalendarDialogShow = true;
+    setTimeout(() => {
+      this.calendarComponent.getApi().updateSize();
+    }, 200)
   }
 }

@@ -7,7 +7,7 @@ import {
   merge,
   Observable, of,
   ReplaySubject,
-  retry,
+  retry, share, shareReplay,
   Subject,
   switchMap,
   throwError, withLatestFrom
@@ -98,6 +98,9 @@ export class AdminPanelComponent implements OnInit {
         this.messageService.add({severity: 'error', detail: 'При получении основного меню произошла ошибка'});
         return throwError(err);
       }))
+    ).pipe(
+      share(),
+      shareReplay({refCount: true, bufferSize: 1})
     );
 
     this.initializeSideEffect()

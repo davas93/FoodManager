@@ -198,6 +198,10 @@
           </div>
         </div>
       </p-dialog>
+
+      <p-dialog class="calendar-modal" modal="true" [(visible)]="isCalendarDialogShow" [style]="{width: '95%', height: '95%'}">
+        <full-calendar #calendar [options]="calendarOptions$ | async" ></full-calendar>
+      </p-dialog>
     } @else {
       <app-loading-screen></app-loading-screen>
     }
@@ -205,5 +209,9 @@
     @if (isLoading$ | async) {
       <app-loading-screen></app-loading-screen>
     }
+  </div>
+
+  <div class="bottom-service">
+    <button pButton (click)="openCalendarDialog()">Открыть календарь</button>
   </div>
 </div>
