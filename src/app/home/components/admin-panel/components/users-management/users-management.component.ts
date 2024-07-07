@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 import {Employee} from "../../../../../models/employee.model";
 import {merge, Observable, ReplaySubject, shareReplay, Subject} from "rxjs";
-import {isNil} from "lodash-es";
+import {isEqual, isNil} from "lodash-es";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Roles} from "../../../../../types/roles.type";
 import {noWhitespaceValidator} from "../../../../../form-validators/form-validators";
@@ -36,12 +36,14 @@ export class UsersManagementComponent {
   @Output() removeUser: EventEmitter<Employee> = new EventEmitter<Employee>();
   @Output() editUser: EventEmitter<Employee> = new EventEmitter<Employee>();
   @Output() openUserMenu: EventEmitter<string> = new EventEmitter<string>();
+  @Output() passwordChange: EventEmitter<{id: string, password: string}> = new EventEmitter<{id: string, password: string}>();
 
   public readonly employeeStatuses: { label: string, value: string }[] = [];
   public readonly roles = ROLES;
   protected readonly STATUSES = STATUSES;
 
   public isDialogShow: boolean = false;
+  public isPasswordDialogShow: boolean = false;
   public isLoading$: Observable<boolean>;
   private startLoading$: Subject<void> = new Subject<void>();
   private errorSubject$: ReplaySubject<{error: boolean, timestamp: number}> = new ReplaySubject<{error: boolean, timestamp: number}>(1);
@@ -52,6 +54,9 @@ export class UsersManagementComponent {
   public currentUserId: string;
 
   public isPasswordShow: boolean = false;
+  public newPasswordControl: FormControl<string> = new FormControl('', [noWhitespaceValidator, Validators.minLength(6)]);
+  public repeatPasswordControl: FormControl<string> = new FormControl('');
+  private selectedUserId: string = "";
 
 
   constructor(private fb: FormBuilder) {
@@ -126,6 +131,20 @@ export class UsersManagementComponent {
 
   togglePassword() {
     this.isPasswordShow = !this.isPasswordShow;
+  }
+
+  openPasswordModal(id: string): void {
+    this.selectedUserId = id;
+    this.isPasswordDialogShow = true;
+  }
+
+  changePassword() {
+    if (!isEqual(this.newPasswordControl.value, this.repeatPasswordControl.value)) {
+      return;
+    }
+
+    this.passwordChange.emit({id: this.selectedUserId, password: this.repeatPasswordControl.value});
+    this.isPasswordDialogShow = false;
   }
 }
 

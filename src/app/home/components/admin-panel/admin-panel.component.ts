@@ -56,6 +56,7 @@ export class AdminPanelComponent implements OnInit {
   public removeUser$: Subject<Employee> = new Subject<Employee>();
   public editUser$: Subject<Employee> = new Subject<Employee>();
   public editSelectedUserMenu$: Subject<string> = new Subject<string>();
+  public changeUserPassword$: Subject<{id: string, password: string}> = new Subject<{id: string; password: string}>();
 
   //Weeks management
   public addNewWeek$: Subject<GeneralMenuWeek> = new Subject<GeneralMenuWeek>();
@@ -257,7 +258,17 @@ export class AdminPanelComponent implements OnInit {
       }),
       retry(),
       untilDestroyed(this)
-    ).subscribe(_ => this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'}))
+    ).subscribe(_ => this.messageService.add({severity: 'success', detail: 'Изменения успешно сохранены'}));
+
+    this.changeUserPassword$.pipe(
+      switchMap(data => this.authService.updatePassword(data.id, data.password)),
+      catchError(err => {
+        this.messageService.add({severity: 'error', detail: err.code});
+        return throwError(err);
+      }),
+      retry(),
+      untilDestroyed(this)
+    ).subscribe(_ => this.messageService.add({severity: 'success', detail: 'пароль успешно изменен'}))
 
     //Weeks management
     this.addNewWeek$.pipe(

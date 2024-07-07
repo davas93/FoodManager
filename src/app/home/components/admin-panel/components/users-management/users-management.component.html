@@ -75,8 +75,17 @@
               </p-cellEditor>
             </td>
             <td style="max-width: 50px" class="sticky-right">
+              <button title="Сменить пароль" pButton icon="fi fi-rr-key"
+                      severity="secondary"
+                      size="large"
+                      style="width: 42px; height: 42px"
+                      [rounded]="true"
+                      [text]="true"
+                      (click)="openPasswordModal(employee.id)">
+              </button>
+
               @if (employee.role !== "Dining" && employee.role !== "Admin" ) {
-                <button pButton icon="fi fi-rr-restaurant"
+                <button title="Редактировать меню пользователя" pButton icon="fi fi-rr-restaurant"
                         severity="secondary"
                         size="large"
                         style="width: 42px; height: 42px"
@@ -86,7 +95,7 @@
                 </button>
               }
 
-              <button pButton icon="fi fi-rr-trash"
+              <button title="Удалить пользователя" pButton icon="fi fi-rr-trash"
                       severity="danger"
                       size="large"
                       style="width: 42px; height: 42px"
@@ -159,6 +168,50 @@
         } @else {
           Добавить
         }
+      </button>
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog [header]="'Новый пароль'"
+          [modal]="true"
+          [(visible)]="isPasswordDialogShow"
+          (onHide)="repeatPasswordControl.reset(); newPasswordControl.reset()">
+  <div class="modal-content">
+    <div class="form">
+      <div class="form-field-wrapper">
+        <p-iconField iconPosition="right">
+          <p-inputIcon style="cursor: pointer"
+                       [styleClass]="isPasswordShow ? 'fi fi-rr-eye-crossed' : 'fi fi-rr-eye'"
+                       (click)="togglePassword()"/>
+          <input [type]="isPasswordShow ? 'text' : 'password'"
+                 pInputText placeholder="Введите новый пароль" [formControl]="newPasswordControl">
+        </p-iconField>
+        <small>{{ getErrorMessage(newPasswordControl) }}</small>
+      </div>
+
+      <div class="form-field-wrapper">
+        <p-iconField iconPosition="right">
+          <p-inputIcon style="cursor: pointer"
+                       [styleClass]="isPasswordShow ? 'fi fi-rr-eye-crossed' : 'fi fi-rr-eye'"
+                       (click)="togglePassword()"/>
+          <input [type]="isPasswordShow ? 'text' : 'password'"
+                 pInputText placeholder="Повторите пароль" [formControl]="repeatPasswordControl">
+        </p-iconField>
+        @if ((newPasswordControl.value !== repeatPasswordControl.value) && repeatPasswordControl.dirty) {
+          <small>Пароли должны совпадать</small>
+        }
+      </div>
+    </div>
+
+    <div class="modal-service">
+      <button pButton label="Отмена"
+              severity="secondary"
+              text="true"
+              [disabled]="isLoading$ | async"
+              (click)="isPasswordDialogShow = false"></button>
+      <button pButton (click)="changePassword()" style="min-width: 110px; justify-content: center">
+        Изменить
       </button>
     </div>
   </div>

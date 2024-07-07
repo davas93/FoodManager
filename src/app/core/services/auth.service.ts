@@ -99,6 +99,12 @@ export class AuthService {
     );
   }
 
+  updatePassword(uid: string, password: string): Observable<string | number> {
+    return this.http.post(`https://food-manager-server.vercel.app/updatePassword`, {uid, password}, {
+      responseType: 'text'
+    })
+  }
+
   get isAuthenticated(): Observable<boolean> {
     return this.authState.asObservable().pipe(
       map(user => !!user)

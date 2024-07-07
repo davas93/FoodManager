@@ -18,7 +18,8 @@
                             (addUser)="addNewUser$.next($event)"
                             (removeUser)="removeUser$.next($event)"
                             (editUser)="editUser$.next($event)"
-                            (openUserMenu)="editSelectedUserMenu$.next($event)">
+                            (openUserMenu)="editSelectedUserMenu$.next($event)"
+                            (passwordChange)="changeUserPassword$.next($event)">
       </app-users-management>
     </div>
   </p-tabPanel>
