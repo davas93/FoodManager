@@ -1,31 +1,66 @@
+@use "themes/mytheme/variables" as var;
 
-.user-menu-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  .user-menu-content {
+app-user-menu {
+  .user-menu-container {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    height: 1%;
-    flex: 1;
-    padding: 32px;
+    height: 100%;
 
-    .user-top-service {
+    .user-menu-content {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      .user-name, .date {
-        font-size: 20px;
-        font-weight: 600;
-      }
-    }
-
-    .table-container {
+      flex-direction: column;
+      gap: 24px;
       height: 1%;
       flex: 1;
+      padding: 32px;
+
+      .user-top-service {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .user-name, .date {
+          font-size: 20px;
+          font-weight: 600;
+        }
+      }
+
+      .table-container {
+        height: 1%;
+        flex: 1;
+      }
+
+      .bottom-service {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+      }
+    }
+  }
+
+  .calendar-modal {
+    .p-dialog-content {
+      padding-bottom: 32px;
+
+      .fc {
+        height: 100% !important;
+
+        .fc-view-harness {
+          height: 1%;
+          flex: 1;
+        }
+
+        button {
+          background: var.$primaryColor;
+          border: none;
+          box-shadow: none;
+
+          &:active {
+            background: var.$primaryDarkColor;
+          }
+        }
+      }
     }
   }
 }

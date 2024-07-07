@@ -111,42 +111,13 @@ export class MenuAdministrationComponent implements OnInit {
 
     this.currentDate$ = this.generalMenu$.pipe(
       map(menu => {
-        const formattedDate: string = new Date().toLocaleDateString('ru', {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric"
-        });
-
-        const currentWeek: string = this.weekService.getCurrentWeek(menu.weeks.length);
-        const currentWeekDisplayName: string = menu.weeks.find(menu => menu.name === currentWeek).displayName;
-
-        return `Сегодня ${formattedDate} ${currentWeekDisplayName}`
+        return this.weekService.getCurrentDateWeekString(menu);
       })
     );
 
     this.calendarOptions$ = this.generalMenu$.pipe(
       map(menu => {
-        const colors = ['#63A0EB', '#EB4F67', '#9BD366', '#F6C855', '#F4BCDB', '#96CFEB', '#F096A2', '#68A33A', '#D09433', '#B077B0', '#3567A4', '#DD6DA7', '#499E8D', '#EF8532'];
-        const weekRanges = this.weekService.getWeekRangesForCurrentYear();
-
-        const events = weekRanges.map((range, index) => ({
-          title: `${menu.weeks[index % menu.weeks.length].displayName}`,
-          start: range.start.toISOString().split('T')[0],
-          end: addDays(range.end, 1).toISOString().split('T')[0],
-          backgroundColor: colors[index % menu.weeks.length],
-          borderColor: colors[index % menu.weeks.length]
-        }));
-
-        const calendarOptions: CalendarOptions = {
-          plugins: [dayGridPlugin],
-          initialView: 'dayGridMonth',
-          events: events,
-          firstDay: 1,
-          locale: ruLocale
-        };
-
-        return calendarOptions;
+        return this.weekService.getWeeksCalendarOptions(menu);
       })
     )
 

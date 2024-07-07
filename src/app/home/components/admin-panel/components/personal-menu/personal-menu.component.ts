@@ -1,11 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ReplaySubject} from "rxjs";
+import {Observable, ReplaySubject} from "rxjs";
 import {EmployeeMenu} from "../../../../../models/employee-menu.model";
 import {GeneralMenu} from "../../../../../models/general-menu.model";
 import {WeekService} from "../../../../../core/services/week.service";
 import {WEEKS} from "../../../../../consts/weeks-vocabulary";
 import {cloneDeep, isEqual, isNil} from "lodash-es";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-personal-menu',
@@ -32,7 +33,7 @@ export class PersonalMenuComponent implements OnInit {
   public currentUserMenu$: ReplaySubject<EmployeeMenu | null> = new ReplaySubject(1);
 
   public _cachedUserMenu!: EmployeeMenu | null;
-  public currentDate!: string;
+  public currentDate$: Observable<string>;
   public currentWeek!: string;
 
 
@@ -45,16 +46,9 @@ export class PersonalMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const formattedDate: string = new Date().toLocaleDateString('ru', {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
-
-    this.currentWeek = this.weekService.getCurrentWeek(4);
-
-    this.currentDate = `Сегодня ${formattedDate} ${WEEKS[this.currentWeek]}`;
+    this.currentDate$ = this.generalMenu$.pipe(
+      map(menu => this.weekService.getCurrentDateWeekString(menu))
+    )
   }
 
   public getBtnState(changedMenu: EmployeeMenu, cachedMenu: EmployeeMenu | null): boolean {

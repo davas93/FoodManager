@@ -3,7 +3,7 @@
     <div class="user-menu-content">
       <div class="user-top-service">
         <div class="user-name">{{menu.employeeName}}</div>
-        <div class="date">{{currentDate}}</div>
+        <div class="date">{{currentDate$ | async}}</div>
       </div>
 
 
@@ -14,9 +14,18 @@
         </app-user-menu-table>
       </div>
 
-      <button style="align-self: center" pButton [disabled]="getBtnState(menu, _cachedUserMenu)" (click)="saveMenuBtnClick$.next(menu)">Сохранить изменения</button>
+      <div class="bottom-service">
+        <button pButton (click)="openCalendarDialog()">Открыть календарь</button>
+        <button pButton [disabled]="getBtnState(menu, _cachedUserMenu)" (click)="saveMenuBtnClick$.next(menu)">Сохранить изменения</button>
+      </div>
     </div>
   } @else {
     <app-loading-screen></app-loading-screen>
   }
 </div>
+
+@if (calendarOptions$ | async; as options) {
+  <p-dialog class="calendar-modal" modal="true" [(visible)]="isCalendarDialogShow" [style]="{width: '95%', height: '95%'}">
+    <full-calendar #calendar [options]="options" ></full-calendar>
+  </p-dialog>
+}
