@@ -122,7 +122,13 @@
       </div>
 
       <div class="form-field-wrapper">
-        <input pInputText placeholder="Введите Пароль для сотрудника" [formControl]="userFormDto.controls.password">
+        <p-iconField iconPosition="right">
+          <p-inputIcon style="cursor: pointer"
+                       [styleClass]="isPasswordShow ? 'fi fi-rr-eye-crossed' : 'fi fi-rr-eye'"
+                       (click)="togglePassword()"/>
+          <input [type]="isPasswordShow ? 'text' : 'password'"
+                 pInputText placeholder="Введите Пароль для сотрудника" [formControl]="userFormDto.controls.password">
+        </p-iconField>
         <small>{{ getErrorMessage(userFormDto.controls.password) }}</small>
       </div>
 

@@ -9,6 +9,7 @@ import {MessageService} from "primeng/api";
 import {ServiceHelper} from "../helpers/service.helper";
 import {noWhitespaceValidator} from "../form-validators/form-validators";
 import {Roles} from "../types/roles.type";
+import {b} from "@fullcalendar/core/internal-common";
 
 @UntilDestroy()
 @Component({
@@ -24,6 +25,7 @@ export class AuthComponent implements OnInit {
 
   public loginBtnClick$: Subject<void> = new Subject<void>();
   public isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isPasswordShow: boolean = false;
 
   constructor(private authService: AuthService, private router: Router, private messageService: MessageService) {
   }
@@ -95,6 +97,10 @@ export class AuthComponent implements OnInit {
           break;
       }
     }
+  }
+
+  togglePassword() {
+    this.isPasswordShow = !this.isPasswordShow;
   }
 }
 

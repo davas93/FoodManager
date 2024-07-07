@@ -51,6 +51,8 @@ export class UsersManagementComponent {
   public userFormDto: FormGroup<UserDtoFormGroup>;
   public currentUserId: string;
 
+  public isPasswordShow: boolean = false;
+
 
   constructor(private fb: FormBuilder) {
     this.currentUserId = JSON.parse(localStorage.getItem("userData")).id;
@@ -120,6 +122,10 @@ export class UsersManagementComponent {
 
   public resetForm(): void {
     this.userFormDto.reset()
+  }
+
+  togglePassword() {
+    this.isPasswordShow = !this.isPasswordShow;
   }
 }
 
