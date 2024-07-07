@@ -12,10 +12,8 @@ import {
   combineLatest, filter,
   map, merge,
   Observable,
-  of,
   ReplaySubject, shareReplay,
   Subject,
-  switchMap, tap,
   withLatestFrom
 } from "rxjs";
 import {GeneralMenu, GeneralMenuWeek} from "../../../../../models/general-menu.model";
@@ -25,9 +23,8 @@ import {Meal} from "../../../../../models/employee-menu.model";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 import {WeekService} from "../../../../../core/services/week.service";
 import {SelectedMenuWithDay} from "../../../../../interfaces/selected-dishes-with-day.interface";
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl} from "@angular/forms";
 import {noWhitespaceValidator} from "../../../../../form-validators/form-validators";
-import {UserFormDto} from "../../../../../interfaces/user-form-dto.interface";
 import {ServiceHelper} from "../../../../../helpers/service.helper";
 
 @UntilDestroy()
@@ -45,7 +42,10 @@ export class MenuAdministrationComponent implements OnInit {
       this.generalMenu$.next(menu);
       this.isDialogShow = false;
       this.isNewWeekDialogShow = false;
-      this._currentWeekIndex = 0;
+
+      if (this.weekAction$.value === 'delete' && this._currentWeekIndex > 0) {
+        this._currentWeekIndex = this._currentWeekIndex - 1;
+      }
     }
   }
 
@@ -59,14 +59,10 @@ export class MenuAdministrationComponent implements OnInit {
   @Output() removeWeek: EventEmitter<GeneralMenuWeek> = new EventEmitter<GeneralMenuWeek>();
   @Output() renameWeek: EventEmitter<{weekName: string; newDisplayName: string }> = new EventEmitter<{weekName: string; newDisplayName: string }>();
 
-  protected readonly WEEKS = WEEKS;
   protected readonly DAYS_OF_WEEK = DAYS_OF_WEEK;
 
-  public currentDate!: string;
-  public currentWeek!: string;
-  public _currentWeekIndex = 0;
-
-  public dishOptions$!: Observable<string[]>;
+  public currentDate$: Observable<string>;
+  public _currentWeekIndex: number = 0;
   public modalHeaderName$!: Observable<string>;
   public selectedOptions$!: Observable<string[]>;
 
@@ -96,6 +92,7 @@ export class MenuAdministrationComponent implements OnInit {
   public openModalMode$: BehaviorSubject<'new' | 'edit'> = new BehaviorSubject<"new" | "edit">('new');
   public weekModalHeaderName$: BehaviorSubject<string> = new BehaviorSubject<string>('Добавление новой недели');
   public selectedWeekName$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private weekAction$: BehaviorSubject<'add' | 'delete' | 'update'> = new BehaviorSubject<"add" | "delete" | "update">('add');
 
   constructor(private weekService: WeekService, private fb: FormBuilder) {
   }
@@ -103,35 +100,25 @@ export class MenuAdministrationComponent implements OnInit {
   ngOnInit(): void {
     this.mealsForm = this.fb.array<string>([]);
 
-    const formattedDate: string = new Date().toLocaleDateString('ru', {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    });
+    this.currentDate$ = this.generalMenu$.pipe(
+      map(menu => {
+        const formattedDate: string = new Date().toLocaleDateString('ru', {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        });
 
-    this.currentWeek = this.weekService.getCurrentWeek(4);
+        const currentWeek: string = this.weekService.getCurrentWeek(menu.weeks.length);
+        const currentWeekDisplayName: string = menu.weeks.find(menu => menu.name === currentWeek).displayName;
 
-    this.currentDate = `Сегодня ${formattedDate} ${WEEKS[this.currentWeek]}`;
+        return `Сегодня ${formattedDate} ${currentWeekDisplayName}`
+      })
+    );
 
     this.modalHeaderName$ = this.currentDishType$.pipe(
       map(type => DISHES[type])
     );
-
-    switch (this.currentWeek) {
-      case 'week1':
-        this._currentWeekIndex = 0;
-        break;
-      case 'week2':
-        this._currentWeekIndex = 1;
-        break;
-      case 'week3':
-        this._currentWeekIndex = 2;
-        break;
-      case 'week4':
-        this._currentWeekIndex = 3;
-        break;
-    }
 
     this.isLoading$ = merge(
       this.generalMenu$.pipe(map(_ => false)),
@@ -230,16 +217,19 @@ export class MenuAdministrationComponent implements OnInit {
         })
       })
     ).subscribe(week => {
+      this.weekAction$.next('add');
       this.addNewWeek.emit(ServiceHelper.toPlainObject(week));
       this.startLoading$.next();
       this.weekDisplayNameFormControl.reset();
     });
 
     this.removeWeekClick$.pipe(untilDestroyed(this)).subscribe(week => {
+      this.weekAction$.next('delete');
       this.removeWeek.emit(week);
     });
 
     this.renameWeekClick$.pipe(untilDestroyed(this)).subscribe(newDisplayName => {
+      this.weekAction$.next('update');
       this.renameWeek.emit({
         weekName: this.selectedWeekName$.value,
         newDisplayName: newDisplayName
