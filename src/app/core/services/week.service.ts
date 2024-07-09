@@ -4,6 +4,7 @@ import {GeneralMenu} from "../../models/general-menu.model";
 import {CalendarOptions} from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import ruLocale from "@fullcalendar/core/locales/ru";
+import {EmployeeMenu} from "../../models/employee-menu.model";
 
 @Injectable({
   providedIn: 'root'
@@ -62,7 +63,7 @@ export class WeekService {
     return calendarOptions;
   }
 
-  getCurrentDateWeekString(menu: GeneralMenu): string {
+  getCurrentDateWeekString(menu: GeneralMenu | EmployeeMenu): string {
     const formattedDate: string = new Date().toLocaleDateString('ru', {
       weekday: "long",
       day: "numeric",

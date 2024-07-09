@@ -8,6 +8,7 @@ import {map} from "rxjs/operators";
 import {calculateMealCounts, MealCounts} from "./functions/calculateMealsCount.function";
 import {Employee} from "../../../models/employee.model";
 import {EmployeeStatus} from "../../../types/employee-status.type";
+import {b} from "@fullcalendar/core/internal-common";
 
 @Component({
   selector: 'app-dining-info',
@@ -22,6 +23,7 @@ export class DiningInfoComponent implements OnInit{
   public currentWeekDay: string;
   public currentWeek: string;
   public _currentWeekIndex: number;
+  public currentWeekIndex$: Observable<number>;
   public _currentDayIndex: number = 0;
   public currentDate: Date = new Date();
 
@@ -29,23 +31,13 @@ export class DiningInfoComponent implements OnInit{
   private employees$: Observable<Employee[]>;
   public mealCounts$: Observable<MealCounts>;
   public isWeekend$: Observable<boolean>;
+  public currentDate$: Observable<string>;
+  public diningTableData$: Observable<DiningTableData>;
 
   constructor(private weekService: WeekService, private fbService: FirebaseDataService) {
   }
 
   ngOnInit(): void {
-    const formattedDate: string = this.currentDate.toLocaleDateString('ru',{weekday: "long", day: "numeric", month: "long", year: "numeric"});
-    this.currentWeekDay = this.currentDate.toLocaleDateString('ru', {weekday: "long"});
-
-    this.currentWeek = this.weekService.getCurrentWeek(4);
-    this.currentDateString = `Сегодня ${formattedDate} ${WEEKS[this.currentWeek]}`;
-    this._currentWeekIndex = Object.keys(WEEKS).indexOf(this.currentWeek);
-
-    if (!(this.currentWeekDay === "суббота" || this.currentWeekDay === "воскресенье")) {
-      this._currentDayIndex = Object.values(DAYS_OF_WEEK).map(day => day.toLowerCase()).indexOf(this.currentWeekDay.toLowerCase());
-    }
-
-    this.isWeekend$ = of(this.currentWeekDay === "суббота" || this.currentWeekDay === "воскресенье");
 
     this.employees$ = this.fbService.getItems<Employee>('employees');
 
@@ -60,12 +52,31 @@ export class DiningInfoComponent implements OnInit{
 
         return filteredMenus;
       }),
-      share(),
-      shareReplay({bufferSize: 1, refCount: true})
     );
 
-    this.mealCounts$ = this.employeeMenus$.pipe(
-      map(employeeMenus => calculateMealCounts(employeeMenus, this._currentWeekIndex, this._currentDayIndex)),
+
+    this.diningTableData$ = this.employeeMenus$.pipe(
+      map(menus => {
+        const currentDate: string = this.weekService.getCurrentDateWeekString(menus[0]);
+        const currentWeek: string = this.weekService.getCurrentWeek(menus[0].weeks.length);
+        const currentWeekIndex: number = menus[0].weeks.findIndex(week => week.name === currentWeek);
+        const currentWeekDay = this.currentDate.toLocaleDateString('ru', {weekday: "long"});
+        const currentDayIndex: number = Object.values(DAYS_OF_WEEK).map(day => day.toLowerCase()).indexOf(currentWeekDay.toLowerCase());
+        const isWeekend: boolean = currentWeekDay === "суббота" || currentWeekDay === "воскресенье";
+        const mealsCount: MealCounts = calculateMealCounts(menus, currentWeekIndex, currentDayIndex);
+
+
+        const data: DiningTableData = {
+          menus: menus,
+          currentDate: currentDate,
+          weekIndex: currentWeekIndex,
+          dayIndex: currentDayIndex,
+          isWeekend: isWeekend,
+          mealCounts: mealsCount
+        }
+
+        return data
+      })
     )
   }
 
@@ -76,4 +87,13 @@ export class DiningInfoComponent implements OnInit{
         Object.keys(mealCounts.sideDish).length - 1,
         Object.keys(mealCounts.salad).length - 1) })
   }
+}
+
+interface DiningTableData {
+  menus: EmployeeMenu[];
+  currentDate: string;
+  isWeekend: boolean;
+  dayIndex: number;
+  weekIndex: number;
+  mealCounts: MealCounts
 }
