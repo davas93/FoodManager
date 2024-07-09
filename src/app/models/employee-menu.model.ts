@@ -40,9 +40,7 @@ export class Week {
 export class EmployeeMenu {
   id: string = "";
   employeeName: string = "";
-  weeks: Week[] = [
-    new Week({name: "week1", displayName: "Неделя 1"}),
-  ];
+  weeks: Week[] = [];
 
   constructor(input?: Partial<EmployeeMenu>) {
     if (!isNil(input)) Object.assign(this, input);

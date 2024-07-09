@@ -24,9 +24,10 @@ import firebase from "firebase/compat";
 import DocumentReference = firebase.firestore.DocumentReference;
 import {LoginData} from "../../models/login-data.model";
 import {ServiceHelper} from "../../helpers/service.helper";
-import {EmployeeMenu} from "../../models/employee-menu.model";
+import {EmployeeMenu, Week} from "../../models/employee-menu.model";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import UserCredential = firebase.auth.UserCredential;
+import {GeneralMenu} from "../../models/general-menu.model";
 
 @Injectable({
   providedIn: 'root'
@@ -67,15 +68,25 @@ export class AuthService {
       switchMap(uid => {
         employee.id = uid;
 
-        return combineLatest([this.firestoreDataService.addItem<Employee>('employees', ServiceHelper.toPlainObject(employee)), of(uid)])
+        return combineLatest([
+          this.firestoreDataService.addItem<Employee>('employees', ServiceHelper.toPlainObject(employee)),
+          of(uid),
+          this.firestoreDataService.getItemById<GeneralMenu>('generalMenu', 1)])
       }),
-      switchMap(([doc, uid]) => {
-        if (employee.role === "Dining") {
+      switchMap(([doc, uid, menu]) => {
+        if (employee.role === "Dining" || employee.role === "Admin") {
           return of(doc);
         } else {
           const userMenu = new EmployeeMenu({
             id: uid,
             employeeName: employee.fullName
+          })
+
+          menu.weeks.forEach((week) => {
+            userMenu.weeks.push(new Week({
+              name: week.name,
+              displayName: week.displayName
+            }))
           })
 
           return this.firestoreDataService.addItem<EmployeeMenu>('menus', ServiceHelper.toPlainObject(userMenu))
@@ -93,7 +104,7 @@ export class AuthService {
     }).pipe(
       switchMap(_ =>
         this.firestoreDataService.deleteItem('employees', employee.id).pipe(
-          switchMap(res => employee.role === "Dining" ? of(res) : this.firestoreDataService.deleteItem('menus', employee.id))
+          switchMap(res => employee.role === "Dining" || employee.role === "Admin" ? of(res) : this.firestoreDataService.deleteItem('menus', employee.id))
         )
       )
     );
