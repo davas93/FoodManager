@@ -99,8 +99,8 @@ export class AuthService {
     );
   }
 
-  updatePassword(uid: string, password: string): Observable<string | number> {
-    return this.http.post(`https://food-manager-server.vercel.app/updatePassword`, {uid, password}, {
+  updatePassword(uid: string, newPassword: string): Observable<string | number> {
+    return this.http.post(`https://food-manager-server.vercel.app/updatePassword`, {uid, password: newPassword}, {
       responseType: 'text'
     })
   }
