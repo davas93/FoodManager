@@ -13,9 +13,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 const STATUSES = {
   "Working": 'Работает',
-  "Vacation": 'В отпуске',
-  "Mission": 'В командировке',
-  "Medical": "На больничном"
+  "NotWorking": 'Не работает'
 };
 
 /***/ }),
@@ -1172,7 +1170,7 @@ let DiningInfoComponent = (_DiningInfoComponent = class DiningInfoComponent {
     this.employeeMenus$ = this.fbService.getItems('menus').pipe((0,rxjs__WEBPACK_IMPORTED_MODULE_6__.withLatestFrom)(this.employees$), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_7__.map)(([menus, employees]) => {
       const filteredMenus = menus.filter(menu => {
         const employee = employees.find(employee => employee.id === menu.id);
-        return employee && employee.status !== 'Vacation' && employee.status !== 'Mission' && employee.status !== 'Medical';
+        return employee && employee.status !== 'NotWorking';
       });
       return filteredMenus;
     }));
@@ -18960,4 +18958,4 @@ function keysIn(object) {
 /***/ })
 
 }]);
-//# sourceMappingURL=55.6450e8045ce2a3bd.js.map
+//# sourceMappingURL=55.dc4777300818b86d.js.map
