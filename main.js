@@ -39,7 +39,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var path = require("path");
 var url = require("url");
-// const admin = require('./firebase-admin/firebase-admin.js');
 var win = null;
 var args = process.argv.slice(1), serve = args.some(function (val) { return val === '--serve'; });
 function createWindow() {
@@ -120,15 +119,6 @@ try {
             createWindow();
         }
     });
-    // ipcMain.on('delete-user', (event, uid) => {
-    //     admin.auth().deleteUser(uid)
-    //         .then(() => {
-    //             event.reply('delete-user-response', { success: true });
-    //         })
-    //         .catch((error) => {
-    //             event.reply('delete-user-response', { success: false, error: error.message });
-    //         });
-    // });
 }
 catch (e) {
     // Catch Error
