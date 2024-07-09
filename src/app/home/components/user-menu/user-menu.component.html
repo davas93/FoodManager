@@ -10,7 +10,7 @@
       <div class="table-container">
         <app-user-menu-table [weeks]="menu.weeks"
                              [generalMenu]="generalMenu$ | async"
-                             [currentWeek]="currentWeek">
+                             [currentWeek]="currentWeek$ | async">
         </app-user-menu-table>
       </div>
 

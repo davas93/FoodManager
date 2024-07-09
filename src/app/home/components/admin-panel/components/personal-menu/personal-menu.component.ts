@@ -34,7 +34,7 @@ export class PersonalMenuComponent implements OnInit {
 
   public _cachedUserMenu!: EmployeeMenu | null;
   public currentDate$: Observable<string>;
-  public currentWeek!: string;
+  public currentWeek$: Observable<string>;
 
 
   constructor(private weekService: WeekService, public config: DynamicDialogConfig, public ref: DynamicDialogRef) {
@@ -48,6 +48,10 @@ export class PersonalMenuComponent implements OnInit {
   ngOnInit(): void {
     this.currentDate$ = this.generalMenu$.pipe(
       map(menu => this.weekService.getCurrentDateWeekString(menu))
+    );
+
+    this.currentWeek$ = this.generalMenu$.pipe(
+      map(menu => this.weekService.getCurrentWeek(menu.weeks.length))
     )
   }
 

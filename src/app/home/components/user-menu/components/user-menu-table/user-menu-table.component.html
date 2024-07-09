@@ -2,6 +2,7 @@
   @for (week of weeks$ | async; track week; let i = $index) {
     <p-tabPanel [header]="week.displayName" class="menu-tabs">
       @if (generalMenu$ | async; as generalMenu) {
+
         <p-table #table [value]="week.days"
                  groupRowsBy="name"
                  rowGroupMode="subheader" (onEditComplete)="changeMenu.emit()">
@@ -29,6 +30,9 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-weekDay let-rowIndex="rowIndex">
+            <p-blockUI [target]="table" [blocked]="week.name === _currentWeek && weekDay.displayName.toLowerCase() === _currentDay && _currentTimeInvalid">
+              <p style="color: white; font-size: 28px;">Выбор блюд доступен до 15:00</p>
+            </p-blockUI>
             <tr>
               <td #cell [pEditableColumn]="weekDay.meals.firstCourse" pEditableColumnField="firstCourse">
                 <p-cellEditor>

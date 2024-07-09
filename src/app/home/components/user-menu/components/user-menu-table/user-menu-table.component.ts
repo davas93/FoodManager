@@ -24,20 +24,8 @@ export class UserMenuTableComponent implements OnInit{
 
   @Input() set currentWeek(week: string) {
     if (!isNil(week)) {
-      switch (week) {
-        case 'week1':
-          this._currentWeekIndex = 0;
-          break;
-        case 'week2':
-          this._currentWeekIndex= 1;
-          break;
-        case 'week3':
-          this._currentWeekIndex = 2;
-          break;
-        case 'week4':
-          this._currentWeekIndex = 3;
-          break;
-      }
+      this._currentWeek = week;
+      console.log(this._currentDay, week, this._currentTimeInvalid)
     }
   }
 
@@ -49,7 +37,10 @@ export class UserMenuTableComponent implements OnInit{
   public weeks$: ReplaySubject<Week[]> = new ReplaySubject<Week[]>(1);
   public generalMenu$: ReplaySubject<GeneralMenu> = new ReplaySubject<GeneralMenu>(1);
   public _currentWeekIndex: number = 0;
-
+  private _currentDate: Date = new Date();
+  public _currentDay: string = this._currentDate.toLocaleDateString('ru', {weekday: "long"});
+  public _currentWeek: string;
+  public _currentTimeInvalid: boolean = this._currentDate.getHours() > 15 || (this._currentDate.getHours() === 15 && this._currentDate.getMinutes() > 0);
 
   ngOnInit(): void {
   }

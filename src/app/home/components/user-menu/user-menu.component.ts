@@ -27,7 +27,7 @@ export class UserMenuComponent implements OnInit {
   private userMenuData$!: Observable<EmployeeMenu | null>;
 
   public _cachedUserMenu!: EmployeeMenu | null;
-  public currentWeek!: string;
+  public currentWeek$: Observable<string>;
   public currentDate$: Observable<string>;
   public calendarOptions$: Observable<CalendarOptions>;
   public isCalendarDialogShow: boolean = false;
@@ -76,6 +76,10 @@ export class UserMenuComponent implements OnInit {
     this.currentDate$ = this.generalMenu$.pipe(
       map(menu => this.weekService.getCurrentDateWeekString(menu))
     );
+
+    this.currentWeek$ = this.generalMenu$.pipe(
+      map(menu => this.weekService.getCurrentWeek(menu.weeks.length))
+    )
 
     this.calendarOptions$ = this.generalMenu$.pipe(
       map(menu => {
