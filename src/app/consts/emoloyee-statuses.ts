@@ -1,1 +1,1 @@
-export const EMPLOYEE_STATUSES = ['Working', 'Vacation', 'Mission', 'Medical'] as const;
+export const EMPLOYEE_STATUSES = ['Working', 'NotWorking'] as const;
