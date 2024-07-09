@@ -55,7 +55,7 @@ export class UsersManagementComponent {
 
   public isPasswordShow: boolean = false;
   public newPasswordControl: FormControl<string> = new FormControl('', [noWhitespaceValidator, Validators.minLength(6)]);
-  public repeatPasswordControl: FormControl<string> = new FormControl('');
+  public repeatPasswordControl: FormControl<string> = new FormControl('', noWhitespaceValidator);
   private selectedUserId: string = "";
 
 
@@ -140,6 +140,7 @@ export class UsersManagementComponent {
 
   changePassword() {
     if (!isEqual(this.newPasswordControl.value, this.repeatPasswordControl.value)) {
+      this.repeatPasswordControl.markAsDirty();
       return;
     }
 
