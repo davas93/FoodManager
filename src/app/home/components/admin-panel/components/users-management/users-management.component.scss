@@ -101,6 +101,13 @@ app-users-management {
                 color: var.$errorMessageTextColor;
               }
             }
+
+            .Medical {
+              .p-tag {
+                background-color: var.$infoMessageBg;
+                color: var.$infoMessageTextColor;
+              }
+            }
           }
         }
 

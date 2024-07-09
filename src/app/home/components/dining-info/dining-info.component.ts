@@ -47,7 +47,7 @@ export class DiningInfoComponent implements OnInit{
         const filteredMenus: EmployeeMenu[] = menus
           .filter(menu => {
             const employee = employees.find(employee => employee.id === menu.id);
-            return employee && employee.status !== 'Vacation' && employee.status !== 'Mission';
+            return employee && employee.status !== 'Vacation' && employee.status !== 'Mission' && employee.status !== 'Medical';
           });
 
         return filteredMenus;

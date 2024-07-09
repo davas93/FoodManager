@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ButtonDirective} from "primeng/button";
-import {catchError, of, Subject, switchMap} from "rxjs";
+import {catchError, of, retry, Subject, switchMap, throwError} from "rxjs";
 import {AuthService} from "../../../core/services/auth.service";
 import {Router} from "@angular/router";
 import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
@@ -23,8 +23,9 @@ export class ToolbarComponent implements OnInit{
         switchMap(_ => this.authService.signOut().pipe(
           catchError(error => {
             console.error('Login error:', error);
-            return of(null);
+            return throwError(error)
           }))),
+        retry(),
         untilDestroyed(this)
       ).subscribe(_ => {
         this.router.navigate(['/auth']);
