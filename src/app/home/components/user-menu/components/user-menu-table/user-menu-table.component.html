@@ -35,6 +35,7 @@
                   <ng-template pTemplate="input">
                     <p-dropdown placeholder="Выберите блюдо"
                                 appendTo="body"
+                                [disabled]="weekDay.meals.salad ==='САЛАТ'"
                                 [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
                                 [options]="[''].concat(generalMenu.weeks[i].days[rowIndex].meals.firstCourse)"
                                 [(ngModel)]="weekDay.meals.firstCourse">
@@ -62,6 +63,7 @@
                   <ng-template pTemplate="input">
                     <p-dropdown placeholder="Выберите блюдо"
                                 appendTo="body"
+                                [disabled]="weekDay.meals.salad ==='САЛАТ'"
                                 [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
                                 [options]="[''].concat(generalMenu.weeks[i].days[rowIndex].meals.secondCourse)"
                                 [(ngModel)]="weekDay.meals.secondCourse">
@@ -89,6 +91,7 @@
                   <ng-template pTemplate="input">
                     <p-dropdown placeholder="Выберите блюдо"
                                 appendTo="body"
+                                [disabled]="weekDay.meals.salad ==='САЛАТ'"
                                 [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
                                 [options]="[''].concat(generalMenu.weeks[i].days[rowIndex].meals.sideDish)"
                                 [(ngModel)]="weekDay.meals.sideDish">
@@ -118,7 +121,8 @@
                                 appendTo="body"
                                 [overlayOptions]="{styleClass: 'user-menu-table-dropdown-overlay'}"
                                 [options]="[''].concat(generalMenu.weeks[i].days[rowIndex].meals.salad)"
-                                [(ngModel)]="weekDay.meals.salad">
+                                [(ngModel)]="weekDay.meals.salad"
+                                (ngModelChange)="onSaladChange(weekDay, $event)">
                       <ng-template let-option pTemplate="item">
                         <span [title]="option" class="dropdown-item">
                           {{ option ? option : "Нет" }}
